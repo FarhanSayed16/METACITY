@@ -1,0 +1,98 @@
+@startuml METACITY_02_Tech_Stack
+' ============================================================
+' METACITY — Technical Stack Overview
+' Theme: Civic Steel (light professional)
+' ============================================================
+
+!theme plain
+skinparam backgroundColor #F4F6F8
+skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+skinparam roundCorner 14
+skinparam ArrowColor #5A6A7A
+skinparam ArrowThickness 1.4
+skinparam ArrowFontColor #3D4A57
+skinparam ArrowFontSize 11
+
+skinparam package {
+  FontStyle bold
+  FontColor #1B2430
+  BorderThickness 1.5
+  RoundCorner 14
+}
+
+skinparam card {
+  BorderThickness 1
+  RoundCorner 10
+  FontColor #1B2430
+}
+
+title <b>METACITY — Technical Stack</b>\n<size:11><color:#5A6A7A>What we use and how layers connect</color></size>
+
+package "**Frontend**" as FE #EAF3F2 {
+  card "**UI Framework**\nReact 18+ · TypeScript\nVite" as FE1 #FFFFFF
+  card "**3D / Map**\nThree.js · React Three Fiber\nMapLibre (Phase 7+)" as FE2 #FFFFFF
+  card "**State & Charts**\nZustand · Recharts\nLucide icons" as FE3 #FFFFFF
+  card "**Quality**\nVitest · ESLint\nOpenAPI→TS types" as FE4 #FFFFFF
+}
+
+package "**Communication**" as COMM #EDF2F7 {
+  card "**REST**\nJSON · OpenAPI\nPydantic schemas" as C1 #FFFFFF
+  card "**WebSocket**\nRun snapshots\nProgress events" as C2 #FFFFFF
+}
+
+package "**Backend**" as BE #E8EEF5 {
+  card "**API**\nPython 3.12\nFastAPI · Uvicorn" as BE1 #FFFFFF
+  card "**Workers**\nMultiprocessing pool\nJob states + retry" as BE2 #FFFFFF
+  card "**Core Library**\nmetacity_core\nNumPy · SciPy" as BE3 #FFFFFF
+  card "**Geospatial (later)**\nOSMnx · GeoPandas\nShapely" as BE4 #FFFFFF
+}
+
+package "**Data & Ops**" as DATA #F7F3EA {
+  card "**MVP Storage**\nSQLite · Parquet\nDuckDB reads" as D1 #FFFFFF
+  card "**Later Storage**\nPostgreSQL\nPostGIS" as D2 #FFFFFF
+  card "**Containers**\nDocker Compose\napi · worker · frontend" as D3 #FFFFFF
+  card "**CI / DX**\nGitHub Actions\nMake/just · ADRs" as D4 #FFFFFF
+}
+
+FE1 -[#2A9D8F]down-> C1
+FE2 -[#2A9D8F]down-> C2
+FE3 -[#2A9D8F]down-> C1
+C1 -[#3D7EA6]down-> BE1
+C2 -[#3D7EA6]down-> BE1
+BE1 -[#5A6A7A]down-> BE2
+BE2 -[#C45C26]down-> BE3
+BE1 -[#5A6A7A]-> D1
+BE2 -[#5A6A7A]-> D1
+BE3 -[#5A6A7A]-> D1
+BE4 -[#A8B5C0]-> D2 : Phase 7+
+D3 -[#A8B5C0]-> BE1
+D3 -[#A8B5C0]-> FE1
+D4 -[#A8B5C0]-> FE4
+D4 -[#A8B5C0]-> BE1
+
+note right of BE3
+  <b>Hard rule</b>
+  Core has <b>no</b> FastAPI,
+  no SQLite, no WebSocket.
+  Pure simulation library.
+end note
+
+note left of FE2
+  <b>Dual render path</b>
+  Synthetic → R3F only
+  Real basemap → MapLibre later
+end note
+
+legend right
+  |= Token |= Role |
+  | <#EAF3F2> Teal wash | Frontend |
+  | <#EDF2F7> Blue wash | Transport |
+  | <#E8EEF5> Slate wash | Backend |
+  | <#F7F3EA> Warm wash | Data / Ops |
+endlegend
+
+footer METACITY · Architecture · Tech Stack
+
+@enduml

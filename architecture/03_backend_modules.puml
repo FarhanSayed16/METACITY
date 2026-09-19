@@ -1,0 +1,124 @@
+@startuml METACITY_03_Backend_Modules
+' ============================================================
+' METACITY — Backend Module Structure
+' Theme: Civic Steel (light professional)
+' ============================================================
+
+!theme plain
+skinparam backgroundColor #F4F6F8
+skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam roundCorner 12
+skinparam ArrowColor #5A6A7A
+skinparam ArrowThickness 1.15
+skinparam ArrowFontColor #3D4A57
+skinparam ArrowFontSize 10
+skinparam linetype ortho
+
+skinparam package {
+  BackgroundColor #FFFFFF
+  BorderColor #C5CED6
+  FontColor #1B2430
+  FontStyle bold
+  BorderThickness 1.5
+}
+
+skinparam component {
+  BackgroundColor #FAFBFC
+  BorderColor #B0BCC6
+  FontColor #1B2430
+  RoundCorner 8
+}
+
+title <b>METACITY — Backend Module Architecture</b>\n<size:11><color:#5A6A7A>Layers A–J · Dependency direction: inward toward core</color></size>
+
+package "**F · API Surface**" as F #EDF2F7 {
+  component [main · settings · deps] as F0
+  component [routes:\nprojects · scenarios · runs\ncomparisons · reports · presets\nhealth · modules] as F1
+  component [schemas / OpenAPI] as F2
+  component [ws · runs_stream] as F3
+}
+
+package "**E · Jobs & Workers**" as E #F7F3EA {
+  component [Job Manager\nqueued · running · completed\nfailed · interrupted] as E1
+  component [Progress Bus] as E2
+  component [Replication Worker] as E3
+}
+
+package "**C · Domain Services**" as C #EAF3F2 {
+  component [scenarios/\napplier · presets · validator] as C1
+  component [comparison/\npairing · statistics · mechanism] as C2
+  component [reports/ · screenshots/] as C3
+  component [geospatial/ · calibration/\n(later)] as C4
+}
+
+package "**B · Pure Core  (metacity_core)**" as B #E8EEF5 {
+  package "**Foundation**" as B0 #F0F4F8 {
+    component [clock · world · config · rng] as B01
+    component [schema/\nscene · migrate · JSON Schema] as B02
+    component [runner.py] as B03
+  }
+  package "**DSA Algorithms**" as BA #EEF6F5 {
+    component [graph · dijkstra · astar\nheap · bfs · union_find] as BA1
+    component [bpr · logit · max_flow\nbridges · betweenness] as BA2
+  }
+  package "**Simulation Domains**" as BD #F5F0EA {
+    component [network · transport\nequilibrium · mode_choice] as BD1
+    component [agents · activity\nplans · demand_profiles] as BD2
+    component [metrics · tracing\nsnapshot] as BD3
+    component [evacuation · hospital\nevents (phased)] as BD4
+  }
+}
+
+package "**D · Persistence**" as D #F3F6F0 {
+  component [SQLite repositories] as D1
+  component [Parquet writer/reader] as D2
+  component [scene_history · archive] as D3
+}
+
+package "**G · Data Assets**" as G #FAF8F5 {
+  component [templates/\nNexus City · Campus · Hospital] as G1
+  component [fixtures · config_profiles] as G2
+}
+
+' --- Dependencies (allowed directions) ---
+F1 -[#3D7EA6]-> E1
+F1 -[#3D7EA6]-> C1
+F1 -[#3D7EA6]-> C2
+F1 -[#3D7EA6]-> C3
+F3 -[#3D7EA6]-> E2
+E1 -[#C45C26]-> E3
+E3 -[#C45C26]-> B03
+E2 -[#3D7EA6]-> F3
+C1 -[#2A9D8F]-> B02
+C1 -[#2A9D8F]-> B03
+C2 -[#2A9D8F]-> BD3
+C2 -[#2A9D8F]-> D2
+E3 -[#2A9D8F]-> D1
+E3 -[#2A9D8F]-> D2
+B03 -[#5A6A7A]-> B01
+B03 -[#5A6A7A]-> BD1
+B03 -[#5A6A7A]-> BD2
+BD1 -[#5A6A7A]-> BA1
+BD1 -[#5A6A7A]-> BA2
+BD2 -[#5A6A7A]-> BA1
+F1 -[#2A9D8F]-> G1
+B02 -[#2A9D8F]-> G2
+
+note bottom of B
+  <b>Never import</b> api/ · jobs/ · persistence/
+  from inside <i>core/</i>
+end note
+
+legend right
+  |= Arrow |= Meaning |
+  | <#3D7EA6> Blue | API / realtime orchestration |
+  | <#C45C26> Orange | Execute simulation job |
+  | <#2A9D8F> Teal | Read/write data or assets |
+  | <#5A6A7A> Slate | Core-internal dependency |
+endlegend
+
+footer METACITY · Backend Modules · v1.1 Plan
+
+@enduml

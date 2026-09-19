@@ -1,0 +1,94 @@
+@startuml METACITY_05_Simulation_Dataflow
+' ============================================================
+' METACITY — Simulation & Comparison Data Flow
+' Theme: Civic Steel (light professional)
+' ============================================================
+
+!theme plain
+skinparam backgroundColor #F4F6F8
+skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam roundCorner 12
+skinparam ArrowColor #5A6A7A
+skinparam ArrowThickness 1.3
+skinparam ArrowFontColor #3D4A57
+skinparam ArrowFontSize 11
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #A8B5C0
+skinparam ActivityDiamondBackgroundColor #EAF3F2
+skinparam ActivityDiamondBorderColor #2A9D8F
+skinparam ActivityFontColor #1B2430
+skinparam PartitionBackgroundColor #FFFFFF
+skinparam PartitionBorderColor #C5CED6
+
+title <b>METACITY — Simulation & Comparison Flow</b>\n<size:11><color:#5A6A7A>Flagship path: Template → Baseline → Scenario → Evidence</color></size>
+
+|Frontend|
+start
+:Open project /\nLoad **Nexus City** template;
+:Workspace **View** mode\ninspect network layers;
+
+|Backend API|
+:Validate scene\n(**schema_version**);
+:Persist project + scene JSON;
+
+|Frontend|
+:Enqueue **baseline** run\nseeds 0–9;
+
+|Job Manager|
+:Create 10 jobs\nstate = queued;
+
+fork
+  |Worker|
+  :Load world from scene;
+  :Apply **demand profiles**\n(AM / PM peaks);
+  :Run **metacity_core**\nrouting · BPR · MSA;
+  :Write Parquet KPIs +\nmeta (seed, gap, versions);
+  :Publish WS progress;
+fork again
+  |Worker|
+  :… parallel replications …;
+end fork
+
+|Frontend|
+:Live congestion /\n**flow animation** via WS;
+:Create scenario\n(e.g. highway bypass)\nor load **preset**;
+
+|Backend API|
+:Validate scenario diff;
+:Enqueue scenario runs\n(**same seeds**);
+
+|Job Manager|
+:Workers run scenario\nreplications;
+
+|Comparison Service|
+:Pair results by seed;
+:Compute mean Δ + **95% CI**;
+:Label distinguishable /\ninconclusive;
+:Attach **calibration badge**\n+ MVP-lite mechanism (top 3);
+
+|Frontend|
+:Comparison Result page\ntable · charts · badge;
+:Optional HTML report +\nscreenshots;
+
+|Trust Gate|
+if (calibration_status?) then (synthetic_uncalibrated)
+  :Show amber badge +\nassumptions drawer;
+else (calibrated later)
+  :Show green badge +\nerror metrics;
+endif
+
+stop
+
+legend right
+  |= Stage |= Owner |
+  | Template / Edit | Frontend + Scene Service |
+  | Multi-seed run | Job Manager + Core |
+  | Evidence | Comparison + Trust UI |
+  | Honesty rule | Always show badge + seeds + model_version |
+endlegend
+
+footer METACITY · Simulation Data Flow · MVP Flagship Path
+
+@enduml

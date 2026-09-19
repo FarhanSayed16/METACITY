@@ -1,0 +1,128 @@
+@startuml METACITY_04_Frontend_Structure
+' ============================================================
+' METACITY — Frontend Application Structure
+' Theme: Civic Steel (light professional)
+' ============================================================
+
+!theme plain
+skinparam backgroundColor #F4F6F8
+skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam roundCorner 12
+skinparam ArrowColor #5A6A7A
+skinparam ArrowThickness 1.15
+skinparam ArrowFontColor #3D4A57
+skinparam ArrowFontSize 10
+skinparam linetype polyline
+
+skinparam package {
+  BackgroundColor #FFFFFF
+  BorderColor #C5CED6
+  FontColor #1B2430
+  FontStyle bold
+  BorderThickness 1.5
+}
+
+skinparam component {
+  BackgroundColor #FAFBFC
+  BorderColor #B0BCC6
+  FontColor #1B2430
+  RoundCorner 8
+}
+
+skinparam card {
+  BackgroundColor #FFFFFF
+  BorderColor #A8B5C0
+  FontColor #1B2430
+  RoundCorner 8
+}
+
+title <b>METACITY — Frontend Structure & Navigation</b>\n<size:11><color:#5A6A7A>Civic Steel UI · Routes · Workspace modes · Feature modules</color></size>
+
+package "**App Shell**" as SHELL #1B2430 {
+  card "<color:#EAF3F2><b>TopBar</b></color>\n<color:#C5CED6>Logo · Project switcher · Calibration chip</color>" as TB #2A3544
+  card "<color:#EAF3F2><b>Project Nav</b></color>\n<color:#C5CED6>Overview · Workspace · Scenarios\nRuns · Compare · Modules…</color>" as PN #2A3544
+  card "<color:#EAF3F2><b>StatusBar</b></color>\n<color:#C5CED6>API · model_version · seed · speed</color>" as SB #2A3544
+  card "<color:#EAF3F2><b>Sim Control Strip</b></color>\n<color:#C5CED6>Play · Pause · Step · 1x–100x</color>" as SC #2A3544
+}
+
+package "**Pages (Routes)**" as PAGES #EAF3F2 {
+  component [Welcome /] as P0
+  component [Projects Dashboard] as P1
+  component [New Project Wizard] as P2
+  component [Project Overview] as P3
+  component [**Workspace**\n/workspace] as P4
+  component [Scenarios · Builder] as P5
+  component [Runs · Run Detail] as P6
+  component [Compare Hub · Result] as P7
+  component [Reports · Evac · Hospital\nImport (phased)] as P8
+}
+
+package "**Workspace Modes**" as MODES #EDF2F7 {
+  component [**View**\nlayers · select · replay] as M1
+  component [**Edit**\nroads MVP · tools] as M2
+  component [**Scenario**\nghost preview · validate] as M3
+  component [**Analyze**\nKPI inspector] as M4
+}
+
+package "**Feature Modules**" as FEAT #E8EEF5 {
+  component [map-scene\nR3F · layers · flow anim] as F1
+  component [editor-roads] as F2
+  component [scenarios · runs · compare] as F3
+  component [trust · onboarding · resilience] as F4
+}
+
+package "**Shared Foundation**" as SHARED #F7F3EA {
+  component [shared/ui\nButton · Badge · Table · Modal] as S1
+  component [shared/theme\ntokens · motion · typography] as S2
+  component [store (Zustand)\nproject · scene · sim · ui…] as S3
+  component [lib/api · lib/ws\nOpenAPI types] as S4
+}
+
+P0 -[#2A9D8F]-> P1
+P1 -[#2A9D8F]-> P2
+P1 -[#2A9D8F]-> P3
+P3 -[#2A9D8F]-> P4
+P3 -[#2A9D8F]-> P5
+P3 -[#2A9D8F]-> P6
+P3 -[#2A9D8F]-> P7
+P4 -[#3D7EA6]-> M1
+P4 -[#3D7EA6]-> M2
+P4 -[#3D7EA6]-> M3
+P4 -[#3D7EA6]-> M4
+P4 -[#C45C26]-> F1
+M2 -[#C45C26]-> F2
+P5 -[#5A6A7A]-> F3
+P6 -[#5A6A7A]-> F3
+P7 -[#5A6A7A]-> F3
+P4 -[#5A6A7A]-> SC
+SHELL -[hidden]-> PAGES
+F1 -[#5A6A7A]-> S3
+F3 -[#5A6A7A]-> S4
+S1 -[#2A9D8F]-> S2
+F4 -[#5A6A7A]-> S1
+
+note right of P4
+  <b>Primary surface</b>
+  Map is the stage.
+  One tool / mode at a time.
+end note
+
+note bottom of S2
+  <b>Civic Steel</b>
+  Light neutrals · steel-teal accent
+  Manrope / Plus Jakarta · Lucide
+end note
+
+legend right
+  |= Arrow |= Meaning |
+  | <#2A9D8F> Teal | Navigation flow |
+  | <#3D7EA6> Blue | Workspace mode switch |
+  | <#C45C26> Orange | Heavy feature use |
+  | <#5A6A7A> Slate | Shared dependency |
+endlegend
+
+footer METACITY · Frontend Structure · Plan v1.1
+
+@enduml
