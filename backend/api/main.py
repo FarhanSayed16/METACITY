@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api.routes import health, projects, scenes, scenarios, runs, comparisons, reports
+from api.routes import health, projects, scenes, scenarios, runs, comparisons, reports, modules
 from api.ws import runs_stream
 from api.settings import Settings
 from persistence.db import init_db
@@ -39,4 +39,5 @@ app.include_router(scenarios.router)
 app.include_router(runs.router)
 app.include_router(comparisons.router)
 app.include_router(reports.router)
+app.include_router(modules.router)
 app.include_router(runs_stream.router)
