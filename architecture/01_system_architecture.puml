@@ -1,0 +1,120 @@
+@startuml METACITY_01_System_Architecture
+' ============================================================
+' METACITY — System Architecture (Overall)
+' Theme: Civic Steel (light professional)
+' ============================================================
+
+!theme plain
+skinparam backgroundColor #F4F6F8
+skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+skinparam roundCorner 12
+skinparam ArrowColor #5A6A7A
+skinparam ArrowThickness 1.2
+skinparam ArrowFontColor #3D4A57
+skinparam ArrowFontSize 11
+
+skinparam package {
+  BackgroundColor #FFFFFF
+  BorderColor #C5CED6
+  FontColor #1B2430
+  FontStyle bold
+  BorderThickness 1.5
+}
+
+skinparam component {
+  BackgroundColor #FFFFFF
+  BorderColor #A8B5C0
+  FontColor #1B2430
+  RoundCorner 10
+}
+
+skinparam node {
+  BackgroundColor #FFFFFF
+  BorderColor #A8B5C0
+  FontColor #1B2430
+}
+
+skinparam database {
+  BackgroundColor #E8F4F3
+  BorderColor #2A9D8F
+  FontColor #1B2430
+}
+
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor #C5CED6
+  FontColor #1B2430
+  RoundCorner 10
+}
+
+title <b>METACITY — System Architecture</b>\n<size:11><color:#5A6A7A>Overall runtime view · Build Plan v3</color></size>
+
+actor "User\n(Planner / Stakeholder)" as User #1B2430
+
+rectangle "**Presentation Layer**" as PRESENT #EAF3F2 {
+  component "**Web Client**\nReact + TypeScript\nVite" as WEB #FFFFFF
+  component "**Map / 3D Canvas**\nThree.js / R3F\n(MapLibre later)" as MAP #FFFFFF
+  component "**Dashboards**\nRecharts · Comparison · Reports" as DASH #FFFFFF
+}
+
+rectangle "**API & Orchestration**" as API_LAYER #EDF2F7 {
+  component "**FastAPI Gateway**\nREST + OpenAPI" as API #FFFFFF
+  component "**WebSocket Hub**\nSnapshot stream 2–10 Hz" as WS #FFFFFF
+  component "**Job Manager**\nProcess pool · Progress bus" as JOBS #FFFFFF
+}
+
+rectangle "**Domain Services**" as DOMAIN #F7F3EA {
+  component "**Scenario Service**\nDiffs · Presets · Validate" as SCEN #FFFFFF
+  component "**Comparison Service**\nPaired CI · Mechanism trace" as COMP #FFFFFF
+  component "**Report Service**\nHTML + screenshots" as REP #FFFFFF
+}
+
+rectangle "**Simulation Core**\n<<pure library · metacity_core>>" as CORE #E8EEF5 {
+  component "**World · Clock · RNG**" as WORLD #FFFFFF
+  component "**Transport Level-1**\nBPR · MSA · Routing" as TRANS #FFFFFF
+  component "**Agents · Activity**\nPlans · Demand profiles" as AGENTS #FFFFFF
+  component "**DSA Algorithms**\nGraph · A* · Heap · Flow…" as DSA #FFFFFF
+  component "**Modules**\nEvac · Hospital · Events" as MODS #FFFFFF
+}
+
+database "**Data Storage**" as STORE {
+  component "**SQLite**\nProjects · Runs · Meta" as SQL #FFFFFF
+  component "**Parquet / DuckDB**\nKPI · Timeseries" as PARQ #FFFFFF
+  component "**JSON Scenes**\nschema_version templates" as JSON #FFFFFF
+}
+
+User -[#2A9D8F]-> WEB : browse / interact
+WEB -[#2A9D8F]-> MAP
+WEB -[#2A9D8F]-> DASH
+WEB -[#3D7EA6]-> API : REST
+WEB -[#3D7EA6]-> WS : live snapshots
+API -[#5A6A7A]-> JOBS
+API -[#5A6A7A]-> SCEN
+API -[#5A6A7A]-> COMP
+API -[#5A6A7A]-> REP
+JOBS -[#C45C26]-> WORLD : run replication
+JOBS -[#C45C26]-> TRANS
+JOBS -[#C45C26]-> AGENTS
+WORLD -[#5A6A7A]-> DSA
+TRANS -[#5A6A7A]-> DSA
+MODS -[#5A6A7A]-> DSA
+SCEN -[#5A6A7A]-> WORLD : apply diff → world
+COMP -[#5A6A7A]-> PARQ : read KPIs
+JOBS -[#2A9D8F]-> SQL
+JOBS -[#2A9D8F]-> PARQ
+API -[#2A9D8F]-> JSON : load templates
+WS -[#3D7EA6]-> WEB : progress + link metrics
+
+legend right
+  |= Colour |= Meaning |
+  | <#2A9D8F> Teal | User / persist path |
+  | <#3D7EA6> Steel blue | Realtime / API |
+  | <#C45C26> Accent | Simulation execution |
+  | <#5A6A7A> Slate | Internal dependency |
+endlegend
+
+footer METACITY · Architecture · Light theme · Civic Steel
+
+@enduml
