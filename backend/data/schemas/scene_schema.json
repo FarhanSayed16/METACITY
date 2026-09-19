@@ -1,0 +1,314 @@
+{
+  "$defs": {
+    "SceneFacility": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "type": {
+          "title": "Type",
+          "type": "string"
+        },
+        "zone_id": {
+          "title": "Zone Id",
+          "type": "string"
+        },
+        "capacity": {
+          "default": 100,
+          "title": "Capacity",
+          "type": "integer"
+        },
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        },
+        "floors": {
+          "default": 1,
+          "title": "Floors",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "zone_id",
+        "x",
+        "y"
+      ],
+      "title": "SceneFacility",
+      "type": "object"
+    },
+    "SceneLink": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "from_node": {
+          "title": "From Node",
+          "type": "string"
+        },
+        "to_node": {
+          "title": "To Node",
+          "type": "string"
+        },
+        "lanes": {
+          "default": 2,
+          "maximum": 8,
+          "minimum": 1,
+          "title": "Lanes",
+          "type": "integer"
+        },
+        "speed_kph": {
+          "default": 50,
+          "maximum": 200,
+          "minimum": 5,
+          "title": "Speed Kph",
+          "type": "number"
+        },
+        "capacity_per_lane_per_hour": {
+          "default": 1800,
+          "maximum": 3000,
+          "minimum": 100,
+          "title": "Capacity Per Lane Per Hour",
+          "type": "integer"
+        },
+        "road_class": {
+          "default": "local",
+          "title": "Road Class",
+          "type": "string"
+        },
+        "oneway": {
+          "default": false,
+          "title": "Oneway",
+          "type": "boolean"
+        },
+        "length_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Length M"
+        }
+      },
+      "required": [
+        "id",
+        "from_node",
+        "to_node"
+      ],
+      "title": "SceneLink",
+      "type": "object"
+    },
+    "SceneNode": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        },
+        "type": {
+          "default": "intersection",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "x",
+        "y"
+      ],
+      "title": "SceneNode",
+      "type": "object"
+    },
+    "SceneParameters": {
+      "properties": {
+        "total_population": {
+          "default": 1000,
+          "title": "Total Population",
+          "type": "integer"
+        },
+        "car_ownership_rate": {
+          "default": 0.5,
+          "title": "Car Ownership Rate",
+          "type": "number"
+        },
+        "simulation_days": {
+          "default": 1,
+          "title": "Simulation Days",
+          "type": "integer"
+        }
+      },
+      "title": "SceneParameters",
+      "type": "object"
+    },
+    "SceneTransitLine": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "mode": {
+          "default": "bus",
+          "title": "Mode",
+          "type": "string"
+        },
+        "stop_node_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Stop Node Ids",
+          "type": "array"
+        },
+        "headway_minutes": {
+          "default": 10,
+          "title": "Headway Minutes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "stop_node_ids"
+      ],
+      "title": "SceneTransitLine",
+      "type": "object"
+    },
+    "SceneZone": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "land_use": {
+          "title": "Land Use",
+          "type": "string"
+        },
+        "population_target": {
+          "default": 0,
+          "title": "Population Target",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "land_use"
+      ],
+      "title": "SceneZone",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "schema_version": {
+      "default": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "description": {
+      "default": "",
+      "title": "Description",
+      "type": "string"
+    },
+    "calibration_status": {
+      "default": "synthetic_uncalibrated",
+      "enum": [
+        "synthetic_uncalibrated",
+        "partially_calibrated",
+        "calibrated"
+      ],
+      "title": "Calibration Status",
+      "type": "string"
+    },
+    "bounds": {
+      "additionalProperties": true,
+      "default": {
+        "width_m": 5000.0,
+        "height_m": 5000.0
+      },
+      "title": "Bounds",
+      "type": "object"
+    },
+    "nodes": {
+      "items": {
+        "$ref": "#/$defs/SceneNode"
+      },
+      "title": "Nodes",
+      "type": "array"
+    },
+    "links": {
+      "items": {
+        "$ref": "#/$defs/SceneLink"
+      },
+      "title": "Links",
+      "type": "array"
+    },
+    "zones": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/SceneZone"
+      },
+      "title": "Zones",
+      "type": "array"
+    },
+    "facilities": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/SceneFacility"
+      },
+      "title": "Facilities",
+      "type": "array"
+    },
+    "transit_lines": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/SceneTransitLine"
+      },
+      "title": "Transit Lines",
+      "type": "array"
+    },
+    "parameters": {
+      "$ref": "#/$defs/SceneParameters",
+      "default": {
+        "total_population": 1000,
+        "car_ownership_rate": 0.5,
+        "simulation_days": 1
+      }
+    }
+  },
+  "required": [
+    "name",
+    "nodes",
+    "links"
+  ],
+  "title": "Scene",
+  "type": "object"
+}
