@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0.0",
+  "name": "College Campus",
+  "description": "Building floor plan template for evacuation.",
+  "calibration_status": "synthetic_uncalibrated",
+  "bounds": { "width_m": 200.0, "height_m": 200.0 },
+  "nodes": [
+    { "id": "N1", "x": 50, "y": 50 }
+  ],
+  "links": [],
+  "zones": [],
+  "facilities": [],
+  "transit_lines": [],
+  "parameters": {
+    "total_population": 500,
+    "car_ownership_rate": 0.0,
+    "simulation_days": 1
+  }
+}
