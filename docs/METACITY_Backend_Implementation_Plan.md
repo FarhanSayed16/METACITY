@@ -1,16 +1,40 @@
-# EvoCity Nexus — Backend Implementation Plan
+# METACITY — Backend Implementation Plan
 
 > **No code.** Structure, modules, services, responsibilities, data flow, and build order only.  
-> Aligns with `EvoCity_Nexus_DSA_Build_Plan_v3.md`.
+> Aligns with `METACITY_DSA_Build_Plan_v3.md`.
 
 | Field | Value |
 |---|---|
-| Project | EvoCity Nexus (METACITY) |
-| Document | Backend Implementation Plan v1.0 |
+| Project | METACITY |
+| Document | Backend Implementation Plan **v1.1** |
 | Date | 19 September 2026 |
 | Stack | Python 3.12 · FastAPI · SQLite · Parquet/DuckDB · process-pool workers |
-| Package name | `evocity_core` (pure simulation library) |
+| Package name | `metacity_core` (pure simulation library) |
 | Scope | Everything under `backend/` through MVP and later phases |
+| Changelog | v1.1 — merged adopted items from `METACITY_Enhancements.md` |
+
+### Document authority
+
+| Topic | Source of truth |
+|---|---|
+| Product vision, phases, **acceptance criteria** | Build Plan v3 |
+| **API endpoints, modules, jobs, storage** | **This backend plan** |
+| UI pages, design, workspace UX | Frontend plan |
+| Shared terms | Build Plan v3 §30 Glossary (see also `docs/GLOSSARY.md` when present) |
+
+Backend/frontend MVP checklists **reference** v3 §21.3 acceptance criteria; they do not redefine pass/fail.
+
+### Cross-map to Build Plan v3
+
+| Backend layer | Maps to v3 |
+|---|---|
+| B Core + algorithms | §9–10 Simulation, §16 DSA |
+| C Scenarios / comparison | §17 Scenario Engine |
+| D Persistence | §13–14 Architecture / data |
+| E Jobs | §13 Job model |
+| F API + WS | §15 (minimal list; **expanded here is authoritative**) |
+| G Templates / geospatial | §3 build order, Phase 7 |
+| I ML / planner | Phases 8–9 in v3 (disasters before ML) |
 
 ---
 
@@ -20,7 +44,7 @@
 2. [Backend Layers at a Glance](#2-backend-layers-at-a-glance)
 3. [Top-Level Folder Map](#3-top-level-folder-map)
 4. [Layer A — Packaging and Configuration](#4-layer-a--packaging-and-configuration)
-5. [Layer B — Pure Core (`evocity_core`)](#5-layer-b--pure-core-evocity_core)
+5. [Layer B — Pure Core (`metacity_core`)](#5-layer-b--pure-core-metacity_core)
 6. [Layer C — Scenario and Intelligence Services](#6-layer-c--scenario-and-intelligence-services)
 7. [Layer D — Persistence and Storage](#7-layer-d--persistence-and-storage)
 8. [Layer E — Job System and Workers](#8-layer-e--job-system-and-workers)
@@ -38,6 +62,8 @@
 20. [MVP Backend Checklist](#20-mvp-backend-checklist)
 21. [What Must Never Depend on What](#21-what-must-never-depend-on-what)
 22. [Open Backend Decisions](#22-open-backend-decisions)
+23. [Repo-Root DX, CI, and Ops](#23-repo-root-dx-ci-and-ops)
+24. [Adopted Enhancements Register](#24-adopted-enhancements-register)
 
 ---
 
@@ -97,7 +123,7 @@ backend/
 ├── README.md                               # How to install and run backend only
 ├── .env.example                            # Paths, ports, worker count, snapshot Hz
 │
-├── core/                                   # PURE LIBRARY — package: evocity_core
+├── core/                                   # PURE LIBRARY — package: metacity_core
 │   ├── __init__.py                         # Public exports / version
 │   ├── version.py                          # model_version string
 │   ├── clock.py
@@ -166,9 +192,9 @@ backend/
 
 ### Responsibilities
 
-- Define installable package `evocity_core`
+- Define installable package `metacity_core`
 - Pin runtime dependencies (FastAPI, NumPy, SciPy, Pydantic, DuckDB, etc.)
-- Expose CLI entry points later if needed (`evocity-run`, `evocity-validate-scene`)
+- Expose CLI entry points later if needed (`metacity-run`, `metacity-validate-scene`)
 - Centralise environment settings: data directory, worker count, snapshot rate, DB path
 
 ### Files / units
@@ -179,7 +205,19 @@ backend/
 | `api/settings.py` | App settings loaded from env |
 | `core/version.py` | `model_version` stamped on every run |
 | `core/config.py` | Simulation parameters object (Appendix A defaults) |
+| `data/config_profiles/` | Named profiles: `default`, `fast_demo`, `presentation`, `academic` |
+| `core/profiles.py` | Load named profile → config object at project creation |
 | `.env.example` | Documented knobs for local dev |
+| Structured JSON logging | From day one — `run_id`, `event`, `ts`, `level` fields |
+
+**Configuration profiles (Phase 3, prepare stubs Phase 0):**
+
+| Profile | Intent |
+|---|---|
+| `default` | Appendix A values |
+| `fast_demo` | 5-min ticks, fewer MSA iters, smaller agent count |
+| `presentation` | Visual-friendly snapshot rates |
+| `academic` | Full 1-min ticks, strict gap, full seed set |
 
 ### Phase
 
@@ -187,7 +225,7 @@ Phase 0.
 
 ---
 
-## 5. Layer B — Pure Core (`evocity_core`)
+## 5. Layer B — Pure Core (`metacity_core`)
 
 > This layer is the product’s scientific heart. It must be runnable from notebooks and tests with **zero** API.
 
@@ -210,7 +248,11 @@ Phase 0.
 | `schema/building.py` | Validate evacuation grid / floors / exits |
 | `schema/hospital.py` | Validate hospital resource config |
 | `schema/scenario.py` | Validate scenario diff ops |
-| `schema/migrate.py` | Version bump helpers (when schema evolves) |
+| `schema/migrate.py` | Chain migrations v1→v2→…; auto-upgrade on load with warning |
+| `data/schemas/scene_schema.json` | Formal JSON Schema (draft-2020-12) kept in sync with validators |
+| `schema/demand_profile.py` | Time-of-day demand profile validation (AM/PM peaks) |
+
+**Migration rule:** every `schema_version` bump has a named migration; CI runs all migrations on golden fixtures.
 
 ### 5.3 Algorithms (DSA spine)
 
@@ -252,12 +294,27 @@ Each unit is a **named algorithm file** with clear inputs/outputs and tests.
 |---|---|
 | `population/generator.py` | Build households/persons from scene + rules |
 | `population/household.py` | Household record behaviour |
-| `agents/person.py` | Person agent state |
+| `population/arrays.py` | Optional NumPy-backed agent state for scale (Phase 2+) |
+| `agents/person.py` | Person agent state (may wrap array rows) |
 | `agents/vehicle.py` | Vehicle binding to person/household |
 | `agents/evacuee.py` | Evacuation-specific stress/state |
 | `agents/patient.py` | Hospital patient state |
 | `activity/plans.py` | Daily plan representation |
+| `activity/plan_templates.py` | Diverse templates by person type (**MVP Phase 2**) |
+| `activity/demand_profiles.py` | Time-dependent trip shares by hour (**MVP Phase 2**) |
 | `activity/scheduler.py` | Advance activities by clock |
+
+**Activity plan templates (required for believable peaks):**
+
+| Template | Typical chain |
+|---|---|
+| Worker | home → work → lunch → work → shop → home |
+| Student | home → school → lunch → library → home |
+| Retired | home → park → market → home |
+| Shift worker | home → factory (night) → home |
+| Caregiver / stay-at-home | home → school drop → market → school pick → home |
+
+**Demand profiles (required in MVP):** scene/config includes AM peak, midday, PM peak, evening shares so congestion is not uniformly flat.
 
 ### 5.6 Transport (Level-1 traffic)
 
@@ -267,7 +324,9 @@ Each unit is a **named algorithm file** with clear inputs/outputs and tests.
 | `transport/assignment.py` | Load paths onto links; accumulate volumes |
 | `transport/congestion.py` | Apply BPR; update travel times |
 | `transport/equilibrium.py` | MSA / partial reassignment loop; gap metric |
-| `transport/animation_state.py` | Sampled positions for UI (not microscopic physics) |
+| `transport/warm_start.py` | Load baseline route assignments for faster scenario re-eq (**Phase 6**) |
+| `transport/animation_state.py` | Sampled positions / flow particles for UI (not microscopic physics) |
+| `transport/flow_export.py` | Per-link volume + direction for frontend flow animation |
 
 ### 5.7 Mode choice and transit
 
@@ -356,13 +415,15 @@ These sit **above** core. They may use persistence paths and orchestration, but 
 | `applier.py` | Apply ordered changes to a scene/world |
 | `validator.py` | Semantic checks (endpoints exist, capacity &gt; 0, connectivity) |
 | `builder.py` | Build baseline + scenario run configs for jobs |
-| `presets.py` | Flagship bypass and other demo scenarios |
+| `presets.py` | Built-in scenario presets (flagship bypass, etc.) |
+| `preset_registry.py` | Discoverable registry for `GET /presets` |
 
 ### 6.2 `comparison/`
 
 | Unit | Responsibility |
 |---|---|
-| `pairing.py` | Pair runs by seed |
+| `pairing.py` | Pair runs by seed (**MVP: exactly 2 arms** — baseline vs one scenario) |
+| `multi_arm.py` | N-way pairwise CIs (**Next**, after MVP) |
 | `statistics.py` | Mean diff, 95% CI, distinguishable / inconclusive |
 | `assembler.py` | Comparison record + calibration badge + assumptions |
 | `mechanism.py` | Call core MVP-lite tracing across paired results |
@@ -373,6 +434,20 @@ These sit **above** core. They may use persistence paths and orchestration, but 
 |---|---|
 | `critical/bridges_service.py` | Orchestrate Tarjan + removal scenarios |
 | `critical/betweenness_service.py` | Rank corridors for demos |
+
+### 6.4 Sensitivity (Phase 6–7)
+
+| Unit | Responsibility |
+|---|---|
+| `sensitivity/sweeper.py` | One-at-a-time parameter sweeps (BPR α/β, logit coeffs) |
+| `sensitivity/curves.py` | KPI vs parameter output for calibration insight |
+
+### 6.5 Module registry (Phase 4+)
+
+| Unit | Responsibility |
+|---|---|
+| `core/registry.py` | Register evacuation / hospital / disasters runners by phase |
+| API `GET /modules` | List available modules so frontend nav is not hard-coded |
 
 ---
 
@@ -399,9 +474,16 @@ These sit **above** core. They may use persistence paths and orchestration, but 
 | `repositories/scenarios.py` | CRUD scenarios |
 | `repositories/runs.py` | CRUD runs + status transitions |
 | `repositories/comparisons.py` | CRUD comparisons |
+| `repositories/scene_history.py` | Version log of scene saves (**MVP: last 10 JSON files**; DB later) |
 | `results_writer.py` | Write Parquet/JSON result artefacts |
 | `results_reader.py` | Read metrics for API and reports |
+| `archive.py` | Project ZIP export/import (**Phase 3 end / Phase 5**) |
+| `geojson_export.py` | Scene → GeoJSON FeatureCollection (**Phase 5**) |
 | `migrations/` or init script | Create schema on first boot (MVP-simple) |
+
+**Scene history (supports frontend undo):** each successful save writes `data/projects/{id}/history/v{n}.json` (keep last 10). API can list/restore versions.
+
+**Startup recovery:** on boot, any run still `running` → mark `interrupted`; expose `POST /runs/{id}/retry`.
 
 ### 7.3 Run artefact layout (conceptual)
 
@@ -427,9 +509,9 @@ MVP: SQLite + Parquet. Phase 10 optional: Postgres.
 
 | Unit | Responsibility |
 |---|---|
-| `states.py` | `queued` \| `running` \| `completed` \| `failed` |
-| `manager.py` | Enqueue, cancel (optional), list active |
-| `progress_bus.py` | In-memory pub/sub for WebSocket (MVP) |
+| `states.py` | `queued` \| `running` \| `completed` \| `failed` \| `interrupted` |
+| `manager.py` | Enqueue, cancel (optional), list active, startup orphan scan |
+| `progress_bus.py` | In-memory pub/sub for WebSocket (MVP); SSE optional later for one-way “run done” |
 | `pool.py` | Process pool sizing from settings |
 | `replication_job.py` | Payload: scene/scenario refs, seed, run_id |
 
@@ -445,7 +527,8 @@ MVP: SQLite + Parquet. Phase 10 optional: Postgres.
 
 - No Redis required
 - API process owns the pool **or** a sibling worker process started by Compose
-- Crash → mark run `failed` with error message; user re-enqueues
+- Crash / process kill → mark run `failed` or on restart `interrupted`; user retries via `POST /runs/{id}/retry`
+- On **startup**: scan DB for `running` → set `interrupted`
 - Golden reproducibility tests **never** use the parallel pool
 
 ### 8.4 Production later
@@ -471,20 +554,27 @@ Optional Redis/RQ (or similar) behind the same `jobs/manager.py` interface — s
 
 | Route module | Endpoints (conceptual) | Owns |
 |---|---|---|
-| `health.py` | Liveness / readiness | Ops |
-| `projects.py` | Create, list, get, load template, save scene | Project lifecycle |
-| `scenes.py` | Validate scene, get scene JSON | Schema gate |
+| `health.py` | Liveness + readiness: API up, SQLite OK, worker pool count, data dir writable, `model_version`, `schema_version` | Ops |
+| `projects.py` | Create, list, get, load template, save scene, **export/import archive** (Phase 5), scene history list/restore | Project lifecycle |
+| `scenes.py` | Validate scene, get scene JSON, **GeoJSON export** (Phase 5) | Schema gate |
+| `presets.py` | `GET /presets` — built-in scenario presets with descriptions | Demo discovery |
+| `modules.py` | `GET /modules` — available sim modules from registry (Phase 4+) | Nav capability |
 | `scenarios.py` | Create, get, list, validate diff | Scenario CRUD |
-| `runs.py` | Enqueue, get status, get metrics | Simulation jobs |
-| `comparisons.py` | Create, get comparison table | Before/after |
-| `reports.py` | Get HTML report | Export |
+| `runs.py` | Enqueue, get status, get metrics, **retry interrupted/failed** | Simulation jobs |
+| `comparisons.py` | Create, get comparison table (MVP: 2 arms; later N-arm) | Before/after |
+| `reports.py` | Get HTML report; accept screenshot assets | Export |
+| `screenshots.py` | Store captured workspace images for reports (Phase 3) | Report media |
 | `templates.py` | List available templates | Discovery |
+| `profiles.py` | List/get config profiles | Project create |
 | `network_tools.py` | Connectivity check, bridge list (DSA demos) | Editor / demos |
 | `evac.py` | Enqueue evacuation run (Phase 4) | Campus module |
 | `hospital.py` | Enqueue hospital run (Phase 4) | Hospital module |
 | `geo_import.py` | OSM import job (Phase 7) | Real data |
 | `calibration.py` | Calibration report (Phase 7) | Credibility |
+| `sensitivity.py` | Parameter sweep jobs (Phase 6–7) | Analysis |
 | `planner.py` | Suggest interventions (Phase 9) | AI planner |
+
+**Rate limiting (Phase 3):** ~100 REST req/min/IP; max ~5 concurrent WS; health exempt.
 
 ### 9.3 Request/response schemas (`api/schemas/`)
 
@@ -633,10 +723,20 @@ tests/
 | Class | Proves |
 |---|---|
 | Unit / algorithms | DSA correctness and edge cases |
-| Unit / schema | Invalid scenes rejected |
+| **Property-based (hypothesis)** | Dijkstra optimality; A* ≡ Dijkstra; max-flow ≤ min-cut; Union-Find invariants |
+| Unit / schema | Invalid scenes rejected; JSON Schema fixtures pass |
 | Integration | API → job → Parquet → metrics |
-| Golden | Same seed → same KPI vector (single-thread) |
+| Golden | Same seed → same KPI vector (single-thread); warm-start ≈ cold-start (Phase 6) |
 | Performance | MVP wall-time budget for 1k agents |
+| **WS load** | 10 clients × 10 Hz × 1 min — dropped frames / latency / memory (Phase 3) |
+
+### OpenAPI → TypeScript bridge
+
+- Backend emits `openapi.json` on build/CI
+- Frontend generates types via `openapi-typescript`
+- CI fails if generated types are out of date
+
+This is owned jointly; backend must keep OpenAPI complete and stable.
 
 ---
 
@@ -644,14 +744,17 @@ tests/
 
 | Concern | Where handled |
 |---|---|
-| Logging | API middleware + worker logs with `run_id` |
+| Logging | **Structured JSON logs** from day one (`event`, `run_id`, `ts`, `level`) |
 | Model provenance | `meta.json` on every run |
 | Calibration badge | Comparison assembler + report sections |
 | Error model | Typed failures: validation, job, internal |
-| Config defaults | `core/config.py` + Appendix A of main plan |
+| Config defaults | `core/config.py` + profiles + Appendix A of main plan |
 | CORS | API middleware for Vite origin |
 | Idempotency | New run_id per enqueue; no silent overwrite |
 | Cancellation | Optional later; MVP fail/retry |
+| Rate limiting | Phase 3 middleware |
+| Snapshot bandwidth | Full frames MVP; **incremental diffs Phase 5+** |
+| Agent scale | Person objects first; **NumPy array backing Phase 2+** when needed |
 
 ---
 
@@ -693,22 +796,32 @@ Think in **services** the frontend (or CLI) can call. Each service is implemente
 | Product feature | Backend owner |
 |---|---|
 | Load template city | Template + Scene + Project services |
-| Road editor save | Scene validate + Project persist |
+| Road editor save + undo versions | Scene validate + Project persist + scene_history |
 | Synthetic population | population/generator |
+| Diverse daily plans | activity/plan_templates |
+| Time-dependent demand (AM/PM) | activity/demand_profiles |
 | Traffic congestion colours | transport + metrics + snapshot |
+| Level-1 flow animation data | transport/flow_export |
 | Mode shift to metro | mode_choice + transit |
 | Equilibrium gap in UI | transport/equilibrium → run meta |
 | Add highway scenario | scenarios/applier |
+| Scenario presets discovery | presets + `GET /presets` |
 | Multi-seed CI table | comparison/* |
-| Top-3 why metrics changed | tracing/mvp_lite |
-| HTML report | reports/* |
+| Mechanism tracing (15a) / top-3 why | tracing/mvp_lite |
+| HTML report + screenshots | reports/* + screenshots |
 | Bridge removal demo | algorithms/bridges + Network Analysis |
 | Campus fire drill | evacuation/* |
 | Hospital surge | hospital/* |
 | Year migration | landuse/year_loop |
 | OSM import | geospatial/osm_to_scene |
+| GTFS import (29a) | geospatial/gtfs_import |
 | Flood closes bridge | events/city_disasters |
 | AI suggests road | planner + verify via Simulation Service |
+| External engines (37) | Optional adapter — not MVP |
+| Config profiles | profiles + core/config |
+| Project archive share | persistence/archive |
+| Health / ops | health route |
+| Sensitivity sweeps | sensitivity/* |
 
 ---
 
@@ -779,108 +892,115 @@ Any change to these contracts requires a version bump and fixture updates.
 
 ## 19. Build Order by Phase
 
-### Phase 0 — Foundations
+> Phase **acceptance pass/fail** remains in Build Plan v3 §21.3. Durations below are backend-only solo estimates for parallel planning with frontend.
 
-1. Packaging (`pyproject.toml`, importable `evocity_core`)
-2. Settings + folder skeleton
-3. Schema validators (scene minimal)
-4. Algorithms: graph, heap, union_find, bfs (start of DSA)
+### Phase 0 — Foundations (~1.5–2 weeks)
+
+1. Packaging (`pyproject.toml`, importable `metacity_core`)
+2. Settings + folder skeleton + **structured JSON logging**
+3. Schema validators + **`data/schemas/scene_schema.json`**
+4. Algorithms: graph, heap, union_find, bfs
 5. Hand templates (Nexus City + one more)
 6. SQLite bootstrap + Project repository
-7. Health + Projects + Templates API
+7. Health API (**dependency status**) + Projects + Templates + **Presets**
 8. Unit tests for schema + first algorithms
 
-### Phase 1 — Simulation core + view feed
+### Phase 1 — Simulation core + view feed (~5–6 weeks)
 
-1. Clock, world, RNG, config
+1. Clock, world, RNG, config (+ profile stubs)
 2. Network builder from scene
-3. Population + person agents + daily plans
-4. Runner loop (even with naive routing)
+3. Population + person agents + daily plans (start templates)
+4. Runner loop
 5. Snapshot builder + Runs API + progress bus + worker pool
-6. Metrics skeleton
-7. Golden seed test harness
+6. **Startup orphan → interrupted** + retry endpoint
+7. Metrics skeleton + golden seed harness
+8. Emit OpenAPI for frontend typegen
 
-### Phase 2 — Traffic and transport
+### Phase 2 — Traffic and transport (~5–6 weeks)
 
-1. Dijkstra, A*, BPR
-2. Assignment + congestion
-3. Equilibrium (MSA) + gap in meta
-4. Mode choice logit + basic transit
-5. Link metrics in snapshots
-6. Algorithm unit tests + transport tests
+1. Dijkstra, A*, BPR + **hypothesis property tests**
+2. Assignment + congestion + MSA gap
+3. Mode choice logit + basic transit
+4. **Demand profiles (AM/PM)** + **plan template diversity**
+5. **Flow export** for Level-1 frontend animation
+6. NumPy agent backing if needed for scale
+7. Link metrics in snapshots
 
-### Phase 3 — Scenarios, comparison, MVP gate
+### Phase 3 — Scenarios, comparison, MVP gate (~4–5 weeks)
 
 1. Scenario ops + applier + validator
 2. Batch multi-seed jobs
-3. Comparison statistics + labels
+3. Comparison statistics + labels (**2-arm only**)
 4. Tracing MVP-lite
-5. HTML reports
+5. HTML reports + **screenshot store**
 6. Bridges / betweenness demo endpoints
-7. Integration tests for full compare pipeline
+7. Config profiles selectable + scene history (last 10)
+8. Rate limiting + WS load test
+9. Integration tests — **MVP END** (v3 §21.3)
 
-### Phase 4 — Evacuation and hospital
+### Phase 4 — Evacuation and hospital (~4–5 weeks)
 
-1. Grid graph, CA fire/smoke, crowd, stress
-2. Evacuation runner + KPIs + API
-3. Hospital DES + triage + API
-4. Keep modules callable standalone
+1. Evacuation CA + crowd + API
+2. Hospital DES + API
+3. **Module registry** + `GET /modules`
+4. Standalone module runners
 
-### Phase 5 — (Mostly frontend 3D polish)
+### Phase 5 — Frontend-heavy; backend support
 
-Backend: richer snapshot fields if needed (heights already in scene); no new sim physics required.
+1. Richer snapshot fields if needed
+2. Project **ZIP export/import**
+3. **GeoJSON** export
+4. Incremental snapshot diffs if bandwidth hurts
 
-### Phase 6 — Land use, utilities, emissions
+### Phase 6 — Land use, utilities, emissions + analysis
 
-1. Year loop service
-2. Utility demand
-3. Traffic CO2
-4. Wire KPIs into comparison
+1. Year loop, utilities, CO2 KPIs
+2. **Warm-start** scenario equilibrium (+ golden vs cold-start)
+3. **Sensitivity** sweeper
 
 ### Phase 7 — Real data and calibration
 
-1. OSM → scene converter
-2. GTFS import
-3. Attribution fields
-4. Calibration error report
-5. Schema fixtures from real imports
+1. OSM → scene + GTFS + attribution
+2. Calibration error report
+3. Real-import schema fixtures
 
 ### Phase 8 — City disasters
 
-1. Event ops for flood/closure/outage
-2. Reachability / isolation metrics
-3. Reuse events engine — do not fork fire model
+1. Flood / outage / bridge closure events
+2. Isolation metrics — reuse event engine
 
 ### Phase 9 — ML and planner
 
-1. Dataset from runs
-2. Surrogate train/infer
-3. Planner candidates + **mandatory** full-sim verify
+1. Surrogate train/infer
+2. Planner + mandatory full-sim verify
 
 ### Phase 10 — Polish
 
-1. Docker worker/api split hardening
-2. Optional Postgres
-3. Optional auth
-4. Preset flagship demo endpoint pack
+1. Docker hardening; optional Postgres/auth
+2. Demo endpoint pack; optional daily backup script
 
 ---
 
 ## 20. MVP Backend Checklist
 
-Backend may claim MVP-ready when all are true:
+> Master acceptance: **v3 §21.3 Phase 0–3**. This list is a backend implementation shorthand.
 
-- [ ] `evocity_core` installs and imports cleanly
-- [ ] Nexus City template validates and loads
+- [ ] `metacity_core` installs and imports cleanly
+- [ ] Nexus City template validates (`scene_schema.json` + Python)
+- [ ] Health reports DB, workers, data dir, versions
 - [ ] Single-seed run writes meta + KPIs
 - [ ] Multi-seed (10) jobs complete via pool
+- [ ] Orphaned runs become `interrupted`; retry works
 - [ ] Same seed golden test passes single-thread
-- [ ] Scenario `add_link` / `set_lanes` applies
-- [ ] Comparison returns CI + distinguishable labels
-- [ ] Calibration badge always present
-- [ ] WebSocket snapshot stream works at capped Hz
-- [ ] HTML report generates for a comparison
-- [ ] At least three DSA modules tested and demo-callable (pathfinding, BPR/MSA, bridges or heap/DES)
+- [ ] Demand profiles + diversified plan templates active
+- [ ] Scenario `add_link` / `set_lanes` applies; `GET /presets` works
+- [ ] Comparison returns CI + distinguishable labels + badge
+- [ ] Mechanism top-3 present
+- [ ] WebSocket snapshot stream works at capped Hz (+ load smoke)
+- [ ] HTML report generates; screenshot asset endpoint exists
+- [ ] Structured logs include `run_id`
+- [ ] At least three DSA modules tested and demo-callable
+- [ ] OpenAPI artefact generated for frontend typegen
 
 ---
 
@@ -904,15 +1024,65 @@ Dependency direction: **inward toward core**, never outward from core.
 
 | Decision | Options | Default leaning |
 |---|---|---|
-| Package layout | Flat `core` vs `src/evocity_core` | Flat `backend/core` packaged as `evocity_core` |
+| Package layout | Flat `core` vs `src/metacity_core` | Flat `backend/core` packaged as `metacity_core` |
 | Job host | In-API process pool vs separate worker container | In-API pool for local MVP; Compose `worker` for prod-like |
 | Progress bus | In-memory vs Redis pubsub | In-memory MVP |
 | Result format | Parquet only vs Parquet + DuckDB views | Parquet + DuckDB read |
 | Scenario apply | Mutate scene JSON vs mutate World only | Apply to scene JSON then rebuild World (auditable) |
 | Hospital/evac process | Same worker type vs specialised | Same worker with `job_type` field |
 | Stats library | Pure NumPy vs SciPy.stats | SciPy OK for CI helpers |
+| Snapshot encoding | Full frame vs incremental diffs | Full MVP; diffs Phase 5+ |
+| SSE for job-done | Yes vs WS-only | WS-only MVP; SSE optional later |
 
-Resolve in Phase 0–1 and record here when decided.
+Resolve in Phase 0–1 and record in `docs/decisions/` ADRs when decided.
+
+---
+
+## 23. Repo-Root DX, CI, and Ops
+
+Owned at **repository root** (not only under `backend/`), planned here so backend work is unblocked.
+
+| Artefact | Purpose | Phase |
+|---|---|---|
+| `Makefile` or `justfile` | `setup`, `dev`, `test`, `lint`, `docker` | 0 |
+| `docker-compose.dev.yml` | One-command full stack | 0 |
+| `.editorconfig` | Consistent formatting | 0 |
+| `CONTRIBUTING.md` | Setup, how to add algorithm/API/tool, PR checklist | 0 |
+| `docs/decisions/` ADRs | Why Python, BPR Level-1, Three-first, SQLite, no-auth | 0 |
+| `docs/GLOSSARY.md` | Shared terms (mirrors v3 §30) | 0 |
+| `docs/api_cookbook.md` | curl workflows for multi-seed compare | 3 |
+| GitHub Actions CI | Backend: ruff, mypy, pytest, golden, schema fixtures; Frontend: eslint, tsc, vitest, build; Integration job | 0 |
+
+**CI jobs (conceptual):** `backend` → `frontend` → `integration` (start API, hit compare smoke).
+
+---
+
+## 24. Adopted Enhancements Register
+
+Merged from `METACITY_Enhancements.md` into this plan:
+
+| ID | Enhancement | Where reflected | Phase |
+|---|---|---|---|
+| 1.* | Doc authority / API SoT / acceptance master | Header + §20 | 0 |
+| 2.1 | Scene version history | persistence scene_history | MVP simple |
+| 2.2 | Presets API | routes + scenarios | 0 |
+| 2.3 | Multi-arm compare | comparison/multi_arm | Next |
+| 2.4 | Project archive | archive.py | 3–5 |
+| 2.5 | Rich health | health route | 0 |
+| 2.6 | Interrupted + retry | jobs | 1 |
+| 4.1 | SSE optional | progress_bus note | 5+ |
+| 4.2 | Module registry | registry + GET /modules | 4 |
+| 4.3 | Config profiles | data/config_profiles | 3 |
+| 5.1 | Warm-start | transport/warm_start | 6 |
+| 5.2 | Sensitivity | sensitivity/ | 6–7 |
+| 5.3 | Plan diversity | plan_templates | 2 |
+| 5.4 | Demand profiles | demand_profiles | 2 (MVP) |
+| 6.* | DX / OpenAPI types / CI / CONTRIBUTING | §23 | 0–1 |
+| 7.1–7.3 | JSON Schema, migrate, GeoJSON | schema + geojson_export | 0 / 1 / 5 |
+| 8.4 | Screenshots | screenshots route | 3 |
+| 9.* | Hypothesis, WS load, CI | tests §13 | 1–3 |
+| 12.1–12.2 | NumPy agents, snapshot diffs | population/arrays, snapshot | 2 / 5 |
+| 13.* | Rate limit, structured logs, backup | cross-cutting / Phase 10 | 0 / 3 / 10 |
 
 ---
 
@@ -936,4 +1106,4 @@ Resolve in Phase 0–1 and record here when decided.
 
 ---
 
-*Companion to the main Build Plan v3. Update this file when backend module boundaries change; keep it code-free.*
+*Companion to the main Build Plan v3 and Frontend Implementation Plan. Update when backend module boundaries change; keep it code-free.*

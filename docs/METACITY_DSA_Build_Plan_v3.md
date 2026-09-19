@@ -1,4 +1,4 @@
-# EvoCity Nexus — Complete Project & DSA Build Plan
+# METACITY — Complete Project & DSA Build Plan
 
 ## AI-Assisted City & Infrastructure Simulation Platform
 
@@ -6,25 +6,27 @@
 
 | Field | Value |
 |---|---|
-| Project | EvoCity Nexus (METACITY) |
-| Document | **Build Plan v3.0** — sole authoritative project document |
+| Project | METACITY |
+| Document | **Build Plan v3.0** — sole authoritative product document |
 | Date | 19 September 2026 |
 | Status | Planning complete. Ready to start Phase 0 |
 | Primary stack | Python (simulation, ML, API), React + TypeScript (web client) |
 | Academic angle | Hand-implemented DSA (graphs, pathfinding, heaps, flow, centrality) with tests and demos |
 | Purpose | One clean document: idea, claims, stack, data contracts, algorithms, roadmap, and end product |
+| Companions | `METACITY_Backend_Implementation_Plan.md` (API/modules SoT) · `METACITY_Frontend_Implementation_Plan.md` (UI SoT) · `METACITY_Enhancements.md` (adopted register) · **`METACITY_Master_Plan.md` (execution plan + checklist — follow this for build order)** |
 
 ### Document status
 
-This file is the **only** project plan. It fully replaces earlier drafts (`Complete_Project` / Plan v1 and Project Specification v2). Do not maintain parallel specs.
+This file is the **only** product/plan authority for vision, phases, and **acceptance criteria**. Backend and frontend plans expand implementation detail; on conflict about *what to build and when*, **this v3 wins**. On conflict about *API shapes or UI structure*, the respective companion plan wins.
 
 ### Document history
 
 | Version | Date | Notes |
 |---|---|---|
 | v1 / Complete Project | earlier | Initial vision draft (superseded) |
-| v2 Specification | 19 Sep 2026 | Detailed draft with API/validation (superseded) |
-| **v3.0 Build Plan** | 19 Sep 2026 | Sole plan: consolidated narrative + schema, API, time model, acceptance criteria, claims policy |
+| v2 Specification | 19 Sep 2026 | Detailed draft (superseded) |
+| **v3.0 Build Plan** | 19 Sep 2026 | Sole plan + companions |
+| v3.0 + enhancements merge | 19 Sep 2026 | Demand profiles, plan diversity, doc authority clarified; companions updated to v1.1 |
 
 ---
 
@@ -80,11 +82,11 @@ Every comparison screen and report must show a visible **calibration status** ba
 
 ### Canonical one-line pitch
 
-> **EvoCity Nexus lets you model a proposed development, simulate how a synthetic population responds, and compare alternatives with evidence — before building it.**
+> **METACITY lets you model a proposed development, simulate how a synthetic population responds, and compare alternatives with evidence — before building it.**
 
 ### In one paragraph
 
-**EvoCity Nexus** is a simulation platform that lets a government authority, infrastructure builder, college, hospital, or city planner **virtually design and test a proposed development before it is physically built**. The user creates (or imports) a virtual city or area with roads, buildings, and facilities. The system populates it with simulated people, vehicles, and systems. It then runs a **modelled** simulation of traffic, behaviour, and resource use under stated assumptions. The user can change the design and compare results. Everything is visible as a **2D map** and a **3D walkthrough** so stakeholders can see both appearance and modelled performance before construction.
+**METACITY** is a simulation platform that lets a government authority, infrastructure builder, college, hospital, or city planner **virtually design and test a proposed development before it is physically built**. The user creates (or imports) a virtual city or area with roads, buildings, and facilities. The system populates it with simulated people, vehicles, and systems. It then runs a **modelled** simulation of traffic, behaviour, and resource use under stated assumptions. The user can change the design and compare results. Everything is visible as a **2D map** and a **3D walkthrough** so stakeholders can see both appearance and modelled performance before construction.
 
 ### The core loop
 
@@ -168,7 +170,7 @@ Pollution patterns change
 The city differs in ways a static study may miss
 ```
 
-**EvoCity Nexus lets you explore these cascades in a virtual laboratory before they happen in the real world** — with explicit assumptions and calibration status.
+**METACITY lets you explore these cascades in a virtual laboratory before they happen in the real world** — with explicit assumptions and calibration status.
 
 ### Who faces this problem
 
@@ -628,7 +630,7 @@ Roads → planes by lane width; buildings → extrusions (floors × 3 m); vehicl
             |  REST API + WebSocket  |
 +----------------------------------------------------+
 |  BACKEND — Python 3.12 + FastAPI + workers         |
-|  evocity-core (pure library, pyproject package)    |
+|  METACITY-core (pure library, pyproject package)    |
 +----------------------------------------------------+
             |
 |  SQLite + Parquet/DuckDB → PostgreSQL/PostGIS later |
@@ -652,7 +654,7 @@ Roads → planes by lane width; buildings → extrusions (floors × 3 m); vehicl
 | Storage prod | PostgreSQL + PostGIS | Multi-user later |
 | Realtime | FastAPI WebSocket | Snapshot stream |
 | Parallel | multiprocessing process pool | Multi-seed runs |
-| Packaging | `pyproject.toml` → import `evocity_core` | Clean library boundary |
+| Packaging | `pyproject.toml` → import `metacity_core` | Clean library boundary |
 | Test | pytest, Vitest | Backend / frontend |
 | CI | GitHub Actions | On every commit |
 | Deploy | Docker Compose | api, worker, frontend; db optional |
@@ -710,7 +712,7 @@ docker compose up
                       |          runs, results, reports  |
                       |  Job Manager (MVP: process pool) |
                       |  Workers: one replication each   |
-                      |  evocity-core (pure library)     |
+                      |  METACITY-core (pure library)     |
                       |  Intelligence: scenarios;        |
                       |    ML/planner later              |
                       +---------------+------------------+
@@ -724,7 +726,7 @@ docker compose up
 
 ### 13.2 Key design principle
 
-`evocity-core` is a **pure Python library**: no web, no DB, no rendering. Usable from API, workers, notebooks, and CLI.
+`METACITY-core` is a **pure Python library**: no web, no DB, no rendering. Usable from API, workers, notebooks, and CLI.
 
 ### 13.3 Job model (MVP)
 
@@ -740,9 +742,9 @@ docker compose up
 ### 13.4 Repository structure
 
 ```text
-METACITY/   (product name: EvoCity Nexus)
+METACITY/   (product name: METACITY)
 +-- backend/
-|   +-- pyproject.toml             # package: evocity_core
+|   +-- pyproject.toml             # package: metacity_core
 |   +-- core/                      # Pure simulation library
 |   |   +-- clock.py
 |   |   +-- world.py
@@ -899,7 +901,9 @@ Scenarios store **diffs only**:
 
 Auth: **none** for MVP (localhost trust).
 
-Full OpenAPI is generated by FastAPI from Pydantic schemas in code.
+**API source of truth:** the endpoint catalogue in the **Backend Implementation Plan** is authoritative and may expand beyond this minimal list. This section remains the product-level contract summary.
+
+Full OpenAPI is generated by FastAPI from Pydantic schemas in code; frontend types are generated from that OpenAPI.
 
 ### 15.2 WebSocket snapshot
 
@@ -1096,7 +1100,7 @@ Phases **4+** are demo-complete / extended. Phases **7–10** are **post-MVP / o
 |---|---|---|---|---|
 | **0** | Foundations | 2 weeks | Repo, `schema_version`, **JSON templates**, package layout | MVP |
 | **1** | Simulation Core + basic view | 5–6 weeks | Agents on map; 2D + **basic 3D**; snapshots | MVP |
-| **2** | Traffic and Transport | 5–6 weeks | BPR, mode choice, MSA/gap, transit basic | MVP |
+| **2** | Traffic and Transport | 5–6 weeks | BPR, mode choice, MSA/gap, transit basic, **AM/PM demand profiles**, **diverse activity plan templates** | MVP |
 | **3** | Scenario Engine + Comparison | 4–5 weeks | Multi-seed CI, **comparison dashboard**, HTML report, DSA demos | **MVP END** |
 | **4** | Evacuation and Hospital | 4–5 weeks | Building fire CA + hospital DES (standalone OK) | Extended |
 | **5** | 3D Visualisation polish | 4–5 weeks | Walkthrough, LOD, day/night, split slider | Extended |
@@ -1114,7 +1118,7 @@ Phases **4+** are demo-complete / extended. Phases **7–10** are **post-MVP / o
 
 #### Phase 0
 
-- [ ] Repo layout matches §13.4; `pip install -e .` imports `evocity_core`
+- [ ] Repo layout matches §13.4; `pip install -e .` imports `metacity_core`
 - [ ] `schema_version` validator exists
 - [ ] ≥2 templates load: Nexus City + Campus **or** Hospital
 - [ ] CI runs empty/pytest discover
@@ -1132,15 +1136,20 @@ Phases **4+** are demo-complete / extended. Phases **7–10** are **post-MVP / o
 - [ ] Mode choice logit produces nonzero transit share when transit exists
 - [ ] Equilibrium stops with `final_gap` recorded &lt; ε or at max iter
 - [ ] Dijkstra/A* unit tests pass; routing used by agents
+- [ ] **Time-dependent demand profiles** produce distinct AM/PM peaks (not flat all-day load)
+- [ ] **≥5 activity plan templates** assigned by person type
 
 #### Phase 3 (MVP gate)
 
 - [ ] Scenario diff applies (`add_link`, `set_lanes`, …)
+- [ ] Built-in scenario **presets** listable via API / UI
 - [ ] 10 paired seeds → comparison table with 95% CI labels
 - [ ] Calibration badge visible in UI
 - [ ] Mechanism trace MVP-lite returns ≤3 drivers
-- [ ] HTML report generates for a comparison
+- [ ] HTML report generates for a comparison (with screenshot placeholders)
 - [ ] ≥3 entries from §16.1 DSA showcase runnable
+
+> Companion backend/frontend checklists must **reference** these criteria, not invent conflicting gates.
 
 #### Phase 4
 
@@ -1327,7 +1336,7 @@ Resolve during Phase 0–2; update this table when decided.
 | External engines | None vs SUMO/MATSim adapter | **None** for MVP/DSA |
 | Charts | Recharts vs ECharts | **Recharts** |
 | Report PDF | Browser print vs dedicated lib | Print HTML for MVP |
-| Package name | `evocity_core` vs `metacity_core` | `evocity_core` |
+| Package name | `metacity_core` vs `metacity_core` | `metacity_core` |
 
 ---
 
@@ -1335,7 +1344,7 @@ Resolve during Phase 0–2; update this table when decided.
 
 ### What we are building
 
-> **EvoCity Nexus is a virtual laboratory for cities and infrastructure.** Design a proposed development, populate it with a synthetic population, simulate under stated assumptions, and compare alternatives in 2D and 3D with evidence — before building in the real world.
+> **METACITY is a virtual laboratory for cities and infrastructure.** Design a proposed development, populate it with a synthetic population, simulate under stated assumptions, and compare alternatives in 2D and 3D with evidence — before building in the real world.
 
 ### The workflow
 
@@ -1349,7 +1358,7 @@ Requirement → Design → Simulate → Compare → Visualise → Decide → Imp
 
 ### The value
 
-| For | EvoCity Nexus provides |
+| For | METACITY provides |
 |---|---|
 | Government | Evidence-oriented infrastructure exploration |
 | Infrastructure builders | Impact simulation before construction |
@@ -1360,7 +1369,7 @@ Requirement → Design → Simulate → Compare → Visualise → Decide → Imp
 
 ### One-line pitch
 
-> **EvoCity Nexus lets you model a proposed development, simulate how a synthetic population responds, and compare alternatives with evidence — before building it.**
+> **METACITY lets you model a proposed development, simulate how a synthetic population responds, and compare alternatives with evidence — before building it.**
 
 ---
 
