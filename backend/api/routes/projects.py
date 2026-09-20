@@ -18,19 +18,21 @@ class ProjectCreateReq(BaseModel):
     name: str
     description: str
     scene_json_path: str
+    profile_id: str = "default"
 
 class ProjectResp(BaseModel):
     id: str
     name: str
     description: str
     scene_json_path: str
+    profile_id: str = "default"
     created_at: datetime
     updated_at: datetime
 
 @router.post("", response_model=ProjectResp)
 def create_project(req: ProjectCreateReq, db: sqlite3.Connection = Depends(get_db)):
     repo = ProjectRepository(db)
-    proj = repo.create(req.name, req.description, req.scene_json_path)
+    proj = repo.create(req.name, req.description, req.scene_json_path, req.profile_id)
     return proj
 
 @router.get("", response_model=list[ProjectResp])

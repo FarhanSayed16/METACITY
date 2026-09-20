@@ -29,6 +29,12 @@ class ScenarioResp(BaseModel):
 
 @router.post("/scenarios", response_model=ScenarioResp)
 def create_scenario(req: ScenarioCreateReq, db: sqlite3.Connection = Depends(get_db)):
+    # Validate diff ops before persisting
+    from scenarios.validator import validate_scenario
+    errors = validate_scenario(req.diff_ops)
+    if errors:
+        raise HTTPException(status_code=422, detail=f"Invalid scenario ops: {'; '.join(errors)}")
+    
     repo = ScenarioRepository(db)
     diff_json = json.dumps(req.diff_ops)
     scen = repo.create(req.project_id, req.name, diff_json)

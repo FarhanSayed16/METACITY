@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from typing import list
+from typing import List
 from pydantic import BaseModel
 
 router = APIRouter(prefix="/modules", tags=["modules"])
