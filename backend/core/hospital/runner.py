@@ -10,6 +10,7 @@ class HospitalResult:
     total_treated: int
     peak_queue_length: int
     avg_queue_length: float
+    queue_history: list[int]
 
 def run_hospital_surge(
     beds: int = 100, 
@@ -57,5 +58,6 @@ def run_hospital_surge(
         total_arrived=total_arrived,
         total_treated=total_treated,
         peak_queue_length=peak_q,
-        avg_queue_length=avg_q
+        avg_queue_length=avg_q,
+        queue_history=queue_lengths
     )

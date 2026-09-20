@@ -1,6 +1,5 @@
 import numpy as np
 from dataclasses import dataclass
-from typing import tuple
 
 @dataclass
 class GridMap:
@@ -25,6 +24,10 @@ class GridMap:
     def set_exit(self, x: int, y: int):
         if 0 <= x < self.width and 0 <= y < self.height:
             self.cells[x, y] = 2
+
+    def set_cell(self, x: int, y: int, value: int):
+        if 0 <= x < self.width and 0 <= y < self.height:
+            self.cells[x, y] = value
 
     def is_walkable(self, x: int, y: int) -> bool:
         if 0 <= x < self.width and 0 <= y < self.height:

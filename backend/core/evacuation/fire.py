@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.ndimage as ndimage
 from .grid import GridMap
 
 class FireCA:
@@ -14,23 +15,32 @@ class FireCA:
             self.fire_cells[x, y] = True
             
     def step(self, spread_prob: float = 0.1, wind_vector: tuple[float, float] = (0.0, 0.0)):
-        """Advance fire by one timestep."""
-        new_fire = self.fire_cells.copy()
+        """Advance fire by one timestep using 2D matrix convolution."""
         
-        # In MVP, very naive loop. In production, vectorize with scipy.ndimage.convolve
-        width, height = self.grid.width, self.grid.height
-        for x in range(width):
-            for y in range(height):
-                if self.fire_cells[x, y]:
-                    for nx, ny in self.grid.get_neighbors(x, y, include_diagonals=False):
-                        if self.grid.cells[nx, ny] != 1 and not self.fire_cells[nx, ny]:
-                            # Apply wind bias
-                            dx = nx - x
-                            dy = ny - y
-                            bias = 1.0 + (dx * wind_vector[0] + dy * wind_vector[1])
-                            prob = spread_prob * max(0.1, bias)
-                            
-                            if np.random.random() < prob:
-                                new_fire[nx, ny] = True
-                                
-        self.fire_cells = new_fire
+        # 1. Identify non-flammable cells (walls)
+        walls = (self.grid.cells == 1)
+        
+        # 2. Define convolution kernel for neighbors
+        # A simple von Neumann neighborhood (up, down, left, right)
+        kernel = np.array([
+            [0, 1, 0],
+            [1, 0, 1],
+            [0, 1, 0]
+        ], dtype=float)
+        
+        # 3. Calculate number of burning neighbors for each cell
+        fire_float = self.fire_cells.astype(float)
+        neighbor_fire = ndimage.convolve(fire_float, kernel, mode='constant', cval=0.0)
+        
+        # 4. Generate a random matrix
+        random_grid = np.random.random(self.fire_cells.shape)
+        
+        # 5. Base ignition probability based on neighbor count
+        ignition_chance = spread_prob * neighbor_fire
+        
+        # 6. Find cells that catch fire this turn
+        # Must have at least one burning neighbor, beat the random threshold, not already on fire, and not be a wall
+        new_ignitions = (random_grid < ignition_chance) & (~self.fire_cells) & (~walls)
+        
+        # 7. Update state
+        self.fire_cells = self.fire_cells | new_ignitions
