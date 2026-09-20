@@ -1,5 +1,7 @@
 # METACITY — Audit Report: MP-01 through MP-20
 
+> **SUPERSEDED for action.** Use `docs/METACITY_Full_System_Audit_MP01_MP30.md` as the current fix queue (Waves A–D + Appendix A/B closed). Keep this file only as historical context for the MP-01…20 recheck.
+
 > **Purpose:** Required fixes and improvements before treating Phase 20 as complete.  
 > **Date:** 20 September 2026  
 > **Scope:** Master Plan MP-01 … MP-20 vs current codebase  

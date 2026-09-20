@@ -29,19 +29,19 @@ export function AssumptionsDrawer({ opened, onClose }: AssumptionsDrawerProps) {
           
           <ul className="space-y-4">
             <li className="flex gap-3 text-sm text-gray-700">
-              <div className="flex-shrink-0 mt-0.5"><Info className="text-blue-500" size={18} /></div>
+              <div className="flex-shrink-0 mt-0.5"><Info className="text-[var(--accent)]" size={18} /></div>
               <div><b>Static Departure Times:</b> Agents do not dynamically adjust their departure times to avoid congestion.</div>
             </li>
             <li className="flex gap-3 text-sm text-gray-700">
-              <div className="flex-shrink-0 mt-0.5"><Info className="text-blue-500" size={18} /></div>
+              <div className="flex-shrink-0 mt-0.5"><Info className="text-[var(--accent)]" size={18} /></div>
               <div><b>BPR Volume-Delay:</b> Link travel times are estimated using the standard Bureau of Public Roads (BPR) function, which may overestimate delays at extreme V/C ratios.</div>
             </li>
             <li className="flex gap-3 text-sm text-gray-700">
-              <div className="flex-shrink-0 mt-0.5"><Info className="text-blue-500" size={18} /></div>
+              <div className="flex-shrink-0 mt-0.5"><Info className="text-[var(--accent)]" size={18} /></div>
               <div><b>Synthetic Demand:</b> If marked as synthetic, the agent population is mathematically generated rather than derived from empirical census data.</div>
             </li>
             <li className="flex gap-3 text-sm text-gray-700">
-              <div className="flex-shrink-0 mt-0.5"><Info className="text-blue-500" size={18} /></div>
+              <div className="flex-shrink-0 mt-0.5"><Info className="text-[var(--accent)]" size={18} /></div>
               <div><b>Multinomial Logit Choice:</b> Mode choices (Car, Walk, Transit) rely on simple fixed utilities, without modeling complex household vehicle constraints.</div>
             </li>
           </ul>

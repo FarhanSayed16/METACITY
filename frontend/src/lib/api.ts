@@ -3,7 +3,7 @@ import type { Project, ProjectCreateReq, Template, Profile, Preset } from '../ty
 /** Backend origin — override with VITE_API_URL in non-local deploys. */
 export const API_BASE =
   (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_URL) ||
-  'http://localhost:8000';
+  'http://localhost:8001';
 
 export function apiUrl(path: string): string {
   const p = path.startsWith('/') ? path : `/${path}`;

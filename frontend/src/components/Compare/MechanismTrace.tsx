@@ -10,20 +10,20 @@ export function MechanismTrace({ mechanisms }: MechanismTraceProps) {
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
-      <h3 className="text-md font-semibold text-gray-900 flex items-center gap-2 mb-1">
-        <TrendingUp size={20} className="text-gray-700" />
-        Mechanism Trace
+    <div className="bg-[var(--bg-panel)] border border-[var(--border-color)] rounded-xl p-5 shadow-sm">
+      <h3 className="text-md font-semibold text-[var(--text-primary)] flex items-center gap-2 mb-1">
+        <TrendingUp size={20} className="text-[var(--accent)]" />
+        Mechanism trace
       </h3>
-      <p className="text-sm text-gray-500 mb-4">
-        Top drivers explaining the KPI changes between baseline and scenario.
+      <p className="text-sm text-[var(--text-secondary)] mb-4">
+        Top drivers explaining KPI changes between baseline and scenario.
       </p>
-      
+
       <ul className="space-y-3">
         {mechanisms.map((mech, idx) => (
-          <li key={idx} className="flex gap-3 text-sm text-gray-700 items-start">
+          <li key={idx} className="flex gap-3 text-sm text-[var(--text-primary)] items-start">
             <div className="flex-shrink-0 mt-0.5">
-              <div className="bg-purple-100 p-1 rounded-full text-purple-600">
+              <div className="bg-[var(--accent-muted)] p-1 rounded-full text-[var(--accent)]">
                 <ArrowRight size={14} />
               </div>
             </div>
@@ -31,8 +31,8 @@ export function MechanismTrace({ mechanisms }: MechanismTraceProps) {
           </li>
         ))}
       </ul>
-      
-      <div className="mt-5 flex items-center gap-1.5 text-xs text-gray-400 border-t border-gray-100 pt-3">
+
+      <div className="mt-5 flex items-center gap-1.5 text-xs text-[var(--text-muted)] border-t border-[var(--border-color)] pt-3">
         <AlertTriangle size={14} />
         <span>Trace is generated from a single representative paired seed.</span>
       </div>

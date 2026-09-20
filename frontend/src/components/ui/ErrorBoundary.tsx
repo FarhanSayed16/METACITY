@@ -42,7 +42,7 @@ export class ErrorBoundary extends Component<Props, State> {
               </div>
               <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-2">API Connection Lost</h1>
               <p className="text-[var(--text-secondary)] mb-8">
-                We couldn't connect to the METACITY backend engine. Please ensure the backend is running on <code className="bg-gray-100 px-1 rounded">localhost:8000</code>.
+                We couldn't connect to the METACITY backend engine. Please ensure the backend is running on <code className="bg-gray-100 px-1 rounded">{API_BASE}</code>.
               </p>
               <Button 
                 onClick={() => window.location.reload()} 

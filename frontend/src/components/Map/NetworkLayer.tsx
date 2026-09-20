@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, memo, useRef } from 'react';
 import { useSceneStore } from '../../store/sceneStore';
 import { useUIStore } from '../../store/uiStore';
 import { useSimStore } from '../../store/simStore';
@@ -11,25 +11,42 @@ const GHOST_ACCENT = CONGESTION_COLORS.selected;
 const GHOST_CLOSE = '#ef4444';
 const GHOST_ADD = '#2A9D8F';
 
-const AnimatedLink = ({ link, points, metrics, selectedLinkId, setSelectedLinkId, isNightMode, ghostStyle }: any) => {
-  const lineRef = React.useRef<any>(null);
+type AnimatedLinkProps = {
+  link: any;
+  points: [number, number, number][];
+  volume: number;
+  capacity: number;
+  selected: boolean;
+  isNightMode: boolean;
+  ghostStyle?: string;
+  animate: boolean;
+};
 
-  const getLinkColor = () => {
+const AnimatedLink = memo(function AnimatedLink({
+  link,
+  points,
+  volume,
+  capacity,
+  selected,
+  isNightMode,
+  ghostStyle,
+  animate,
+}: AnimatedLinkProps) {
+  const lineRef = useRef<any>(null);
+
+  const color = useMemo(() => {
     if (ghostStyle === 'close') return GHOST_CLOSE;
     if (ghostStyle === 'modify') return GHOST_ACCENT;
-    if (link.id === selectedLinkId) return CONGESTION_COLORS.selected;
-    if (!metrics) return congestionColor(0, { night: isNightMode });
-
-    const vc = metrics.capacity > 0 ? (metrics.volume / metrics.capacity) : 0;
+    if (selected) return CONGESTION_COLORS.selected;
+    if (!capacity && !volume) return congestionColor(0, { night: isNightMode });
+    const vc = capacity > 0 ? volume / capacity : 0;
     return congestionColor(vc, { night: isNightMode });
-  };
+  }, [ghostStyle, selected, capacity, volume, isNightMode]);
 
   useFrame((_, delta) => {
-    if (lineRef.current && lineRef.current.material && !ghostStyle) {
-      const vol = metrics?.volume || 0;
-      if (vol > 0) {
-        lineRef.current.material.dashOffset -= delta * (vol * 0.05 + 1.0);
-      }
+    if (!animate || ghostStyle) return;
+    if (lineRef.current?.material && volume > 0) {
+      lineRef.current.material.dashOffset -= delta * (volume * 0.05 + 1.0);
     }
   });
 
@@ -38,21 +55,19 @@ const AnimatedLink = ({ link, points, metrics, selectedLinkId, setSelectedLinkId
     ? ghostStyle === 'close'
       ? 5
       : 4
-    : link.id === selectedLinkId
-      ? link.lanes
-        ? link.lanes * 1.5 + 2
-        : 5
+    : selected
+      ? (link.lanes ? link.lanes * 1.5 + 2 : 5)
       : link.lanes
         ? link.lanes * 1.5
         : 3;
-  const isFlowing = !isGhost && (metrics?.volume || 0) > 0;
+  const isFlowing = !isGhost && volume > 0;
   const dashed = isGhost || isFlowing;
 
   return (
     <Line
       ref={lineRef}
       points={points}
-      color={getLinkColor()}
+      color={color}
       lineWidth={lineWidth}
       dashed={dashed}
       dashScale={isGhost ? 20 : 50}
@@ -66,7 +81,7 @@ const AnimatedLink = ({ link, points, metrics, selectedLinkId, setSelectedLinkId
         e.stopPropagation();
         const editorMode = useUIStore.getState().editorMode;
         if (editorMode === 'select') {
-          setSelectedLinkId(link.id);
+          useUIStore.getState().setSelectedLinkId(link.id);
           useUIStore.getState().setSelectedNodeId(null);
         }
       }}
@@ -88,13 +103,22 @@ const AnimatedLink = ({ link, points, metrics, selectedLinkId, setSelectedLinkId
       }}
     />
   );
-};
+});
 
 export const NetworkLayer: React.FC = () => {
-  const { selectedLinkId, setSelectedLinkId, selectedNodeId, setSelectedNodeId, editorMode, setEditorMode, isNightMode } =
-    useUIStore();
-  const { sceneData, addNode, addLink } = useSceneStore();
-  const link_metrics = useSimStore((state) => state.link_metrics);
+  const selectedLinkId = useUIStore((s) => s.selectedLinkId);
+  const selectedNodeId = useUIStore((s) => s.selectedNodeId);
+  const editorMode = useUIStore((s) => s.editorMode);
+  const isNightMode = useUIStore((s) => s.isNightMode);
+  const centralityScores = useUIStore((s) => s.centralityScores);
+  const setSelectedNodeId = useUIStore((s) => s.setSelectedNodeId);
+  const setSelectedLinkId = useUIStore((s) => s.setSelectedLinkId);
+  const setEditorMode = useUIStore((s) => s.setEditorMode);
+
+  const sceneData = useSceneStore((s) => s.sceneData);
+  const addNode = useSceneStore((s) => s.addNode);
+  const addLink = useSceneStore((s) => s.addLink);
+  const link_metrics = useSimStore((s) => s.link_metrics);
   const pendingOps = useScenarioDraftStore((s) => s.pendingOps);
 
   const nodeMap = useMemo(() => {
@@ -102,7 +126,7 @@ export const NetworkLayer: React.FC = () => {
     const map = new Map();
     sceneData.nodes.forEach((n: any) => map.set(n.id, n));
     return map;
-  }, [sceneData]);
+  }, [sceneData?.nodes]);
 
   const ghost = useMemo(() => {
     const closed = new Set<string>();
@@ -158,7 +182,17 @@ export const NetworkLayer: React.FC = () => {
       }
     }
     return { closed, modified, extraNodes, extraLinks, map };
-  }, [pendingOps, sceneData, nodeMap]);
+  }, [pendingOps, sceneData?.links, nodeMap]);
+
+  // Cap animated edges — only top-N by volume animate (FPS)
+  const animateIds = useMemo(() => {
+    const entries = Object.entries(link_metrics || {})
+      .map(([id, m]: [string, any]) => [id, m?.volume || 0] as const)
+      .filter(([, v]) => v > 0)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 48);
+    return new Set(entries.map(([id]) => id));
+  }, [link_metrics]);
 
   if (!sceneData?.nodes) return null;
 
@@ -181,16 +215,21 @@ export const NetworkLayer: React.FC = () => {
         if (ghost.closed.has(link.id)) ghostStyle = 'close';
         else if (ghost.modified.has(link.id)) ghostStyle = 'modify';
 
+        const m = link_metrics[link.id];
+        const volume = m?.volume || 0;
+        const capacity = m?.capacity || 0;
+
         return (
           <AnimatedLink
             key={`link-${link.id || idx}`}
             link={link}
             points={toPoints(fromNode, toNode)}
-            metrics={link_metrics[link.id]}
-            selectedLinkId={selectedLinkId}
-            setSelectedLinkId={setSelectedLinkId}
+            volume={volume}
+            capacity={capacity}
+            selected={link.id === selectedLinkId}
             isNightMode={isNightMode}
             ghostStyle={ghostStyle}
+            animate={animateIds.has(link.id)}
           />
         );
       })}
@@ -215,6 +254,11 @@ export const NetworkLayer: React.FC = () => {
 
       {sceneData.nodes.map((node: any, idx: number) => {
         const isSelected = node.id === selectedNodeId;
+        const cent = centralityScores?.[node.id];
+        let color = nodeColor;
+        if (isSelected) color = '#FFD166';
+        else if (cent !== undefined) color = cent > 0.05 ? '#ef4444' : '#10b981';
+
         return (
           <mesh
             key={`node-${node.id || idx}`}
@@ -256,17 +300,7 @@ export const NetworkLayer: React.FC = () => {
             }}
           >
             <cylinderGeometry args={[isSelected ? 5 : 4, isSelected ? 5 : 4, 1, 16]} />
-            <meshStandardMaterial
-              color={
-                isSelected
-                  ? '#FFD166'
-                  : useUIStore.getState().centralityScores?.[node.id] !== undefined
-                    ? useUIStore.getState().centralityScores![node.id] > 0.05
-                      ? '#ef4444'
-                      : '#10b981'
-                    : nodeColor
-              }
-            />
+            <meshStandardMaterial color={color} />
           </mesh>
         );
       })}
@@ -284,9 +318,9 @@ export const NetworkLayer: React.FC = () => {
         const size = fac.type === 'home' ? 10 : fac.type === 'office' ? 20 : 15;
 
         let color = '#a1a1aa';
-        if (fac.type === 'home') color = isNightMode ? '#3b82f6' : '#60a5fa';
-        if (fac.type === 'office') color = isNightMode ? '#8b5cf6' : '#a78bfa';
-        if (fac.type === 'school') color = isNightMode ? '#eab308' : '#fde047';
+        if (fac.type === 'home') color = isNightMode ? '#1d4ed8' : '#60a5fa';
+        if (fac.type === 'office') color = isNightMode ? '#0f766e' : '#2A9D8F';
+        if (fac.type === 'school') color = isNightMode ? '#a16207' : '#fde047';
 
         return (
           <mesh key={`fac-${fac.id || idx}`} position={[fac.x - 500, height / 2, fac.y - 500]}>

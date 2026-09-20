@@ -17,7 +17,12 @@ def get_db_connection():
             except OSError:
                 pass
                 
-    conn = sqlite3.connect(db_string.replace("sqlite:///", "") if db_string.startswith("sqlite:///") else db_string)
+    conn = sqlite3.connect(
+        db_string.replace("sqlite:///", "") if db_string.startswith("sqlite:///") else db_string,
+        timeout=15.0,
+        check_same_thread=False
+    )
+    conn.execute("PRAGMA journal_mode=WAL;")  # Enable Write-Ahead Logging for better concurrency
     conn.row_factory = sqlite3.Row
     return conn
 

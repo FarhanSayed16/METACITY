@@ -52,14 +52,14 @@ app = FastAPI(
 
 from api.middleware.rate_limit import RateLimitMiddleware
 
+app.add_middleware(RateLimitMiddleware, max_requests=100, window_seconds=60)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.add_middleware(RateLimitMiddleware, max_requests=100, window_seconds=60)
 
 # Register routes
 app.include_router(health.router)

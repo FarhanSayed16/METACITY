@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import { MainLayout } from './components/layout/MainLayout';
 import { Welcome } from './pages/Welcome';
@@ -24,7 +24,11 @@ import { OnboardingTour } from './components/ui/OnboardingTour';
 import { useHealthStore } from './store/healthStore';
 import { api } from './lib/api';
 
-function App() {
+/**
+ * Root layout that wraps the entire app.
+ * Handles API health polling and the connection-lost overlay.
+ */
+function RootLayout() {
   const apiReachable = useHealthStore((s) => s.apiReachable);
   const setApiReachable = useHealthStore((s) => s.setApiReachable);
   const setModelVersion = useHealthStore((s) => s.setModelVersion);
@@ -58,45 +62,63 @@ function App() {
   }
 
   return (
-    <ErrorBoundary>
-      <BrowserRouter>
-        {apiReachable === false && (
-          <div className="fixed inset-0 z-[200] bg-white/50 backdrop-blur-sm flex flex-col items-center justify-center pointer-events-auto">
-            <div className="bg-red-50 border-l-4 border-red-500 p-6 max-w-md shadow-xl rounded-lg text-center">
-              <h2 className="text-red-800 text-lg font-bold mb-2">Connection Lost</h2>
-              <p className="text-red-700 text-sm">
-                The METACITY backend API is unreachable. Save, Run, Compare, and edit mutations are blocked until the API recovers.
-              </p>
-            </div>
+    <>
+      {apiReachable === false && (
+        <div className="fixed inset-0 z-[200] bg-white/50 backdrop-blur-sm flex flex-col items-center justify-center pointer-events-auto">
+          <div className="bg-red-50 border-l-4 border-red-500 p-6 max-w-md shadow-xl rounded-lg text-center">
+            <h2 className="text-red-800 text-lg font-bold mb-2">Connection Lost</h2>
+            <p className="text-red-700 text-sm">
+              The METACITY backend API is unreachable. Save, Run, Compare, and edit mutations are blocked until the API recovers.
+            </p>
           </div>
-        )}
-        <Routes>
-          <Route path="/" element={<Welcome />} />
+        </div>
+      )}
+      <Outlet />
+      <ToastStack />
+      <OnboardingTour />
+    </>
+  );
+}
 
-          <Route element={<MainLayout />}>
-            <Route path="/projects" element={<Projects />} />
-            <Route path="/projects/:id" element={<ProjectOverview />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/ui-kit" element={<UiKit />} />
-            <Route path="/projects/:id/map" element={<WorkspaceMap />} />
-            <Route path="/projects/:id/compare" element={<Compare />} />
-            <Route path="/projects/:id/runs" element={<Runs />} />
-            <Route path="/projects/:id/runs/:runId" element={<Runs />} />
-            <Route path="/projects/:id/planner" element={<Planner />} />
-            <Route path="/runs" element={<Runs />} />
-            <Route path="/planner" element={<Planner />} />
-            <Route path="/network" element={<NetworkTools />} />
-            <Route path="/projects/:id/network" element={<NetworkTools />} />
-            <Route path="/dsa" element={<DSAShowcase />} />
-            <Route path="/evacuation" element={<EvacuationMap />} />
-            <Route path="/hospital" element={<HospitalSurge />} />
-          </Route>
+const router = createBrowserRouter([
+  {
+    element: <RootLayout />,
+    errorElement: <NotFound />,
+    children: [
+      { path: '/', element: <Welcome /> },
 
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <ToastStack />
-        <OnboardingTour />
-      </BrowserRouter>
+      // Routes wrapped in MainLayout (with TopBar, ProjectNav, StatusBar)
+      {
+        element: <MainLayout />,
+        children: [
+          { path: '/projects', element: <Projects /> },
+          { path: '/projects/:id', element: <ProjectOverview /> },
+          { path: '/settings', element: <Settings /> },
+          { path: '/ui-kit', element: <UiKit /> },
+          { path: '/projects/:id/map', element: <WorkspaceMap /> },
+          { path: '/projects/:id/compare', element: <Compare /> },
+          { path: '/projects/:id/runs', element: <Runs /> },
+          { path: '/projects/:id/runs/:runId', element: <Runs /> },
+          { path: '/projects/:id/planner', element: <Planner /> },
+          { path: '/runs', element: <Runs /> },
+          { path: '/planner', element: <Planner /> },
+          { path: '/network', element: <NetworkTools /> },
+          { path: '/projects/:id/network', element: <NetworkTools /> },
+          { path: '/dsa', element: <DSAShowcase /> },
+          { path: '/evacuation', element: <EvacuationMap /> },
+          { path: '/hospital', element: <HospitalSurge /> },
+        ],
+      },
+
+      { path: '*', element: <NotFound /> },
+    ],
+  },
+]);
+
+function App() {
+  return (
+    <ErrorBoundary>
+      <RouterProvider router={router} />
     </ErrorBoundary>
   );
 }

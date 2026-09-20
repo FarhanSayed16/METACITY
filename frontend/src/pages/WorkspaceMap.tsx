@@ -20,6 +20,9 @@ import { EnvironmentSettings } from '../components/Map/EnvironmentSettings';
 import { Attribution } from '../components/Attribution';
 import { ExportPanel } from '../components/ExportPanel';
 import { DragDropZone } from '../components/Import/DragDropZone';
+import { CongestionLegend } from '../components/ui/CongestionLegend';
+import { CalibrationBadge } from '../components/Compare/CalibrationBadge';
+import { AssumptionsDrawer } from '../components/Compare/AssumptionsDrawer';
 
 export const WorkspaceMap: React.FC = () => {
   const { id: projectId } = useParams<{ id: string }>();
@@ -40,6 +43,9 @@ export const WorkspaceMap: React.FC = () => {
   const location = useLocation();
   const [sceneError, setSceneError] = useState<string | null>(null);
   const [sceneLoading, setSceneLoading] = useState(true);
+  const [assumptionsOpen, setAssumptionsOpen] = useState(false);
+  const calibrationStatus =
+    (sceneData as any)?.calibration_status || 'synthetic_uncalibrated';
 
   // Set active project ID and fetch scene on mount
   useEffect(() => {
@@ -123,7 +129,7 @@ export const WorkspaceMap: React.FC = () => {
     return (
       <div className="flex items-center justify-center w-full h-full bg-[var(--bg-canvas)]">
         <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--accent)] mx-auto animate-soft-pulse"></div>
           <p className="text-[var(--text-secondary)]">Loading scene…</p>
         </div>
       </div>
@@ -135,12 +141,12 @@ export const WorkspaceMap: React.FC = () => {
     return (
       <div className="flex items-center justify-center w-full h-full bg-[var(--bg-canvas)]">
         <div className="text-center space-y-4 max-w-md">
-          <div className="text-red-400 text-5xl">⚠</div>
+          <div className="mx-auto w-14 h-14 rounded-full bg-red-50 flex items-center justify-center text-[var(--danger)] text-2xl font-bold">!</div>
           <h2 className="text-xl font-bold text-[var(--text-primary)]">Failed to load scene</h2>
           <p className="text-[var(--text-secondary)]">{sceneError}</p>
           <button 
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg"
+            className="px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white rounded-lg transition-colors"
           >
             Retry
           </button>
@@ -159,8 +165,23 @@ export const WorkspaceMap: React.FC = () => {
       </div>
 
       <EnvironmentSettings />
-      <ExportPanel projectId={projectId} />
+      <div className="workspace-desktop-only">
+        <ExportPanel projectId={projectId} />
+      </div>
       <Attribution />
+
+      {/* Mobile read-only banner */}
+      <div className="workspace-mobile-banner absolute top-0 inset-x-0 z-30 bg-[var(--bg-chrome)] text-[var(--text-inverse)] text-xs px-3 py-2 text-center">
+        Mobile view is read-only — open on desktop to edit network & run tools.
+      </div>
+
+      {/* Trust badge → Assumptions */}
+      <div className="absolute top-4 right-4 z-20 workspace-desktop-only">
+        <CalibrationBadge
+          status={calibrationStatus}
+          onClick={() => setAssumptionsOpen(true)}
+        />
+      </div>
 
       {/* Scenario ghost preview banner */}
       {pendingOps.length > 0 && (
@@ -193,39 +214,39 @@ export const WorkspaceMap: React.FC = () => {
       <div className="absolute top-4 left-4 z-10 flex bg-[var(--bg-panel)] rounded-lg shadow-md border border-[var(--border-color)] overflow-hidden">
         <button 
           onClick={is3D ? toggle3D : undefined}
-          className={`px-4 py-2 flex items-center space-x-2 text-sm font-medium transition-colors ${!is3D ? 'bg-blue-500/10 text-blue-500' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'}`}
+          className={`px-4 py-2 flex items-center space-x-2 text-sm font-medium transition-colors ${!is3D ? 'bg-[var(--accent-muted)] text-[var(--accent)]' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'}`}
         >
           <Layers size={16} />
           <span>2D Map</span>
         </button>
         <button 
           onClick={!is3D ? toggle3D : undefined}
-          className={`px-4 py-2 flex items-center space-x-2 text-sm font-medium transition-colors ${is3D ? 'bg-blue-500/10 text-blue-500' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'}`}
+          className={`px-4 py-2 flex items-center space-x-2 text-sm font-medium transition-colors ${is3D ? 'bg-[var(--accent-muted)] text-[var(--accent)]' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'}`}
         >
           <Box size={16} />
           <span>3D View</span>
         </button>
       </div>
 
-      {/* Editor Toolbar */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 flex bg-[var(--bg-panel)] rounded-lg shadow-md border border-[var(--border-color)] overflow-hidden">
+      {/* Editor Toolbar — desktop edit chrome */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 flex bg-[var(--bg-panel)] rounded-lg shadow-md border border-[var(--border-color)] overflow-hidden workspace-desktop-only">
         <button 
           onClick={() => setEditorMode('select')}
-          className={`px-3 py-2 flex items-center space-x-2 text-sm font-medium transition-colors ${editorMode === 'select' ? 'bg-blue-500/20 text-blue-500' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'}`}
+          className={`px-3 py-2 flex items-center space-x-2 text-sm font-medium transition-colors ${editorMode === 'select' ? 'bg-[var(--accent-muted)] text-[var(--accent)]' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'}`}
           title="Select (Esc)"
         >
           <MousePointer2 size={16} />
         </button>
         <button 
           onClick={() => setEditorMode('addNode')}
-          className={`px-3 py-2 flex items-center space-x-2 text-sm font-medium transition-colors ${editorMode === 'addNode' ? 'bg-blue-500/20 text-blue-500' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'}`}
+          className={`px-3 py-2 flex items-center space-x-2 text-sm font-medium transition-colors ${editorMode === 'addNode' ? 'bg-[var(--accent-muted)] text-[var(--accent)]' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'}`}
           title="Add Node"
         >
           <CirclePlus size={16} />
         </button>
         <button 
           onClick={() => setEditorMode('addLink')}
-          className={`px-3 py-2 flex items-center space-x-2 text-sm font-medium transition-colors ${editorMode === 'addLink' ? 'bg-blue-500/20 text-blue-500' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'}`}
+          className={`px-3 py-2 flex items-center space-x-2 text-sm font-medium transition-colors ${editorMode === 'addLink' ? 'bg-[var(--accent-muted)] text-[var(--accent)]' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'}`}
           title="Draw Link"
         >
           <GitMerge size={16} />
@@ -254,8 +275,9 @@ export const WorkspaceMap: React.FC = () => {
               try {
                 const data = await api.getCentrality(sceneData);
                 useUIStore.getState().setCentralityScores(data.centrality);
+                toast.success('Centrality', 'Betweenness overlay on.');
               } catch (e) {
-                alert("Failed to compute centrality");
+                toast.error('Centrality', 'Failed to compute betweenness.');
               }
             }
           }}
@@ -268,13 +290,12 @@ export const WorkspaceMap: React.FC = () => {
           onClick={async () => {
             try {
               const data = await api.getIsolation(sceneData);
-              alert(`Network Isolation Report:
-- Components: ${data.component_count}
-- Largest Component Size: ${data.largest_component_size}
-- Isolated Nodes: ${data.isolated_nodes.length}
-- Isolation Ratio: ${(data.isolation_ratio * 100).toFixed(2)}%`);
+              toast.success(
+                'Isolation',
+                `Components ${data.component_count} · largest ${data.largest_component_size} · isolated ${data.isolated_nodes.length} (${(data.isolation_ratio * 100).toFixed(1)}%)`
+              );
             } catch (e) {
-              alert("Failed to compute isolation metrics");
+              toast.error('Isolation', 'Failed to compute isolation metrics.');
             }
           }}
           className="px-3 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] transition-colors"
@@ -324,7 +345,7 @@ export const WorkspaceMap: React.FC = () => {
           <button 
             onClick={handleSave}
             disabled={mutationsLocked}
-            className="px-4 py-1.5 flex items-center space-x-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:pointer-events-none text-white text-sm font-medium rounded-full shadow-lg transition-colors"
+            className="px-4 py-1.5 flex items-center space-x-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-40 disabled:pointer-events-none text-white text-sm font-medium rounded-full shadow-lg transition-colors"
           >
             <Save size={14} />
             <span>Save Changes</span>
@@ -334,18 +355,10 @@ export const WorkspaceMap: React.FC = () => {
 
       {/* Layers legend (L) */}
       {showLayersLegend && (
-        <div className="absolute top-20 right-4 z-20 w-52 bg-[var(--bg-panel)] border border-[var(--border-color)] rounded-lg shadow-lg p-3 text-xs">
-          <div className="font-semibold mb-2">Congestion legend</div>
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm bg-[#10b981]" /> Free / light (v/c ≤ 0.3)</div>
-            <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm bg-[#f59e0b]" /> Moderate (v/c ≤ 0.7)</div>
-            <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm bg-[#ef4444]" /> Heavy (v/c &gt; 0.9)</div>
-            <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm bg-[#FFD166]" /> Selected / ghost</div>
-            <p className="pt-1 text-[10px] text-[var(--text-secondary)] leading-snug">
-              Moving dashes encode relative volume — not particle trails or absolute flow counts.
-            </p>
-          </div>
-        </div>
+        <CongestionLegend
+          showFlowNote
+          className="absolute top-20 right-4 z-20 w-52 workspace-desktop-only"
+        />
       )}
 
       {/* Help overlay (?) */}
@@ -372,7 +385,7 @@ export const WorkspaceMap: React.FC = () => {
             </ul>
             <button
               onClick={toggleHelp}
-              className="mt-5 w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium"
+              className="mt-5 w-full py-2 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-sm font-medium transition-colors"
             >
               Close
             </button>
@@ -382,9 +395,13 @@ export const WorkspaceMap: React.FC = () => {
 
       <InspectorPanel />
       
-      <SplitWipe />
-      <MiniMap />
-      <DemoMode />
+      <div className="workspace-desktop-only">
+        <SplitWipe />
+        <MiniMap />
+        <DemoMode />
+      </div>
+
+      <AssumptionsDrawer opened={assumptionsOpen} onClose={() => setAssumptionsOpen(false)} />
 
       {/* Sim Strip Component at the bottom */}
       <SimStrip />

@@ -9,8 +9,10 @@ export const MainLayout: React.FC = () => {
     <div className="flex flex-col h-screen overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">
       <TopBar />
       <div className="flex flex-1 overflow-hidden">
-        <ProjectNav />
-        <main className="flex-1 overflow-auto relative">
+        <div className="workspace-desktop-only">
+          <ProjectNav />
+        </div>
+        <main className="flex-1 overflow-auto relative min-w-0">
           <Outlet />
         </main>
       </div>

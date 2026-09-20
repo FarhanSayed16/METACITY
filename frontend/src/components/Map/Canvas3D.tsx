@@ -27,6 +27,8 @@ export const Canvas3D: React.FC<Canvas3DProps> = ({ perspective = true }) => {
     <div className="absolute inset-0 z-0">
       <Canvas
         orthographic={!perspective}
+        dpr={[1, 1.5]}
+        performance={{ min: 0.5 }}
         camera={
           perspective
             ? { position: [0, 500, 500], fov: 60 }

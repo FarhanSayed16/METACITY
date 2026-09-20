@@ -12,14 +12,19 @@
   --bg-surface-muted: #F9FAFB;
   --bg-chrome: #1B2430;
   --bg-canvas: #E5E7EB;
+  --bg-panel: var(--bg-surface);
+  --bg-card: var(--bg-surface-muted);
+  --bg-hover: #EEF2F5;
   --border-subtle: #E5E7EB;
   --border-strong: #D1D5DB;
+  --border-color: var(--border-subtle);
 
   /* Text */
   --text-primary: #111827;
   --text-secondary: #4B5563;
   --text-inverse: #F9FAFB;
   --text-muted: #9CA3AF;
+  --text-tertiary: var(--text-muted);
   --text-link: #2A9D8F;
 
   /* Brand / Action */
@@ -44,6 +49,11 @@
   --fire: #DC2626;
   --smoke: #9CA3AF;
   --water-flood: #2563EB;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 150ms;
+  --duration-med: 280ms;
 }
 
 body {
@@ -71,3 +81,31 @@ body {
   from { transform: translateX(100%); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
 }
+
+@keyframes fadeUp {
+  from { transform: translateY(8px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes softPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+.animate-fade-up {
+  animation: fadeUp var(--duration-med) var(--ease-out) both;
+}
+
+.animate-soft-pulse {
+  animation: softPulse 1.6s var(--ease-out) infinite;
+}
+
+/* Dense / comfortable UI density helpers */
+.ui-dense .text-sm { font-size: 0.8125rem; }
+
+/* Workspace overlays: reduce paint on narrow screens */
+@media (max-width: 767px) {
+  .workspace-desktop-only { display: none !important; }
+  .workspace-mobile-banner { display: block !important; }
+}
+.workspace-mobile-banner { display: none; }

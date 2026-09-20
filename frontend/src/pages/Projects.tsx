@@ -78,11 +78,11 @@ export const Projects: React.FC = () => {
                 <TableCell className="font-mono text-xs">{p.scene_json_path}</TableCell>
                 <TableCell>
                   <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                    p.calibration_status === 'calibrated' ? 'bg-green-100 text-green-800' :
-                    p.calibration_status === 'partially_calibrated' ? 'bg-yellow-100 text-yellow-800' :
+                    (p.calibration_status || 'uncalibrated') === 'calibrated' ? 'bg-green-100 text-green-800' :
+                    (p.calibration_status || 'uncalibrated') === 'partially_calibrated' ? 'bg-yellow-100 text-yellow-800' :
                     'bg-red-100 text-red-800'
                   }`}>
-                    {p.calibration_status.replace('_', ' ')}
+                    {(p.calibration_status || 'uncalibrated').replace('_', ' ')}
                   </span>
                 </TableCell>
                 <TableCell className="text-sm text-[var(--text-secondary)]">

@@ -3,15 +3,15 @@
 > **Purpose:** One comprehensive fix list so the system can be closed as complete before UI polish / next enhancement work.  
 > **Date:** 20 September 2026  
 > **Scope:** Re-check MP-01…20 (including prior audit fixes) + full audit MP-21…30  
-> **Tests:** `pytest` → **90 passed**, 13 warnings (Waves A–D closed)  
-> **Verdict:** Substantial product exists, but **the system is not EXIT-complete through Phase 30.** Master Plan Progress Log + EXIT boxes reconciled honestly (Wave D). Remaining work is Wave E UI polish + MVP tag when committed.
+> **Tests:** `pytest` → **92 passed**, 13 warnings (Waves A–D + Appendix A/B closed)  
+> **Verdict:** Substantial product exists, but **the system is not EXIT-complete through Phase 30.** Master Plan Progress Log + EXIT boxes reconciled honestly (Wave D). Appendix A/B closed. Remaining work is Wave E UI polish + MVP tag when committed.
 
 | Field | Value |
 |---|---|
 | Prior audit | `METACITY_Audit_MP01_MP20_Fixes.md` (many P0s fixed) |
 | This document | Supersedes that file as the **current** fix queue |
 | Honest status | **~70–80% engineered · ~40–50% EXIT-complete** |
-| Safe next focus | Wave E UI polish; commit + `mvp-1.0` tag when ready |
+| Safe next focus | Commit working tree; tag `mvp-1.0` when ready |
 
 ---
 
@@ -49,20 +49,15 @@ Many earlier **P0s are fixed**:
 - Toast + ApiDown present; Compare UI with mechanisms exists
 - Bypass multi-seed integration test added (suite now 61 tests)
 
-### What is still not true
+### What is still not true (honest leftover — not Appendix A)
 
-- **MVP gate (MP-22) is not closed** (no `mvp-1.0` tag, DSA demos mostly static, screenshots not in reports)
-- **MP-23–30 EXIT checkboxes in Master Plan are overstated**
-- **OSM import is schema-broken** (will crash validation)
-- **ML verifier calls `run_replication` wrong**
-- **Flood disaster engine uses wrong link fields**
-- **Many presentation/export components exist but are unmounted**
-- **Year loop / sensitivity / warm-start / planner UI lack real product surfaces**
-- **Prod Docker has no worker**
-- **2D map is still OSM tiles, not network orthographic view**
-- **Scenario ghost preview still missing**
+- **MVP gate (MP-22)** — demos/screenshots landed; `mvp-1.0` tag still pending commit
+- **MP-23–30 EXIT** — Progress Log correctly unchecked; engines exist, polish remains
+- **Wave E UI** — workspace/evidence/trust polish not started
 
-**Bottom line:** Do not treat the project as “Phase 30 complete.” Waves A–D closed the P0/P1 hygiene queue; treat remaining work as Wave E UI + MVP tag.
+Appendix A broken call sites from the original audit are **all fixed** (see Appendix A status table).
+
+**Bottom line:** Do not treat the project as “Phase 30 complete.” Waves A–D + Appendix A/B closed the P0/P1 hygiene queue and residual broken sites; treat remaining work as Wave E UI + MVP tag.
 
 ---
 
@@ -314,17 +309,15 @@ Many earlier **P0s are fixed**:
 
 ## 9. UI enhancement candidates (later)
 
-After Waves A–C, UI work can focus on:
+After Waves A–E, further UI work can focus on:
 
-1. **Workspace IA** — clear modes, layers rail, inspector consistency  
-2. **2D/3D parity** — same tools both cameras  
-3. **Evidence storytelling** — Compare → Report → 3D wipe as one guided flow  
-4. **Empty/error states** — professional empty maps, failed runs, inconclusive CI education  
-5. **Mobile read-only** — projects + compare summary only  
-6. **Visual polish** — motion, typography scale, density modes  
-7. **Trust UX** — Assumptions always one click from badge  
-
-Do **not** start large UI redesign until P0-1…P0-7 are closed — otherwise polish sits on broken foundations.
+1. **Workspace IA** — clear modes, layers rail, inspector consistency — **done (Wave E)**  
+2. **2D/3D parity** — same tools both cameras — **done (Wave A + E)**  
+3. **Evidence storytelling** — Compare empty/CI education + badge→Assumptions — **done (Wave E)**  
+4. **Empty/error states** — professional empty maps, failed runs, inconclusive CI — **done (Wave E)**  
+5. **Mobile read-only** — projects + compare summary — **done (Wave E)**  
+6. **Visual polish** — motion, typography scale, density helpers — **done (Wave E)**  
+7. **Trust UX** — Assumptions one click from badge — **done (Wave E)**
 
 ---
 
@@ -379,7 +372,15 @@ Do **not** start large UI redesign until P0-1…P0-7 are closed — otherwise po
 
 ### Wave E — UI enhancement (only after A–D)
 
-- [ ] Workspace / evidence / trust UI polish (Section 9)
+- [x] Civic Steel token aliases + accent (kill blue drift)
+- [x] Map performance: memoized links, capped dash animation, throttled WS metrics, instanced heatmap, Canvas `dpr` cap
+- [x] Workspace IA: shared congestion legend, inspector idle/node panels, toast instead of `alert`
+- [x] Trust UX: calibration badge → Assumptions on map + Compare
+- [x] Compare empty / same-scenario / inconclusive CI education
+- [x] Mobile read-only: hide edit chrome/nav; TopBar hamburger; projects/compare accessible
+- [x] Motion: fade-up panels, soft pulse loading
+
+> **Wave E closed:** 20 Sep 2026 — frontend build OK; Civic Steel polish + map FPS path + trust/evidence UX.
 
 ---
 
@@ -433,28 +434,42 @@ Do not rewrite these:
 
 ## Appendix A — Broken / risky call sites (quick map)
 
-| Area | File(s) | Issue |
-|---|---|---|
-| OSM | `core/geo/osm_converter.py` | Wrong SceneLink fields |
-| ML verify | `core/ml/verifier.py` | Wrong `run_replication` call |
-| Flood | `core/disasters/flood.py` | Non-schema fields |
-| FE 2D | `WorkspaceMap` / `MapLibreBaseMap` | No network ortho |
-| FE export | `ExportPanel.tsx` | Empty GeoJSON; unmounted |
-| Docker prod | `docker-compose.yml` | No worker |
-| Routes | `App.tsx` | `/runs`, `/network` Coming Soon |
-| Evac/Hospital FE | pages | Hardcoded localhost |
+> Re-verified 20 Sep 2026 after Waves A–D + appendix closure. All original items are **FIXED**.
+
+| Area | File(s) | Status | Notes |
+|---|---|---|---|
+| OSM | `core/geo/osm_converter.py` | **FIXED** | Schema fields + round-trip unit test |
+| ML verify | `core/ml/verifier.py` | **FIXED** | Correct `run_replication(run_id, scene, config, seed=…)` + param apply |
+| Flood | `core/disasters/flood.py` | **FIXED** | Schema-safe capacity/speed; outage + applier wired |
+| FE 2D | `WorkspaceMap` / `Canvas3D` | **FIXED** | Orthographic R3F + `NetworkLayer` (MapLibre unused) |
+| FE export | `ExportPanel.tsx` | **FIXED** | Mounted; real GeoJSON + optional `run_id` flows |
+| Docker prod | `docker-compose.yml` | **FIXED** | `worker` service present |
+| Routes | `App.tsx` | **FIXED** | `/runs` → Runs; `/network` → Network Inspector |
+| Evac/Hospital FE | pages | **FIXED** | Shared `api` client (no page-local hosts) |
+
+### Residual risks closed during appendix pass
+
+| Area | File(s) | Status | Notes |
+|---|---|---|---|
+| Resilience | `core/metrics/resilience.py` | **FIXED** | Was wrong `run_replication` arity + non-schema `capacity`/`freespeed`; now schema-safe N-1 + unit test |
+| Hardcoded FE hosts | `api.ts`, `App`, `WorkspaceMap`, `simStore` | **FIXED** | Single `API_BASE` / `apiUrl` / `wsUrl` (`VITE_API_URL` override) |
+| `/network` stub | `NetworkTools.tsx` | **FIXED** | Connectivity / bridges / centrality / isolation UI |
+
+**Appendix A: complete — no open broken call sites from this list.**
 
 ---
 
 ## Appendix B — Related documents
 
-| Document | Role |
-|---|---|
-| `METACITY_Master_Plan.md` | Re-tick after Waves A–D |
-| `METACITY_Task_List.md` | File-level implementation guidance |
-| `METACITY_Audit_MP01_MP20_Fixes.md` | Historical prior audit (superseded by this file for action) |
-| This file | **Current single fix queue for full system** |
+| Document | Role | Status |
+|---|---|---|
+| `METACITY_Master_Plan.md` | Execution order + Progress Log / EXIT | **Reconciled** (Wave D) — only MP-01/04/05/09/11/12 EXIT `[x]` |
+| `METACITY_Task_List.md` | File-level implementation guidance | **Current** — package naming = `metacity-core` / `import core` |
+| `METACITY_Audit_MP01_MP20_Fixes.md` | Historical prior audit | **Superseded** for action — banner points here |
+| This file (`METACITY_Full_System_Audit_MP01_MP30.md`) | **Current single fix queue** | Waves A–D + Appendix A/B closed; remaining = Wave E UI + `mvp-1.0` tag |
+
+**Appendix B: complete — related docs consistent with post–Wave D reality.**
 
 ---
 
-*Full audit complete. Recommended start: Wave A (P0-1 … P0-7). After those land, re-run pytest + flagship demo, then Wave B (MVP gate).*
+*Full audit + appendix + Wave E UI polish complete (20 Sep 2026). Remaining: commit working tree and tag `mvp-1.0` when ready.*
