@@ -1,4 +1,10 @@
-"""Public exports for metacity_core."""
-from .version import MODEL_VERSION, SCHEMA_VERSION
+"""
+METACITY Core — Pure simulation library.
 
-__version__ = MODEL_VERSION
+Import as:
+    from core.schema.scene import Scene
+    from core.runner import run_replication
+
+Note: The original plan referred to this as 'metacity_core', but
+the actual package name is 'core'. All imports use 'core' consistently.
+"""
