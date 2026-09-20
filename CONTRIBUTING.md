@@ -28,6 +28,17 @@ make dev
 2. Add corresponding tests in `backend/tests/unit/algorithms/test_your_algo.py`.
 3. Make sure the algorithm has zero dependencies on `api`, `workers`, or `persistence`.
 
+## Python package naming
+- Distribution name (PyPI / `pip install`): **`metacity-core`**
+- Importable package: **`core`** — always `import core…`, never `import metacity_core`
+- Historical docs may say `metacity_core`; treat that as the conceptual pure-library layer living under `backend/core/`.
+
+## Regenerating OpenAPI TypeScript types
+```bash
+cd frontend && npm run typegen
+```
+CI fails if `frontend/src/lib/api-types.ts` or `openapi.json` drift from the FastAPI schema.
+
 ## Adding a new API endpoint
 1. Create the route in `backend/api/routes/your_route.py`.
 2. Add schemas in `backend/api/schemas/your_schema.py`.

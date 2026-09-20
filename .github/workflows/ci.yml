@@ -14,7 +14,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
       - uses: actions/setup-node@v4
         with: { node-version: "20" }
-      # Commented out until package.json is initialized
-      # - run: cd frontend && npm ci && npm run build
+      - run: cd backend && pip install -e ".[dev]"
+      - run: cd frontend && npm ci --legacy-peer-deps && npm run build
+      - name: OpenAPI TypeScript drift check
+        run: |
+          cd frontend
+          npm run typegen
+          git diff --exit-code -- src/lib/api-types.ts openapi.json || (
+            echo "::error::OpenAPI types drifted. Run: cd frontend && npm run typegen"
+            exit 1
+          )

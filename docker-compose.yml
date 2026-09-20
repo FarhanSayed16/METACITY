@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  backend:
+    build: 
+      context: ./backend
+    ports:
+      - "${METACITY_PORT:-8000}:8000"
+    volumes:
+      - metacity_data:/app/data
+    environment:
+      - METACITY_DATA_DIR=/app/data
+      - METACITY_DB_PATH=/app/data/metacity.db
+      - METACITY_ALLOWED_ORIGINS=${METACITY_ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:8080}
+
+  worker:
+    build:
+      context: ./backend
+    volumes:
+      - metacity_data:/app/data
+    environment:
+      - METACITY_DATA_DIR=/app/data
+      - METACITY_DB_PATH=/app/data/metacity.db
+    command: python -m workers.pool
+    depends_on:
+      - backend
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+      - worker
+
+volumes:
+  metacity_data:
