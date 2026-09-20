@@ -5,9 +5,13 @@ from core.runner import run_replication
 from persistence.db import get_db_connection
 from persistence.repositories import RunRepository, ProjectRepository, ScenarioRepository
 from persistence.results_writer import write_run_result
+from core.config_profiles import get_profile
+from core.scenarios.applier import apply_scenario
+from core.network.builder import build_network_from_scene
+from core.disasters.emergency_access import compute_isolation_metrics
 import traceback
 
-def worker_run_replication(run_id: str):
+def worker_run_replication(run_id: str, progress_queue = None):
     """
     Background worker function that runs a simulation replication.
     """
@@ -33,15 +37,36 @@ def worker_run_replication(run_id: str):
             
         scene = Scene.model_validate(scene_data)
         
-        # Apply scenario diff (stub: assuming ops catalog will mutate this scene later)
-        # diff_ops = json.loads(scenario.diff_json)
-        # apply_scenario(scene, diff_ops)
+        # Apply scenario diff
+        diff_ops = json.loads(scenario.diff_json)
+        if diff_ops:
+            scene = apply_scenario(scene, diff_ops)
+
+        # Isolation KPIs on the post-scenario network (disaster-aware)
+        isolation = None
+        try:
+            graph = build_network_from_scene(scene)
+            isolation = compute_isolation_metrics(graph)
+        except Exception:
+            isolation = None
+        
+        # Apply project config profile (academic / fast_demo / etc.)
+        profile_id = getattr(project, "profile_id", None) or "default"
+        config = get_profile(profile_id).config
+        
+        def progress_cb(snapshot: dict):
+            if progress_queue:
+                progress_queue.put((run_id, snapshot))
         
         # Run simulation
-        kpis = run_replication(scene, seed=run.seed)
+        result = run_replication(run_id, scene, config, seed=run.seed, progress_callback=progress_cb)
         
         # Write results
-        write_run_result(run_id, kpis)
+        write_run_result(
+            run_id, config, run.seed, result,
+            calibration_status=scene.calibration_status,
+            isolation=isolation,
+        )
         
         # Update DB status
         with get_db_connection() as conn:

@@ -8,7 +8,7 @@
 | Document | Task List v1.0 |
 | Date | 19 September 2026 |
 | Stack | Python 3.12 + FastAPI (backend) · React + TypeScript + Vite (frontend) |
-| Package | `metacity_core` (pure simulation library, no API/DB imports) |
+| Package | `metacity-core` (pip) / import `core` (pure simulation library, no API/DB imports) |
 | Hard MVP | End of Phase 3 (MP-22 in Master Plan) |
 | Reference docs | `METACITY_DSA_Build_Plan_v3.md` (vision + acceptance) · `METACITY_Backend_Implementation_Plan.md` (API/modules) · `METACITY_Frontend_Implementation_Plan.md` (UI/design) · `METACITY_Master_Plan.md` (execution order) |
 
@@ -20,7 +20,7 @@
 2. Each task has: **what to create**, **exact file paths**, **function signatures**, **what it must do**, and **how to verify**.
 3. When a task says "test: ...", write that test and make it pass before moving on.
 4. The folder structure under `backend/` and `frontend/` is final — follow it exactly.
-5. `metacity_core` (under `backend/core/`) must NEVER import from `api/`, `persistence/`, `jobs/`, or `workers/`.
+5. `core` (under `backend/core/`, pip package `metacity-core`) must NEVER import from `api/`, `persistence/`, `jobs/`, or `workers/`.
 
 ---
 
@@ -999,6 +999,1278 @@ def test_different_seed_different_result():
 ---
 
 ## PHASE 2 — Traffic Realism (MP-16 to MP-18)
+
+### Task 2.1 — Transport routing facade
+
+**Create `core/transport/routing.py`:**
+```python
+from core.algorithms.paths import dijkstra, a_star
+from core.algorithms.graph import DirectedGraph
+
+def find_route(
+    graph: DirectedGraph,
+    origin_node: str,
+    dest_node: str,
+    congested_times: dict[str, float] | None = None,
+    use_astar: bool = True
+) -> tuple[float, list[str]]:
+    """
+    Returns (total_time_minutes, list_of_node_ids_on_path).
+    If congested_times is provided, use those as edge weights instead of free-flow.
+    Uses A* with Euclidean heuristic when use_astar=True, else Dijkstra.
+    """
+
+def find_routes_batch(
+    graph: DirectedGraph,
+    od_pairs: list[tuple[str, str]],
+    congested_times: dict[str, float] | None = None,
+) -> list[tuple[float, list[str]]]:
+    """Route multiple OD pairs. Returns list of (time, path)."""
+```
+
+**Test:**
+- Route across Nexus City grid → valid path, correct travel time
+- With congested_times on bottleneck → route avoids it
+
+### Task 2.2 — Assignment and congestion
+
+**Create `core/transport/assignment.py`:**
+```python
+from core.algorithms.graph import DirectedGraph
+
+def all_or_nothing_assignment(
+    graph: DirectedGraph,
+    trips: list[dict],  # [{origin, dest, volume}]
+    congested_times: dict[str, float] | None = None,
+) -> dict[str, float]:
+    """
+    Route each trip on shortest path, accumulate volume on each link.
+    Returns {link_id: total_volume_vehicles_per_hour}.
+    """
+
+def get_link_id_for_edge(graph: DirectedGraph, u: str, v: str) -> str:
+    """Extract link_id from edge attributes."""
+    edge = graph.get_edge_data(u, v)
+    return edge.get("link_id", f"{u}->{v}") if edge else f"{u}->{v}"
+```
+
+**Create `core/transport/congestion.py`:**
+```python
+from core.algorithms.bpr import bpr_travel_time
+from core.algorithms.graph import DirectedGraph
+
+def update_congested_times(
+    graph: DirectedGraph,
+    volumes: dict[str, float],
+    alpha: float = 0.15,
+    beta: float = 4.0,
+) -> dict[str, float]:
+    """
+    For each link, compute BPR congested travel time from volume and capacity.
+    Returns {link_id: congested_travel_time_minutes}.
+    Also updates edge weights in the graph in-place for re-routing.
+    """
+    congested = {}
+    for u, v, attr in graph.edges:
+        link_id = attr.get("link_id", f"{u}->{v}")
+        vol = volumes.get(link_id, 0.0)
+        cap = attr.get("capacity", 1800)
+        ff_time = attr.get("free_flow_time_m", 1.0)
+        ct = bpr_travel_time(ff_time, vol, cap, alpha, beta)
+        congested[link_id] = ct
+        # Update graph weight for next routing iteration
+        attr["weight"] = ct
+    return congested
+```
+
+**Test:**
+- Assign 2000 vehicles to 1-lane bottleneck (cap=800) → BPR time >> free-flow
+- Zero volume → congested time == free-flow time
+
+### Task 2.3 — Equilibrium (MSA)
+
+**Create `core/transport/equilibrium.py`:**
+```python
+from dataclasses import dataclass
+from core.algorithms.graph import DirectedGraph
+from core.transport.assignment import all_or_nothing_assignment
+from core.transport.congestion import update_congested_times
+
+@dataclass
+class EquilibriumResult:
+    method: str                    # "MSA"
+    final_gap: float
+    iterations: int
+    converged: bool
+    volumes_per_link: dict[str, float]
+    congested_times: dict[str, float]
+
+def compute_relative_gap(
+    old_volumes: dict[str, float],
+    new_volumes: dict[str, float]
+) -> float:
+    """
+    Relative gap = sum(|new - old|) / max(1, sum(old)).
+    Measures how much the assignment changed between iterations.
+    """
+
+def run_msa_equilibrium(
+    graph: DirectedGraph,
+    trips: list[dict],
+    max_iterations: int = 50,
+    epsilon: float = 0.01,
+    alpha: float = 0.15,
+    beta: float = 4.0,
+) -> EquilibriumResult:
+    """
+    Method of Successive Averages:
+    1. Iteration 0: All-or-nothing assignment on free-flow costs
+    2. Loop n = 1, 2, ...:
+       a. Update congested times using BPR on current volumes
+       b. All-or-nothing on congested costs → new_volumes
+       c. Blend: volumes = (1/n)*new_volumes + (1 - 1/n)*old_volumes
+       d. Compute relative gap
+       e. Stop if gap < epsilon or n >= max_iterations
+    3. Return EquilibriumResult
+    """
+```
+
+**Test (`tests/unit/transport/test_equilibrium.py`):**
+```python
+def test_msa_gap_decreases():
+    """On a 2-route parallel network, gap should decrease over iterations."""
+
+def test_msa_converges_on_toy():
+    """On a simple network, MSA converges in < 30 iterations."""
+
+def test_msa_splits_traffic_between_routes():
+    """Two parallel routes with equal capacity → ~50/50 split at equilibrium."""
+```
+
+### Task 2.4 — Mode choice and transit network
+
+**Create `core/transport/mode_choice.py`:**
+```python
+from core.algorithms.logit import multinomial_logit
+
+def compute_mode_utilities(
+    person_owns_car: bool,
+    car_time: float,
+    transit_time: float | None,
+    walk_time: float | None,
+    car_cost_per_km: float = 0.12,
+    transit_fare: float = 2.50,
+    distance_km: float = 5.0,
+) -> dict[str, float]:
+    """
+    Utility = β_time * time + β_cost * cost + ASC.
+    Modes: car, transit, walk.
+    β_time = -0.06 (per minute), β_cost = -0.5 (per dollar).
+    ASC_transit = -0.5, ASC_walk = -1.0.
+    If person doesn't own car, car utility = -inf.
+    If no transit available, transit utility = -inf.
+    Walking only viable if distance < 3 km.
+    """
+
+def choose_mode(
+    utilities: dict[str, float],
+    rng
+) -> str:
+    """Apply logit probabilities, draw random mode."""
+```
+
+**Create `core/transit/network.py`:**
+```python
+from core.schema.scene import SceneTransitLine
+from core.algorithms.graph import DirectedGraph
+
+class TransitNetwork:
+    """Simple transit model: each line has stops, headway, and inter-stop times."""
+    
+    def __init__(self):
+        self.lines: list[SceneTransitLine] = []
+        self.stop_to_lines: dict[str, list[str]] = {}  # node_id → [line_ids]
+    
+    def add_line(self, line: SceneTransitLine, graph: DirectedGraph) -> None:
+        """Register a transit line. Compute inter-stop travel times from graph."""
+    
+    def get_transit_time(self, from_node: str, to_node: str) -> float | None:
+        """Total time = walk_to_stop + wait + in_vehicle + walk_from_stop.
+           Returns None if no transit connection exists."""
+    
+    def get_wait_time(self, line_id: str) -> float:
+        """Half the headway (average wait for random arrival)."""
+```
+
+**Test:**
+- Bus line with 10-min headway → avg wait = 5 min
+- Person without car → never assigned "car" mode
+- Transit available → transit_share > 0
+
+### Task 2.5 — Time-dependent demand profiles
+
+**Create `core/population/demand_profiles.py`:**
+```python
+import numpy as np
+
+DEMAND_PROFILES = {
+    "am_peak":  {"hours": (7, 9),   "share": 0.35},
+    "midday":   {"hours": (9, 16),  "share": 0.20},
+    "pm_peak":  {"hours": (16, 19), "share": 0.35},
+    "evening":  {"hours": (19, 22), "share": 0.10},
+}
+
+def get_departure_minute(
+    plan_type: str,
+    activity_start: int,
+    rng: np.random.Generator,
+) -> int:
+    """
+    Jitter departure within the appropriate demand window.
+    Workers/students → AM peak outbound, PM peak return.
+    Shift workers → spread across all periods.
+    Retired/caregiver → midday bias.
+    """
+
+def classify_period(minute: int) -> str:
+    """Returns 'am_peak', 'midday', 'pm_peak', or 'evening'."""
+```
+
+### Task 2.6 — Snapshot builder for live streaming
+
+**Create `core/snapshot/builder.py`:**
+```python
+from dataclasses import dataclass
+import time
+
+@dataclass
+class SnapshotFrame:
+    run_id: str
+    tick: int
+    time_minutes: int
+    progress: float                     # 0.0–1.0
+    link_metrics: list[dict]            # [{id, volume, vc_ratio, travel_time_min}]
+    agents_sample: list[dict]           # [{id, x, y, mode}] — sampled, not all
+    equilibrium: dict | None            # {iteration, gap}
+
+def build_snapshot(
+    world,
+    run_id: str,
+    volumes: dict[str, float],
+    congested_times: dict[str, float],
+    max_agent_sample: int = 200,
+) -> SnapshotFrame:
+    """
+    Build a single frame for WebSocket streaming.
+    Samples at most max_agent_sample agents (never full population dump).
+    Link metrics include id, volume, V/C ratio, congested travel time.
+    """
+```
+
+### Task 2.7 — Wire everything into runner.py
+
+**Modify `core/runner.py` to integrate:**
+```python
+from core.transport.routing import find_route
+from core.transport.assignment import all_or_nothing_assignment
+from core.transport.congestion import update_congested_times
+from core.transport.equilibrium import run_msa_equilibrium
+from core.transport.mode_choice import choose_mode, compute_mode_utilities
+from core.transit.network import TransitNetwork
+from core.population.demand_profiles import get_departure_minute, classify_period
+from core.snapshot.builder import build_snapshot, SnapshotFrame
+
+@dataclass
+class SimResult:
+    run_id: str
+    seed: int
+    model_version: str
+    schema_version: str
+    calibration_status: str
+    ticks_completed: int
+    kpis: dict[str, float]
+    equilibrium_meta: dict | None
+    link_metrics: list[dict]
+    snapshots: list[SnapshotFrame]
+
+def run_replication(
+    scene: Scene,
+    seed: int,
+    config: SimConfig | None = None,
+    snapshot_callback: callable | None = None,
+) -> SimResult:
+    """
+    Full simulation replication:
+    1. Build world from scene
+    2. Generate population (all 6 plan types)
+    3. Build transit network from scene transit_lines
+    4. For each agent with a trip:
+       a. Choose mode (logit)
+       b. Assign departure time (demand profile)
+    5. Run MSA equilibrium on all trips
+    6. Emit snapshots via callback (if provided)
+    7. Compute real KPIs from actual volumes and travel times
+    8. Return SimResult
+    """
+```
+
+**Modify `core/metrics/kpis.py`:**
+```python
+def compute_kpis(
+    world,
+    volumes: dict[str, float],
+    congested_times: dict[str, float],
+    trips: list[dict],
+    equilibrium: dict | None = None,
+) -> dict[str, float]:
+    """
+    Returns:
+    - avg_travel_time_min: mean congested travel time across all trips
+    - total_delay_veh_hours: sum of (congested_time - free_flow_time) * volume
+    - max_vc_ratio: highest volume/capacity on any link
+    - mean_vc_ratio: average V/C across all links with volume > 0
+    - total_vehicle_km: sum of volume * length for all links
+    - transit_ridership: number of trips using transit mode
+    - congested_link_count: links with V/C > 0.8
+    """
+```
+
+**Test:**
+- Runner with 200+ agents → produces non-zero KPIs
+- avg_travel_time > 0
+- Congested bottleneck → higher travel time than free-flow
+- Same seed → same KPIs (golden test)
+
+---
+
+## PHASE 3 — MVP Platform & Evidence (MP-12 to MP-15, MP-19 to MP-22)
+
+### Task 3.1 — Results writer with meta.json
+
+**Modify `persistence/results_writer.py`:**
+```python
+import json
+from pathlib import Path
+from core.version import MODEL_VERSION
+
+def write_run_result(
+    run_id: str,
+    result,  # SimResult
+    data_dir: str = "data/runs",
+) -> Path:
+    """
+    Write complete run artifacts:
+    - data/runs/{run_id}/meta.json (version, seed, params, calibration_status)
+    - data/runs/{run_id}/kpis.json (all KPI values)
+    - data/runs/{run_id}/link_metrics.json (per-link volume, V/C, travel time)
+    Returns path to run directory.
+    """
+    run_dir = Path(data_dir) / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    
+    # meta.json
+    meta = {
+        "run_id": run_id,
+        "seed": result.seed,
+        "model_version": result.model_version,
+        "schema_version": result.schema_version,
+        "calibration_status": result.calibration_status,
+        "ticks_completed": result.ticks_completed,
+    }
+    if result.equilibrium_meta:
+        meta["equilibrium"] = result.equilibrium_meta
+    (run_dir / "meta.json").write_text(json.dumps(meta, indent=2))
+    
+    # kpis.json
+    (run_dir / "kpis.json").write_text(json.dumps(result.kpis, indent=2))
+    
+    # link_metrics.json
+    (run_dir / "link_metrics.json").write_text(json.dumps(result.link_metrics, indent=2))
+    
+    return run_dir
+```
+
+### Task 3.2 — Job manager with orphan recovery
+
+**Modify `jobs/manager.py`:**
+```python
+import concurrent.futures
+from persistence.db import get_db_connection
+from persistence.repositories import RunRepository
+
+class JobManager:
+    def __init__(self, pool_size: int = 4):
+        self.executor = concurrent.futures.ProcessPoolExecutor(max_workers=pool_size)
+        self.futures: dict[str, concurrent.futures.Future] = {}
+    
+    def enqueue(self, run_id: str) -> None:
+        """Submit a simulation run to the background pool."""
+    
+    def get_status(self, run_id: str) -> str:
+        """Check if the future is running/done/error."""
+    
+    def on_startup(self) -> None:
+        """
+        Boot-time orphan recovery:
+        Find all runs with status='running' in DB → set to 'interrupted'.
+        These can be retried by the user.
+        """
+        with get_db_connection() as conn:
+            repo = RunRepository(conn)
+            repo.recover_orphaned_runs()
+    
+    def shutdown(self) -> None:
+        self.executor.shutdown(wait=True)
+```
+
+**Modify `persistence/repositories.py` — add to RunRepository:**
+```python
+def recover_orphaned_runs(self) -> int:
+    """UPDATE runs SET status='interrupted' WHERE status='running'. Returns count."""
+
+def get_by_scenario(self, scenario_id: str) -> list:
+    """Get all runs for a scenario, ordered by seed."""
+```
+
+### Task 3.3 — Progress bus (in-memory pub/sub)
+
+**Create `jobs/progress_bus.py`:**
+```python
+import asyncio
+from collections import defaultdict
+from core.snapshot.builder import SnapshotFrame
+
+class ProgressBus:
+    """In-memory pub/sub for streaming simulation snapshots to WebSocket clients."""
+    
+    def __init__(self):
+        self._subscribers: dict[str, list[asyncio.Queue]] = defaultdict(list)
+    
+    def subscribe(self, run_id: str) -> asyncio.Queue:
+        """Client subscribes to a run's snapshot stream. Returns an asyncio Queue."""
+        q = asyncio.Queue(maxsize=10)
+        self._subscribers[run_id].append(q)
+        return q
+    
+    def unsubscribe(self, run_id: str, queue: asyncio.Queue) -> None:
+        """Remove a subscriber."""
+    
+    def publish(self, run_id: str, frame: SnapshotFrame) -> None:
+        """Push snapshot to all subscribers of this run. Drop if queue full."""
+    
+    def close(self, run_id: str) -> None:
+        """Signal end of stream for this run."""
+
+# Global singleton
+progress_bus = ProgressBus()
+```
+
+### Task 3.4 — WebSocket snapshot stream (real data)
+
+**Rewrite `api/ws/runs_stream.py`:**
+```python
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from jobs.progress_bus import progress_bus
+
+router = APIRouter(tags=["stream"])
+
+@router.websocket("/runs/{run_id}/stream")
+async def run_stream(websocket: WebSocket, run_id: str):
+    """
+    Stream SnapshotFrames at capped Hz.
+    1. Accept connection
+    2. Subscribe to progress_bus for this run_id
+    3. Loop: await next frame from queue, send as JSON
+    4. On disconnect: unsubscribe
+    Rate limit: discard frames if more than 10 Hz.
+    """
+    await websocket.accept()
+    queue = progress_bus.subscribe(run_id)
+    try:
+        while True:
+            frame = await queue.get()
+            if frame is None:  # End-of-stream sentinel
+                break
+            await websocket.send_json({
+                "run_id": run_id,
+                "tick": frame.tick,
+                "time_minutes": frame.time_minutes,
+                "progress": frame.progress,
+                "link_metrics": frame.link_metrics,
+                "agents_sample": frame.agents_sample,
+            })
+    except WebSocketDisconnect:
+        pass
+    finally:
+        progress_bus.unsubscribe(run_id, queue)
+```
+
+### Task 3.5 — Replication worker (wire scenario diffs + snapshots)
+
+**Rewrite `workers/replication_worker.py`:**
+```python
+import json
+from pathlib import Path
+from core.schema.scene import Scene
+from core.runner import run_replication
+from scenarios.applier import apply_scenario
+from persistence.db import get_db_connection
+from persistence.repositories import RunRepository, ProjectRepository, ScenarioRepository
+from persistence.results_writer import write_run_result
+from jobs.progress_bus import progress_bus
+
+def worker_run_replication(run_id: str) -> None:
+    """
+    Background worker:
+    1. Load run config from DB
+    2. Load base scene
+    3. Apply scenario diff (if scenario has ops)
+    4. Run simulation with snapshot callback → publish to progress_bus
+    5. Write results to disk
+    6. Update DB status to 'completed' or 'error'
+    """
+```
+
+### Task 3.6 — Templates API endpoint
+
+**Create `api/routes/templates.py`:**
+```python
+from fastapi import APIRouter
+from pathlib import Path
+import json
+
+router = APIRouter(prefix="/templates", tags=["templates"])
+
+@router.get("")
+def list_templates():
+    """
+    List available scene templates from data/templates/.
+    Returns: [{name, description, filename, node_count, link_count}]
+    """
+
+@router.get("/{filename}")
+def get_template(filename: str):
+    """Return the full scene JSON for a given template."""
+```
+
+Register in `api/main.py`.
+
+### Task 3.7 — Config profiles and presets API
+
+**Create `core/config_profiles.py`:**
+```python
+PROFILES = {
+    "default": {
+        "city_tick_minutes": 1,
+        "msa_max_iterations": 50,
+        "msa_epsilon": 0.01,
+        "bpr_alpha": 0.15,
+        "bpr_beta": 4.0,
+        "snapshot_hz": 2,
+    },
+    "fast_demo": {
+        "city_tick_minutes": 5,
+        "msa_max_iterations": 10,
+        "msa_epsilon": 0.05,
+        "bpr_alpha": 0.15,
+        "bpr_beta": 4.0,
+        "snapshot_hz": 1,
+    },
+    "presentation": {
+        "city_tick_minutes": 1,
+        "msa_max_iterations": 30,
+        "msa_epsilon": 0.02,
+        "bpr_alpha": 0.15,
+        "bpr_beta": 4.0,
+        "snapshot_hz": 5,
+    },
+    "academic": {
+        "city_tick_minutes": 1,
+        "msa_max_iterations": 100,
+        "msa_epsilon": 0.001,
+        "bpr_alpha": 0.15,
+        "bpr_beta": 4.0,
+        "snapshot_hz": 0,
+    },
+}
+
+def get_profile(name: str) -> dict:
+    return PROFILES.get(name, PROFILES["default"])
+
+def list_profiles() -> list[dict]:
+    return [{"name": k, **v} for k, v in PROFILES.items()]
+```
+
+**Create `api/routes/profiles.py`:**
+```python
+from fastapi import APIRouter
+from core.config_profiles import list_profiles, get_profile
+
+router = APIRouter(prefix="/profiles", tags=["profiles"])
+
+@router.get("")
+def list_all_profiles():
+    return list_profiles()
+
+@router.get("/{name}")
+def get_profile_by_name(name: str):
+    return get_profile(name)
+```
+
+**Create `api/routes/presets.py`:**
+```python
+from fastapi import APIRouter
+from scenarios.presets import get_all_presets
+
+router = APIRouter(prefix="/presets", tags=["presets"])
+
+@router.get("")
+def list_presets():
+    """Return all available scenario presets."""
+    return get_all_presets()
+```
+
+**Expand `scenarios/presets.py` — full bypass preset with real node coordinates:**
+```python
+BYPASS_PRESET = {
+    "name": "Eastern Highway Bypass",
+    "description": "4-lane bypass east of CBD to relieve the G3_2→G3_3 bottleneck",
+    "ops": [
+        {"op": "add_node", "id": "N_BP1", "x": 3800, "y": 1900, "type": "intersection"},
+        {"op": "add_node", "id": "N_BP2", "x": 3800, "y": 3100, "type": "intersection"},
+        {"op": "add_link", "id": "L_BP_N", "from_node": "G3_6", "to_node": "N_BP1",
+         "lanes": 4, "speed_kph": 80, "capacity_per_lane_per_hour": 2000, "road_class": "highway", "oneway": False},
+        {"op": "add_link", "id": "L_BP_MAIN", "from_node": "N_BP1", "to_node": "N_BP2",
+         "lanes": 4, "speed_kph": 80, "capacity_per_lane_per_hour": 2000, "road_class": "highway", "oneway": False},
+        {"op": "add_link", "id": "L_BP_S", "from_node": "N_BP2", "to_node": "G5_6",
+         "lanes": 4, "speed_kph": 80, "capacity_per_lane_per_hour": 2000, "road_class": "highway", "oneway": False},
+    ]
+}
+
+TOLL_PRESET = {
+    "name": "CBD Congestion Pricing",
+    "description": "Reduce lanes on central arterial to simulate congestion pricing effect",
+    "ops": [
+        {"op": "update_link", "id": "LH25", "lanes": 1, "speed_kph": 30},
+    ]
+}
+
+def get_all_presets() -> list[dict]:
+    return [BYPASS_PRESET, TOLL_PRESET]
+```
+
+Register `profiles.py`, `presets.py`, `templates.py` in `api/main.py`.
+
+### Task 3.8 — Comparison mechanism trace (real analysis)
+
+**Rewrite `comparison/mechanism.py`:**
+```python
+def trace_mechanisms(
+    baseline_kpis: dict[str, float],
+    scenario_kpis: dict[str, float],
+    baseline_link_metrics: list[dict],
+    scenario_link_metrics: list[dict],
+    top_n: int = 3,
+) -> list[str]:
+    """
+    Identify top-N drivers of KPI change by comparing per-link metrics.
+    
+    Algorithm:
+    1. For each link, compute Δ_travel_time = scenario_tt - baseline_tt
+    2. Weight by volume: impact = Δ_tt * volume
+    3. Sort by |impact| descending
+    4. Translate top-N into human-readable explanations:
+       e.g. "Link L_BP_MAIN absorbed 1200 vehicles, reducing bottleneck V/C from 1.8 to 0.6"
+    5. Also check aggregate: if transit_ridership increased → add "Modal shift..."
+    """
+```
+
+### Task 3.9 — HTML report generator (full spec)
+
+**Rewrite `reports/html_builder.py`:**
+```python
+def generate_comparison_report(
+    comparison_stats: dict,
+    mechanisms: list[str],
+    calibration_status: str,
+    model_version: str,
+    seed_count: int,
+) -> str:
+    """
+    Generate a complete standalone HTML report with:
+    - Title and model version header
+    - Calibration badge (colour-coded: green/yellow/red)
+    - Parameter summary table (seeds, MSA iterations, BPR params)
+    - KPI comparison table with Mean, 95% CI, Δ, significance label
+    - Mechanism trace section (top-3 drivers)
+    - Disclaimer: "These are modelled estimates, not predictions..."
+    - Assumptions section listing all model limitations
+    - Generated timestamp
+    Styled with inline CSS (no external dependencies).
+    """
+```
+
+### Task 3.10 — Scene history and undo
+
+**Create `persistence/scene_history.py`:**
+```python
+import json
+from pathlib import Path
+from datetime import datetime
+
+class SceneHistory:
+    """Keeps last N versions of a project's scene JSON."""
+    
+    MAX_VERSIONS = 10
+    
+    def __init__(self, project_id: str, data_dir: str = "data"):
+        self.history_dir = Path(data_dir) / "projects" / project_id / "history"
+        self.history_dir.mkdir(parents=True, exist_ok=True)
+    
+    def save_version(self, scene_json: dict, label: str = "") -> str:
+        """Save current scene as a timestamped version. Prune old versions. Returns version_id."""
+    
+    def list_versions(self) -> list[dict]:
+        """Return [{version_id, timestamp, label}] newest first."""
+    
+    def restore_version(self, version_id: str) -> dict:
+        """Load and return the scene JSON for a given version."""
+    
+    def _prune(self) -> None:
+        """Delete oldest versions beyond MAX_VERSIONS."""
+```
+
+**Create `api/routes/scene_history.py`:**
+```python
+from fastapi import APIRouter
+
+router = APIRouter(tags=["scene-history"])
+
+@router.get("/projects/{project_id}/scene/history")
+def list_scene_versions(project_id: str):
+    """List last 10 scene versions for undo/restore."""
+
+@router.post("/projects/{project_id}/scene/history/{version_id}/restore")
+def restore_scene_version(project_id: str, version_id: str):
+    """Restore a previous scene version (undo)."""
+```
+
+### Task 3.11 — Scenario engine improvements
+
+**Expand `scenarios/ops_catalog.py`:**
+```python
+SCENARIO_OPS = {
+    "add_node": {"required": ["id", "x", "y"], "optional": ["type"]},
+    "add_link": {"required": ["id", "from_node", "to_node", "lanes", "speed_kph"],
+                 "optional": ["capacity_per_lane_per_hour", "road_class", "oneway"]},
+    "remove_link": {"required": ["id"]},
+    "update_link": {"required": ["id"], "optional": ["lanes", "speed_kph", "capacity_per_lane_per_hour"]},
+    "close_link": {"required": ["id"]},  # Sets capacity to 0
+    "add_facility": {"required": ["id", "type", "zone_id", "x", "y"], "optional": ["capacity", "floors"]},
+    "set_lanes": {"required": ["id", "lanes"]},
+    "set_speed": {"required": ["id", "speed_kph"]},
+}
+
+def validate_op(op: dict) -> list[str]:
+    """Validate a single operation against the catalog schema."""
+
+def get_ops_catalog() -> dict:
+    """Return the full ops catalog for UI rendering."""
+```
+
+---
+
+## PHASE 4 — Evacuation & Hospital (MP-23, MP-24)
+
+### Task 4.1 — Evacuation API endpoints
+
+**Create `api/routes/evacuation.py`:**
+```python
+from fastapi import APIRouter
+from core.evacuation.runner import run_evacuation, EvacuationResult
+from core.evacuation.grid import GridMap
+
+router = APIRouter(prefix="/evacuation", tags=["evacuation"])
+
+@router.post("/run")
+def run_evacuation_sim(
+    width: int = 50,
+    height: int = 50,
+    fire_starts: list[dict] = [],     # [{x, y}]
+    agent_starts: list[dict] = [],    # [{x, y}]
+    wall_cells: list[dict] = [],      # [{x, y}]
+    exit_cells: list[dict] = [],      # [{x, y}]
+    max_ticks: int = 500,
+    spread_prob: float = 0.1,
+) -> dict:
+    """Run a fire evacuation simulation and return results."""
+
+@router.post("/run/template/{template_name}")
+def run_from_template(template_name: str):
+    """Load a campus template and run evacuation with default fire/agent positions."""
+```
+
+Register in `api/main.py`.
+
+### Task 4.2 — Hospital API endpoints
+
+**Create `api/routes/hospital.py`:**
+```python
+from fastapi import APIRouter
+from core.hospital.runner import run_hospital_surge, HospitalResult
+
+router = APIRouter(prefix="/hospital", tags=["hospital"])
+
+@router.post("/run")
+def run_hospital_sim(
+    beds: int = 100,
+    nurses: int = 50,
+    surge_rate: float = 2.0,
+    max_ticks: int = 1440,
+) -> dict:
+    """Run a hospital surge simulation."""
+
+@router.post("/compare")
+def compare_surge(
+    beds_baseline: int = 100,
+    beds_scenario: int = 150,
+    nurses: int = 50,
+    surge_rate: float = 2.0,
+) -> dict:
+    """Run two scenarios (different bed counts) and compare results."""
+```
+
+Register in `api/main.py`.
+
+### Task 4.3 — Dynamic module nav from API
+
+The `GET /modules` endpoint already exists. Frontend must query it on load and render navigation items dynamically.
+
+---
+
+## PHASE 5 — 3D Polish (MP-25)
+
+### Task 5.1 — Walkthrough controls, LOD, day/night, split-view
+
+**Already implemented:** WalkthroughControls, Day/Night toggle.
+
+**Remaining — create `frontend/src/components/Map/LODManager.tsx`:**
+```tsx
+/**
+ * Dynamically adjust geometry detail based on camera distance.
+ * When camera > 2000 units: use low-poly (segments=4).
+ * When camera 500-2000: medium (segments=8).
+ * When camera < 500: high (segments=16).
+ */
+```
+
+**Create `frontend/src/components/Map/SplitWipe.tsx`:**
+```tsx
+/**
+ * Side-by-side or slider-wipe comparison of baseline vs scenario.
+ * Left half: baseline snapshot data. Right half: scenario snapshot data.
+ * Draggable vertical divider.
+ */
+```
+
+### Task 5.2 — URL deep links and demo mode
+
+**Create `frontend/src/hooks/useURLParams.ts`:**
+```typescript
+/**
+ * Parse URL search params: ?mode=3d&layers=congestion,transit&view=45,30,1000
+ * On change, update uiStore. On store change, update URL.
+ */
+```
+
+**Create `frontend/src/components/DemoMode.tsx`:**
+```tsx
+/**
+ * Guided fullscreen walkthrough:
+ * Step 1: "Welcome to METACITY" (overview)
+ * Step 2: "The Road Network" (fly to bottleneck)
+ * Step 3: "Running a Simulation" (auto-play)
+ * Step 4: "Compare Scenarios" (show bypass result)
+ * Auto-advance with narration text overlay.
+ */
+```
+
+### Task 5.3 — Embeddable comparison HTML export
+
+**Create `frontend/src/components/EmbedExport.tsx`:**
+```tsx
+/**
+ * Generate a self-contained HTML file with:
+ * - Screenshot of current 3D view (via canvas.toDataURL)
+ * - KPI comparison table
+ * - Calibration badge
+ * Downloadable as .html file.
+ */
+```
+
+---
+
+## PHASE 6 — Land Use & Utilities (MP-26)
+
+### Task 6.1 — Year loop (accessibility → housing shift)
+
+Already implemented: `core/land_use/housing.py` and `core/land_use/multi_year_runner.py`.
+
+**Enhance `core/land_use/multi_year_runner.py`:**
+```python
+def run_multi_year(
+    scene: Scene,
+    years: int = 5,
+    seed: int = 42,
+) -> list[dict]:
+    """
+    For each year:
+    1. Run traffic simulation → get congested travel times
+    2. Compute accessibility per zone
+    3. Apply housing shift (population redistribution)
+    4. Recalculate utilities (water, electricity)
+    5. Record year's KPIs (population, travel_time, utilities, emissions)
+    Returns: list of per-year KPI dicts.
+    """
+```
+
+### Task 6.2 — Wire utilities and emissions to comparison KPIs
+
+**Modify `comparison/statistics.py`:**
+Add `electricity_kwh`, `water_liters`, `co2_tonnes` as new KPI rows in the paired comparison.
+
+### Task 6.3 — Sensitivity sweeper (enhanced)
+
+**Modify `jobs/sweeper.py`:**
+```python
+def run_sensitivity_sweep(
+    scene: Scene,
+    parameter_name: str,
+    values: list[float],
+    seed: int = 42,
+) -> list[dict]:
+    """
+    One-at-a-time sensitivity analysis.
+    For each value of the parameter, run a full replication and collect KPIs.
+    Returns [{parameter_value, kpis}].
+    Supported parameters: 'car_ownership_rate', 'total_population', 'bpr_alpha', 'bpr_beta'.
+    """
+```
+
+### Task 6.4 — Project ZIP archive export/import
+
+**Create `api/routes/archive.py`:**
+```python
+from fastapi import APIRouter, UploadFile
+from fastapi.responses import StreamingResponse
+
+router = APIRouter(prefix="/projects", tags=["archive"])
+
+@router.get("/{project_id}/export")
+def export_project_zip(project_id: str) -> StreamingResponse:
+    """
+    Bundle into ZIP:
+    - scene.json
+    - all run results (meta.json, kpis.json)
+    - scenario diffs
+    - comparison results
+    """
+
+@router.post("/import")
+def import_project_zip(file: UploadFile):
+    """Unpack ZIP, create new project, restore all data."""
+```
+
+---
+
+## PHASE 7 — Real Data Import (MP-27, MP-28)
+
+### Task 7.1 — CRS helpers
+
+Already implemented: `core/geo/crs.py`.
+
+### Task 7.2 — OSM → scene converter
+
+Already implemented: `core/geo/osm_converter.py`.
+
+**Enhance — add proper attribution string:**
+```python
+OSM_ATTRIBUTION = "© OpenStreetMap contributors. Data available under ODbL."
+```
+
+### Task 7.3 — GTFS transit import
+
+Already implemented: `core/geo/gtfs_parser.py` (full routes/trips/stoptimes).
+
+### Task 7.4 — Import API endpoint
+
+**Create `api/routes/import_geo.py`:**
+```python
+from fastapi import APIRouter
+
+router = APIRouter(prefix="/import", tags=["import"])
+
+@router.post("/osm")
+def import_from_osm(
+    south: float, west: float, north: float, east: float,
+    project_name: str = "Imported Area",
+):
+    """
+    Fetch highways from Overpass API for the bounding box.
+    Convert to METACITY scene JSON.
+    Create a new project with the imported scene.
+    Returns: {project_id, node_count, link_count, attribution}.
+    """
+
+@router.post("/gtfs")
+def import_gtfs(stops_txt: str, routes_txt: str, trips_txt: str, stop_times_txt: str):
+    """Parse GTFS data and return TransitLine objects for the scene."""
+```
+
+### Task 7.5 — Calibration engine (observed counts → fit → error report)
+
+Already implemented: `core/calibration/engine.py` (GEH/RMSE).
+
+**Create `api/routes/calibration.py`:**
+```python
+from fastapi import APIRouter
+
+router = APIRouter(prefix="/calibration", tags=["calibration"])
+
+@router.post("/projects/{project_id}/calibrate")
+def run_calibration(
+    project_id: str,
+    observed_counts: dict[str, float],  # {link_id: observed_volume}
+):
+    """
+    1. Run a baseline simulation
+    2. Compare simulated vs observed flows
+    3. Compute GEH/RMSE metrics
+    4. Determine calibration status (calibrated / partially_calibrated / synthetic_uncalibrated)
+    5. Update the project's calibration_status
+    Returns: {status, rmse, geh_avg, per_link_errors}
+    """
+```
+
+---
+
+## PHASE 8 — City Disasters (MP-29)
+
+### Task 8.1 — Disaster preset pack
+
+**Enhance `scenarios/presets.py`:**
+```python
+FLOOD_PRESET = {
+    "name": "Riverside Flood",
+    "description": "Close low-lying links near the river zone",
+    "ops": [
+        {"op": "close_link", "id": "LH7"},
+        {"op": "close_link", "id": "LH8"},
+        {"op": "close_link", "id": "LV22"},
+    ]
+}
+
+BRIDGE_FAILURE_PRESET = {
+    "name": "Critical Bridge Failure",
+    "description": "Close the main ring-road bridge segment",
+    "ops": [
+        {"op": "close_link", "id": "LR100"},
+        {"op": "close_link", "id": "LR101"},
+    ]
+}
+
+def get_all_presets() -> list[dict]:
+    return [BYPASS_PRESET, TOLL_PRESET, FLOOD_PRESET, BRIDGE_FAILURE_PRESET]
+```
+
+### Task 8.2 — Emergency accessibility metric
+
+**Create `core/disasters/emergency_access.py`:**
+```python
+from core.algorithms.paths import dijkstra
+from core.algorithms.graph import DirectedGraph
+
+def compute_emergency_access(
+    graph: DirectedGraph,
+    hospital_node_ids: list[str],
+) -> dict[str, float]:
+    """
+    For each node, compute the shortest travel time to the nearest hospital.
+    Returns {node_id: minutes_to_nearest_hospital}.
+    Nodes with no path to any hospital get value = float('inf').
+    """
+
+def compute_isolation_metrics(
+    graph: DirectedGraph,
+) -> dict:
+    """
+    BFS-based: compute connected components.
+    Returns {
+        component_count: int,
+        largest_component_size: int,
+        isolated_nodes: list[str],
+        isolation_ratio: float,  # isolated / total
+    }
+    """
+```
+
+---
+
+## PHASE 9 — ML & AI Planner (MP-30, optional)
+
+### Task 9.1 — Surrogate model (train from past runs)
+
+Already implemented: `core/ml/dataset_gen.py` and `core/ml/surrogate.py`.
+
+### Task 9.2 — Planner candidates (greedy/hill-climb)
+
+**Create `core/ml/planner.py`:**
+```python
+from core.ml.surrogate import SurrogateModel
+
+def greedy_search(
+    model: SurrogateModel,
+    base_params: list[float],
+    parameter_ranges: list[tuple[float, float]],
+    n_candidates: int = 100,
+    objective: str = "minimize_travel_time",
+) -> list[dict]:
+    """
+    Generate n_candidates random parameter sets.
+    Predict KPIs using surrogate model.
+    Sort by objective.
+    Return top-10 candidates with predicted KPIs.
+    """
+
+def hill_climb(
+    model: SurrogateModel,
+    start_params: list[float],
+    step_sizes: list[float],
+    max_steps: int = 50,
+    objective: str = "minimize_travel_time",
+) -> dict:
+    """
+    Simple hill-climbing optimizer:
+    1. Start at start_params
+    2. For each step: try +/- step_size on each parameter
+    3. Move to best neighbor if it improves the objective
+    4. Stop if no improvement or max_steps
+    Returns: {best_params, predicted_kpis, steps_taken}
+    """
+```
+
+### Task 9.3 — Mandatory full-sim verification
+
+**Create `core/ml/verifier.py`:**
+```python
+def verify_top_candidates(
+    candidates: list[dict],
+    scene: Scene,
+    top_n: int = 3,
+    seeds: list[int] = [42, 99, 7],
+) -> list[dict]:
+    """
+    Take the top-N surrogate-predicted candidates.
+    Run full simulation for each with multiple seeds.
+    Compare predicted vs actual KPIs.
+    Returns candidates with verified_kpis and prediction_error.
+    """
+```
+
+### Task 9.4 — Planner API
+
+**Create `api/routes/planner.py`:**
+```python
+from fastapi import APIRouter
+
+router = APIRouter(prefix="/planner", tags=["planner"])
+
+@router.post("/search")
+def search_candidates(project_id: str, objective: str = "minimize_travel_time"):
+    """Run greedy search using surrogate model. Returns top-10 candidates."""
+
+@router.post("/verify")
+def verify_candidate(project_id: str, candidate_params: list[float]):
+    """Run full simulation to verify a surrogate-predicted candidate."""
+```
+
+---
+
+## PHASE 10 — Production Hardening (MP-30 continued)
+
+### Task 10.1 — Docker Compose (production)
+
+Already implemented: `docker-compose.yml`, `backend/Dockerfile`, `frontend/Dockerfile`.
+
+### Task 10.2 — Backup script
+
+**Create `scripts/backup.sh`:**
+```bash
+#!/bin/bash
+# Rotate SQLite DB + data/runs/ into timestamped tar.gz
+# Keep last 5 backups, delete older ones
+```
+
+### Task 10.3 — API cookbook
+
+**Create `docs/API_COOKBOOK.md`:**
+```markdown
+# METACITY API Cookbook
+
+## Create a project from template
+curl -X POST http://localhost:8000/projects -d '{"name": "My City", "template": "nexus_city_baseline"}'
+
+## Run a multi-seed batch
+curl -X POST http://localhost:8000/runs -d '{"scenario_id": "...", "seeds": [42, 99, 7, 13, 55]}'
+
+## Create a comparison
+curl -X POST http://localhost:8000/comparisons -d '{"baseline_run_ids": [...], "scenario_run_ids": [...]}'
+
+## Get the HTML report
+curl http://localhost:8000/reports/{comparison_id} > report.html
+```
+
+### Task 10.4 — Stakeholder pack
+
+**Create `docs/STAKEHOLDER_GUIDE.md`:**
+```markdown
+Overview of METACITY for non-technical stakeholders.
+Includes: what it models, how to interpret results, calibration badges, and limitations.
+```
+
+---
+
+## Dependency rules (NEVER violate)
+
+```
+core/          ✗ must NOT import api/, jobs/, persistence/, workers/
+algorithms/    ✗ must NOT import transport/ or api/
+api/           ✓ may import services, persistence, jobs
+workers/       ✓ may import core, persistence, jobs
+scenarios/     ✓ may import core schema + network
+comparison/    ✓ may import metrics helpers; not api
+ml/ planner/   ✓ may call core.runner; must NOT mutate agent brains via LLM
+```
+
+Direction: **inward toward core**, never outward from core.
+
+---
+
+## Golden rules for all code
+
+1. **Every function has a docstring** explaining what it does, parameters, and return value.
+2. **Every algorithm has a test file** in `tests/unit/algorithms/`.
+3. **Same seed = same result** (single-thread). This is tested by golden tests.
+4. **Calibration badge appears on every comparison and report** — never hidden.
+5. **No hardcoded magic numbers** — all parameters come from `SimConfig` or scene JSON.
+6. **Type hints on all function signatures** (Python) and strict TypeScript on frontend.
+7. **Structured JSON logging** — no `print()` statements.
+8. **Error messages are actionable** — tell the user what went wrong and what to do.
+
+---
+
+*This task list is the companion to `METACITY_Master_Plan.md`. Follow the Master Plan for execution order and checkboxes; follow this file for exact implementation detail.*
+
 
 ### Task 2.1 — Transport routing facade
 

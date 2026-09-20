@@ -18,12 +18,12 @@ def test_generate_synthetic_population():
     scene.parameters.total_population = 50
     scene.parameters.car_ownership_rate = 0.5
     
-    agents = generate_synthetic_population(scene, seed=42)
+    agents, households, vehicles = generate_synthetic_population(scene, seed=42)
     
     assert len(agents) == 50
     assert all(a.home_fac_id == "f1" for a in agents)
     
     # Check reproducible determinism
-    agents2 = generate_synthetic_population(scene, seed=42)
+    agents2, _, _ = generate_synthetic_population(scene, seed=42)
     assert agents[0].owns_car == agents2[0].owns_car
     assert agents[0].plan_type == agents2[0].plan_type

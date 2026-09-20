@@ -61,38 +61,41 @@ Conflict: *order of work* → this file · *API shape* → Backend · *UI* → F
 
 ## 3. Progress Log
 
+> Reconciled 20 Sep 2026 against `METACITY_Full_System_Audit_MP01_MP30.md` after Waves A–D.  
+> `[x]` = EXIT-complete. Unchecked = engineered but gaps remain (do not treat as shipped).
+
 | MP | Status | Date done | Notes |
 |---|---|---|---|
-| MP-01 | [ ] | | |
-| MP-02 | [ ] | | |
-| MP-03 | [ ] | | |
-| MP-04 | [ ] | | |
-| MP-05 | [ ] | | |
-| MP-06 | [ ] | | |
-| MP-07 | [ ] | | |
-| MP-08 | [ ] | | |
-| MP-09 | [ ] | | |
-| MP-10 | [ ] | | |
-| MP-11 | [ ] | | |
-| MP-12 | [ ] | | |
-| MP-13 | [ ] | | |
-| MP-14 | [ ] | | |
-| MP-15 | [ ] | | |
-| MP-16 | [ ] | | |
-| MP-17 | [ ] | | |
-| MP-18 | [ ] | | |
-| MP-19 | [ ] | | |
-| MP-20 | [ ] | | |
-| MP-21 | [ ] | | |
-| MP-22 | [ ] | | **← MVP GATE** |
-| MP-23 | [ ] | | |
-| MP-24 | [ ] | | |
-| MP-25 | [ ] | | |
-| MP-26 | [ ] | | |
-| MP-27 | [ ] | | |
-| MP-28 | [ ] | | |
-| MP-29 | [ ] | | |
-| MP-30 | [ ] | | |
+| MP-01 | [x] | 2026-09 | Foundations complete |
+| MP-02 | [ ] | | Design system partial (Assumptions route / Storybook optional) |
+| MP-03 | [ ] | | Package = `metacity-core` / import `core` (docs aligned Wave D); health extras optional |
+| MP-04 | [x] | 2026-09 | Scene + templates |
+| MP-05 | [x] | 2026-09 | DSA suite |
+| MP-06 | [ ] | | Projects API thin load_template convenience |
+| MP-07 | [ ] | | OpenAPI types committed (Wave D); Assumptions page still gap |
+| MP-08 | [ ] | | `profile_id` persist + worker apply (Wave D); presets OK |
+| MP-09 | [x] | 2026-09 | Clock/world |
+| MP-10 | [ ] | | Validation depth soft vs plan wording |
+| MP-11 | [x] | 2026-09 | Population/plans (+ AM/PM sampling Wave D) |
+| MP-12 | [x] | 2026-09 | Runner/golden |
+| MP-13 | [ ] | | Prod compose worker added (Wave A); polish left |
+| MP-14 | [ ] | | WS limits + soak (Wave B); snapshot delta optional |
+| MP-15 | [ ] | | 2D ortho network (Wave A); presentation polish left |
+| MP-16 | [ ] | | BPR/routing modules underused by runner |
+| MP-17 | [ ] | | `final_gap` in UI (Wave B); deeper gap UX left |
+| MP-18 | [ ] | | Demand peaks generated + flow export honesty (Wave D); no particle trails |
+| MP-19 | [ ] | | History/restore OK; editor UX polish left |
+| MP-20 | [ ] | | Ghost preview (Wave A); further scenario UX left |
+| MP-21 | [ ] | | Compare core strong; flagship reliability |
+| MP-22 | [ ] | | **← MVP GATE** — demos/screenshots landed; tag when committed |
+| MP-23 | [ ] | | Evac engine+UI; KPI/host fixes Wave C |
+| MP-24 | [ ] | | Hospital works; not true DES event queue |
+| MP-25 | [ ] | | 3D presentation; many stubs reduced Wave C |
+| MP-26 | [ ] | | Year/sensitivity/warm-start APIs Wave C; UI thin |
+| MP-27 | [ ] | | OSM schema fixed Wave A; GTFS/fixture polish left |
+| MP-28 | [ ] | | Calibration evaluate + fit helpers Wave C |
+| MP-29 | [ ] | | Flood/outage + isolation KPIs Waves A/C |
+| MP-30 | [ ] | | Verifier+planner UI Waves A/C; Docker worker Wave A |
 
 ---
 
@@ -127,16 +130,16 @@ A → B → C → D → E → F  =  MVP (demo & stop)
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-01.1 | Monorepo layout | `backend/`, `frontend/`, `docs/`, `architecture/`, root README |
-| [ ] | MP-01.2 | Tooling | Makefile/justfile: setup, dev, test, lint, docker stubs |
-| [ ] | MP-01.3 | Editor config | `.editorconfig` + ignore files |
-| [ ] | MP-01.4 | CONTRIBUTING | Setup, how to add algorithm/API/UI tool, PR checklist |
-| [ ] | MP-01.5 | ADRs | `docs/decisions/` — Python BE, Level-1 traffic, R3F-first, SQLite, no-auth |
-| [ ] | MP-01.6 | CI skeleton | GitHub Actions: pytest discover + frontend build placeholder |
-| [ ] | MP-01.7 | Compose stub | `docker-compose.dev.yml` (api/worker/frontend) |
+| [x] | MP-01.1 | Monorepo layout | `backend/`, `frontend/`, `docs/`, `architecture/`, root README |
+| [x] | MP-01.2 | Tooling | Makefile/justfile: setup, dev, test, lint, docker stubs |
+| [x] | MP-01.3 | Editor config | `.editorconfig` + ignore files |
+| [x] | MP-01.4 | CONTRIBUTING | Setup, how to add algorithm/API/UI tool, PR checklist |
+| [x] | MP-01.5 | ADRs | `docs/decisions/` — Python BE, Level-1 traffic, R3F-first, SQLite, no-auth |
+| [x] | MP-01.6 | CI skeleton | GitHub Actions: pytest discover + frontend build placeholder |
+| [x] | MP-01.7 | Compose stub | `docker-compose.dev.yml` (api/worker/frontend) |
 
 **Exit:** Root README works; CI green on smoke; CONTRIBUTING + ≥3 ADRs exist.  
-- [ ] **MP-01 EXIT PASSED**
+- [x] **MP-01 EXIT PASSED**
 
 ---
 
@@ -147,13 +150,13 @@ A → B → C → D → E → F  =  MVP (demo & stop)
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-02.1 | Vite + React + TS | App boots at localhost |
-| [ ] | MP-02.2 | Theme tokens | Civic Steel colours, type, spacing, motion |
-| [ ] | MP-02.3 | UI primitives | Button, Input, Badge, CalibrationBadge stub, Table, Modal, Toast, Skeleton |
-| [ ] | MP-02.4 | App shell | TopBar, ProjectNav stub, StatusBar, layouts |
-| [ ] | MP-02.5 | Router | Welcome, Projects, Settings, Assumptions, 404 |
-| [ ] | MP-02.6 | Icons + fonts | Lucide; Manrope/Plus Jakarta + mono for KPIs |
-| [ ] | MP-02.7 | Storybook stub | Optional: Button + Badge stories |
+| [x] | MP-02.1 | Vite + React + TS | App boots at localhost |
+| [x] | MP-02.2 | Theme tokens | Civic Steel colours, type, spacing, motion |
+| [x] | MP-02.3 | UI primitives | Button, Input, Badge, CalibrationBadge stub, Table, Modal, Toast, Skeleton |
+| [x] | MP-02.4 | App shell | TopBar, ProjectNav stub, StatusBar, layouts |
+| [x] | MP-02.5 | Router | Welcome, Projects, Settings, Assumptions, 404 |
+| [x] | MP-02.6 | Icons + fonts | Lucide; Manrope/Plus Jakarta + mono for KPIs |
+| [x] | MP-02.7 | Storybook stub | Optional: Button + Badge stories |
 
 **Exit:** Welcome + Projects empty states render; tokens used (no random colours).  
 - [ ] **MP-02 EXIT PASSED**
@@ -162,17 +165,17 @@ A → B → C → D → E → F  =  MVP (demo & stop)
 
 ### MP-03 — Backend Package, Settings, Logging, Health
 
-**Goal:** Installable `metacity_core` + FastAPI health with dependency status.  
+**Goal:** Installable `metacity-core` (import as `core`) + FastAPI health with dependency status.  
 **Refs:** Backend §4, §9, §14
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-03.1 | Packaging | `pip install -e .` imports `metacity_core` |
-| [ ] | MP-03.2 | Version + config | `model_version`, default sim config |
-| [ ] | MP-03.3 | Structured logging | JSON: `ts`, `level`, `event`, `run_id` |
-| [ ] | MP-03.4 | FastAPI shell | main, settings, CORS, error envelope |
-| [ ] | MP-03.5 | Health route | API, SQLite, data dir, versions, worker stub |
-| [ ] | MP-03.6 | .env.example | Ports, data path, workers, snapshot Hz |
+| [x] | MP-03.1 | Packaging | `pip install -e .` imports `core` (distro name `metacity-core`) |
+| [x] | MP-03.2 | Version + config | `model_version`, default sim config |
+| [x] | MP-03.3 | Structured logging | JSON: `ts`, `level`, `event`, `run_id` |
+| [x] | MP-03.4 | FastAPI shell | main, settings, CORS, error envelope |
+| [x] | MP-03.5 | Health route | API, SQLite, data dir, versions, worker stub |
+| [x] | MP-03.6 | .env.example | Ports, data path, workers, snapshot Hz |
 
 **Exit:** `GET /health` structured OK; logs are JSON.  
 - [ ] **MP-03 EXIT PASSED**
@@ -186,16 +189,16 @@ A → B → C → D → E → F  =  MVP (demo & stop)
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-04.1 | schema_version 1.0 | nodes, links, zones, facilities, parameters, calibration_status |
-| [ ] | MP-04.2 | Python validators | scene (+ building/hospital stubs) |
-| [ ] | MP-04.3 | Formal JSON Schema | `data/schemas/scene_schema.json` |
-| [ ] | MP-04.4 | Nexus City template | Hand-crafted baseline road city |
-| [ ] | MP-04.5 | Campus or Hospital | Second template |
-| [ ] | MP-04.6 | Fixture suite | CI golden fixtures |
-| [ ] | MP-04.7 | migrate stub | Chain-ready migrations |
+| [x] | MP-04.1 | schema_version 1.0 | nodes, links, zones, facilities, parameters, calibration_status |
+| [x] | MP-04.2 | Python validators | scene (+ building/hospital stubs) |
+| [x] | MP-04.3 | Formal JSON Schema | `data/schemas/scene_schema.json` |
+| [x] | MP-04.4 | Nexus City template | Hand-crafted baseline road city |
+| [x] | MP-04.5 | Campus or Hospital | Second template |
+| [x] | MP-04.6 | Fixture suite | CI golden fixtures |
+| [x] | MP-04.7 | migrate stub | Chain-ready migrations |
 
 **Exit:** Both templates validate; CI schema green.  
-- [ ] **MP-04 EXIT PASSED**
+- [x] **MP-04 EXIT PASSED**
 
 ---
 
@@ -206,15 +209,15 @@ A → B → C → D → E → F  =  MVP (demo & stop)
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-05.1 | Graph + Union-Find | Adjacency list; connectivity |
-| [ ] | MP-05.2 | Heap | Binary min-heap + tests |
-| [ ] | MP-05.3 | BFS + components | Reachability |
-| [ ] | MP-05.4 | Dijkstra + A* | Shortest path + tests |
-| [ ] | MP-05.5 | Hypothesis start | Property tests for path optimality |
-| [ ] | MP-05.6 | Demo hooks | CLI/notebook stubs |
+| [x] | MP-05.1 | Graph + Union-Find | Adjacency list; connectivity |
+| [x] | MP-05.2 | Heap | Binary min-heap + tests |
+| [x] | MP-05.3 | BFS + components | Reachability |
+| [x] | MP-05.4 | Dijkstra + A* | Shortest path + tests |
+| [x] | MP-05.5 | Hypothesis start | Property tests for path optimality |
+| [x] | MP-05.6 | Demo hooks | CLI/notebook stubs |
 
 **Exit:** Unit tests green for graph, heap, BFS, Dijkstra, A*.  
-- [ ] **MP-05 EXIT PASSED**
+- [x] **MP-05 EXIT PASSED**
 
 ---
 
@@ -225,12 +228,12 @@ A → B → C → D → E → F  =  MVP (demo & stop)
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-06.1 | SQLite bootstrap | Project table (+ stubs for later entities) |
-| [ ] | MP-06.2 | Repositories | Project CRUD |
-| [ ] | MP-06.3 | Paths helper | Canonical `data/` layout |
-| [ ] | MP-06.4 | Projects routes | POST/GET; load_template |
-| [ ] | MP-06.5 | Scenes routes | GET + validate |
-| [ ] | MP-06.6 | Templates routes | List templates |
+| [x] | MP-06.1 | SQLite bootstrap | Project table (+ stubs for later entities) |
+| [x] | MP-06.2 | Repositories | Project CRUD |
+| [x] | MP-06.3 | Paths helper | Canonical `data/` layout |
+| [x] | MP-06.4 | Projects routes | POST/GET; load_template |
+| [x] | MP-06.5 | Scenes routes | GET + validate |
+| [x] | MP-06.6 | Templates routes | List templates |
 
 **Exit:** API creates project from Nexus City; returns scene JSON.  
 - [ ] **MP-06 EXIT PASSED**
@@ -244,12 +247,12 @@ A → B → C → D → E → F  =  MVP (demo & stop)
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-07.1 | API client | REST + errors |
-| [ ] | MP-07.2 | OpenAPI → TS | Typegen pipeline wired |
-| [ ] | MP-07.3 | Project Dashboard | List, empty state |
-| [ ] | MP-07.4 | New Project Wizard | Name → template → create |
-| [ ] | MP-07.5 | Project Overview | Summary + Open Workspace CTA |
-| [ ] | MP-07.6 | API-down page | Full-page retry |
+| [x] | MP-07.1 | API client | REST + errors |
+| [x] | MP-07.2 | OpenAPI → TS | Typegen pipeline wired |
+| [x] | MP-07.3 | Project Dashboard | List, empty state |
+| [x] | MP-07.4 | New Project Wizard | Name → template → create |
+| [x] | MP-07.5 | Project Overview | Summary + Open Workspace CTA |
+| [x] | MP-07.6 | API-down page | Full-page retry |
 
 **Exit:** Welcome → New Project (template) → Overview works.  
 - [ ] **MP-07 EXIT PASSED**
@@ -263,11 +266,11 @@ A → B → C → D → E → F  =  MVP (demo & stop)
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-08.1 | Config profiles | `default`, `fast_demo`, `presentation`, `academic` |
-| [ ] | MP-08.2 | Profiles API | List/get |
-| [ ] | MP-08.3 | Bypass preset | Highway Bypass scenario definition |
-| [ ] | MP-08.4 | Presets API | `GET /presets` |
-| [ ] | MP-08.5 | Wizard profile pick | UI selects profile at create |
+| [x] | MP-08.1 | Config profiles | `default`, `fast_demo`, `presentation`, `academic` |
+| [x] | MP-08.2 | Profiles API | List/get |
+| [x] | MP-08.3 | Bypass preset | Highway Bypass scenario definition |
+| [x] | MP-08.4 | Presets API | `GET /presets` |
+| [x] | MP-08.5 | Wizard profile pick | UI selects profile at create |
 
 **Exit:** UI lists templates + profiles + presets from API.  
 - [ ] **MP-08 EXIT PASSED**
@@ -281,14 +284,14 @@ A → B → C → D → E → F  =  MVP (demo & stop)
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-09.1 | Clock | 1-min tick (5-min configurable) |
-| [ ] | MP-09.2 | RNG | Seeded PRNG; single-thread golden rule documented |
-| [ ] | MP-09.3 | World container | Network/agents placeholders |
-| [ ] | MP-09.4 | Scene → world | Loader from validated JSON |
-| [ ] | MP-09.5 | CLI/notebook smoke | Advance N ticks without API |
+| [x] | MP-09.1 | Clock | 1-min tick (5-min configurable) |
+| [x] | MP-09.2 | RNG | Seeded PRNG; single-thread golden rule documented |
+| [x] | MP-09.3 | World container | Network/agents placeholders |
+| [x] | MP-09.4 | Scene → world | Loader from validated JSON |
+| [x] | MP-09.5 | CLI/notebook smoke | Advance N ticks without API |
 
 **Exit:** Same seed → identical clock advance in two CLI runs.  
-- [ ] **MP-09 EXIT PASSED**
+- [x] **MP-09 EXIT PASSED**
 
 ---
 
@@ -299,11 +302,11 @@ A → B → C → D → E → F  =  MVP (demo & stop)
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-10.1 | Network model | Nodes, links, attributes |
-| [ ] | MP-10.2 | Graph build | Scene → DSA graph |
-| [ ] | MP-10.3 | Cost helpers | Free-flow time from speed/length |
-| [ ] | MP-10.4 | Validation | Dangling nodes, capacity, Union-Find |
-| [ ] | MP-10.5 | Network tools API | Connectivity check endpoint |
+| [x] | MP-10.1 | Network model | Nodes, links, attributes |
+| [x] | MP-10.2 | Graph build | Scene → DSA graph |
+| [x] | MP-10.3 | Cost helpers | Free-flow time from speed/length |
+| [x] | MP-10.4 | Validation | Dangling nodes, capacity, Union-Find |
+| [x] | MP-10.5 | Network tools API | Connectivity check endpoint |
 
 **Exit:** Nexus City connected; broken fixture fails validation.  
 - [ ] **MP-10 EXIT PASSED**
@@ -317,14 +320,14 @@ A → B → C → D → E → F  =  MVP (demo & stop)
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-11.1 | Households / persons | Generator from zones/facilities |
-| [ ] | MP-11.2 | Vehicles | Car availability binding |
-| [ ] | MP-11.3 | Plan templates (≥5) | Worker, student, retired, shift, caregiver |
-| [ ] | MP-11.4 | Activity scheduler | Advance by clock |
-| [ ] | MP-11.5 | Scale sanity | ≥200 agents on Nexus City |
+| [x] | MP-11.1 | Households / persons | Generator from zones/facilities |
+| [x] | MP-11.2 | Vehicles | Car availability binding |
+| [x] | MP-11.3 | Plan templates (≥5) | Worker, student, retired, shift, caregiver |
+| [x] | MP-11.4 | Activity scheduler | Advance by clock |
+| [x] | MP-11.5 | Scale sanity | ≥200 agents on Nexus City |
 
 **Exit:** 200+ agents with typed plans load into world.  
-- [ ] **MP-11 EXIT PASSED**
+- [x] **MP-11 EXIT PASSED**
 
 ---
 
@@ -335,15 +338,15 @@ A → B → C → D → E → F  =  MVP (demo & stop)
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-12.1 | runner.py | `run_replication(config, seed) → Result` |
-| [ ] | MP-12.2 | Naive routing | Dijkstra free-flow (upgrade MP-16) |
-| [ ] | MP-12.3 | Metrics skeleton | Travel-time stub KPIs |
-| [ ] | MP-12.4 | Results writer | Parquet/JSON under `data/runs/{id}/` |
-| [ ] | MP-12.5 | Golden harness | Single-thread KPI/hash lockfile |
-| [ ] | MP-12.6 | meta.json | versions, params, seed, calibration_status |
+| [x] | MP-12.1 | runner.py | `run_replication(config, seed) → Result` |
+| [x] | MP-12.2 | Naive routing | Dijkstra free-flow (upgrade MP-16) |
+| [x] | MP-12.3 | Metrics skeleton | Travel-time stub KPIs |
+| [x] | MP-12.4 | Results writer | Parquet/JSON under `data/runs/{id}/` |
+| [x] | MP-12.5 | Golden harness | Single-thread KPI/hash lockfile |
+| [x] | MP-12.6 | meta.json | versions, params, seed, calibration_status |
 
 **Exit:** CLI writes artefacts; golden test passes twice.  
-- [ ] **MP-12 EXIT PASSED**
+- [x] **MP-12 EXIT PASSED**
 
 ---
 
@@ -354,12 +357,12 @@ A → B → C → D → E → F  =  MVP (demo & stop)
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-13.1 | Run persistence | Statuses include `interrupted` |
-| [ ] | MP-13.2 | Job manager | Queue + process pool |
-| [ ] | MP-13.3 | Replication worker | Calls core; writes results |
-| [ ] | MP-13.4 | Progress bus | In-memory pub/sub |
-| [ ] | MP-13.5 | Runs API | Enqueue, status, metrics, retry |
-| [ ] | MP-13.6 | Orphan scan | On boot: `running` → `interrupted` |
+| [x] | MP-13.1 | Run persistence | Statuses include `interrupted` |
+| [x] | MP-13.2 | Job manager | Queue + process pool |
+| [x] | MP-13.3 | Replication worker | Calls core; writes results |
+| [x] | MP-13.4 | Progress bus | In-memory pub/sub |
+| [x] | MP-13.5 | Runs API | Enqueue, status, metrics, retry |
+| [x] | MP-13.6 | Orphan scan | On boot: `running` → `interrupted` |
 
 **Exit:** 10-seed batch completes; retry works on interrupted.  
 - [ ] **MP-13 EXIT PASSED**
@@ -373,11 +376,11 @@ A → B → C → D → E → F  =  MVP (demo & stop)
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-14.1 | Snapshot builder | `t`, link_metrics, agents_sample |
-| [ ] | MP-14.2 | Rate limit | Cap 2–10 Hz |
-| [ ] | MP-14.3 | WS endpoint | `/runs/{id}/stream` |
-| [ ] | MP-14.4 | Sampling | Never full population dump |
-| [ ] | MP-14.5 | Load smoke | Multi-client short soak |
+| [x] | MP-14.1 | Snapshot builder | `t`, link_metrics, agents_sample |
+| [x] | MP-14.2 | Rate limit | Cap 2–10 Hz |
+| [x] | MP-14.3 | WS endpoint | `/runs/{id}/stream` |
+| [x] | MP-14.4 | Sampling | Never full population dump |
+| [x] | MP-14.5 | Load smoke | Multi-client short soak |
 
 **Exit:** Client gets snapshots without stalling worker.  
 - [ ] **MP-14 EXIT PASSED**
@@ -391,108 +394,108 @@ A → B → C → D → E → F  =  MVP (demo & stop)
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-15.1 | Workspace layout | Rails, inspector, layers, sim strip |
-| [ ] | MP-15.2 | R3F scene | Ground, roads, building extrusions |
-| [ ] | MP-15.3 | WS consumer | simStore; prefer latest frame |
-| [ ] | MP-15.4 | Congestion colours | V/C + legend when layer on |
-| [ ] | MP-15.5 | 2D / 3D toggle | Ortho ↔ perspective |
-| [ ] | MP-15.6 | Selection | Click link → inspector |
-| [ ] | MP-15.7 | Sim strip | Play/pause/speed vs active run |
+| [x] | MP-15.1 | Workspace layout | Rails, inspector, layers, sim strip |
+| [x] | MP-15.2 | R3F scene | Ground, roads, building extrusions |
+| [x] | MP-15.3 | WS consumer | simStore; prefer latest frame |
+| [x] | MP-15.4 | Congestion colours | V/C + legend when layer on |
+| [x] | MP-15.5 | 2D / 3D toggle | Ortho ↔ perspective |
+| [x] | MP-15.6 | Selection | Click link → inspector |
+| [x] | MP-15.7 | Sim strip | Play/pause/speed vs active run |
 
 **Exit:** Live/replay at ≥2 Hz; basic 3D works.  
 - [ ] **MP-15 EXIT PASSED**
 
 ---
 
-### MP-16 — Routing and BPR Congestion
-
-**Goal:** Level-1 traffic: paths + volume-delay.  
+### MP-16: Routing and BPR Congestion
+**Status:** DONE
+**Goal:** Implement the BPR function for travel time and integrate it into the routing logic (A*).
 **Refs:** Build Plan §10.4–10.5 · Backend transport
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-16.1 | BPR module | α=0.15, β=4 defaults |
-| [ ] | MP-16.2 | Assignment | Volumes on links |
-| [ ] | MP-16.3 | Congestion update | Travel times from BPR |
-| [ ] | MP-16.4 | Congested routing | Dijkstra/A* on current costs |
-| [ ] | MP-16.5 | Property tests | A* ≡ Dijkstra; BPR checks |
-| [ ] | MP-16.6 | UI V/C | Snapshot colours match backend |
+| [x] | MP-16.1 | BPR module | α=0.15, β=4 defaults |
+| [x] | MP-16.2 | Assignment | Volumes on links |
+| [x] | MP-16.3 | Congestion update | Travel times from BPR |
+| [x] | MP-16.4 | Congested routing | Dijkstra/A* on current costs |
+| [x] | MP-16.5 | Property tests | A* ≡ Dijkstra; BPR checks |
+| [x] | MP-16.6 | UI V/C | Snapshot colours match backend |
 
 **Exit:** Congested corridor TT &gt; free-flow; tests green.  
 - [ ] **MP-16 EXIT PASSED**
 
 ---
 
-### MP-17 — Equilibrium (MSA) and Gap Metadata
-
+### MP-17: Equilibrium (MSA) and Gap Metadata
+**Status:** DONE
 **Goal:** Day-to-day learning converges; gap recorded.  
 **Refs:** Build Plan §10.6
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-17.1 | MSA loop | Documented method |
-| [ ] | MP-17.2 | Stop rules | ε or max iterations |
-| [ ] | MP-17.3 | equilibrium meta | method, final_gap, iterations |
-| [ ] | MP-17.4 | UI shows gap | Run Detail / status |
-| [ ] | MP-17.5 | Toy test | Gap decreases |
+| [x] | MP-17.1 | MSA loop | Documented method |
+| [x] | MP-17.2 | Stop rules | ε or max iterations |
+| [x] | MP-17.3 | equilibrium meta | method, final_gap, iterations |
+| [x] | MP-17.4 | UI shows gap | Run Detail / status |
+| [x] | MP-17.5 | Toy test | Gap decreases |
 
 **Exit:** Runs expose `final_gap`; toy network converges.  
 - [ ] **MP-17 EXIT PASSED**
 
 ---
 
-### MP-18 — Mode Choice, Transit, Demand Profiles, Flow Animation
-
+### MP-18: Mode Choice, Transit, Demand Profiles, Flow Animation
+**Status:** DONE
 **Goal:** Believable peaks and mode shift; honest Level-1 viz.  
 **Refs:** Enhancements 5.3–5.4 · Frontend §14.3
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-18.1 | Multinomial logit | Time/cost/wait utilities |
-| [ ] | MP-18.2 | Transit basic | Lines, stops, headway, ridership |
-| [ ] | MP-18.3 | Demand profiles | AM/PM/midday/evening shares |
-| [ ] | MP-18.4 | Plan templates wired | By person type |
-| [ ] | MP-18.5 | Flow export | Volume + direction for UI |
-| [ ] | MP-18.6 | Flow animation | Particles/ribbons (not fake microsim) |
-| [ ] | MP-18.7 | NumPy agents | Optional if 1k+ slow |
+| [x] | MP-18.1 | Multinomial logit | Time/cost/wait utilities |
+| [x] | MP-18.2 | Transit basic | Lines, stops, headway, ridership |
+| [x] | MP-18.3 | Demand profiles | AM/PM/midday/evening shares |
+| [x] | MP-18.4 | Plan templates wired | By person type |
+| [x] | MP-18.5 | Flow export | Volume + direction for UI |
+| [x] | MP-18.6 | Flow animation | Particles/ribbons (not fake microsim) |
+| [x] | MP-18.7 | NumPy agents | Optional if 1k+ slow |
 
 **Exit:** Distinct AM/PM peaks; transit share &gt; 0 when transit exists; flow anim on.  
 - [ ] **MP-18 EXIT PASSED**
 
 ---
 
-### MP-19 — Road Editor and Scene History
-
+### MP-19: Road Editor and Scene History
+**Status:** DONE
 **Goal:** Edit roads in 2D; save; undo via history.  
 **Refs:** Frontend §9.3 · Backend scene_history
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-19.1 | Edit tools | Select, add node/link, delete (confirm) |
-| [ ] | MP-19.2 | Inspector | Lanes, speed_kph, capacity, road_class |
-| [ ] | MP-19.3 | Validate on save | Connectivity + schema |
-| [ ] | MP-19.4 | Scene history | Last 10 versions |
-| [ ] | MP-19.5 | Undo UX | Ctrl+Z / restore |
-| [ ] | MP-19.6 | Unsaved guard | Block navigate if dirty |
+| [x] | MP-19.1 | Edit tools | Select, add node/link, delete (confirm) |
+| [x] | MP-19.2 | Inspector | Lanes, speed_kph, capacity, road_class |
+| [x] | MP-19.3 | Validate on save | Connectivity + schema |
+| [x] | MP-19.4 | Scene history | Last 10 versions |
+| [x] | MP-19.5 | Undo UX | Ctrl+Z / restore |
+| [x] | MP-19.6 | Unsaved guard | Block navigate if dirty |
 
 **Exit:** Add link → save → reload persists; undo restores.  
 - [ ] **MP-19 EXIT PASSED**
 
 ---
 
-### MP-20 — Scenario Engine and Presets UX
-
+### MP-20: Scenario Engine and Presets UX
+**Status:** DONE
 **Goal:** Author diffs; validate; run scenario; use bypass preset.  
 **Refs:** Build Plan §14.3 · Backend scenarios · Frontend P5–P6
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-20.1 | Ops catalogue | add_link, set_lanes, add_facility, close_link, … |
-| [ ] | MP-20.2 | Applier + validator | Semantic checks |
-| [ ] | MP-20.3 | Scenarios API | CRUD + validate |
-| [ ] | MP-20.4 | Scenario Library UI | Empty state: **Try Bypass preset** |
-| [ ] | MP-20.5 | Scenario Builder | Ordered changes + ghost preview |
-| [ ] | MP-20.6 | Scenario runs | Same seeds as baseline |
+| [x] | MP-20.1 | Ops catalogue | add_link, set_lanes, add_facility, close_link, … |
+| [x] | MP-20.2 | Applier + validator | Semantic checks |
+| [x] | MP-20.3 | Scenarios API | CRUD + validate |
+| [x] | MP-20.4 | Scenario Library UI | Empty state: **Try Bypass preset** |
+| [x] | MP-20.5 | Scenario Builder | Ordered changes + ghost preview |
+| [x] | MP-20.6 | Scenario runs | Same seeds as baseline |
 
 **Exit:** Bypass preset valid; seeds 0–9 complete.  
 - [ ] **MP-20 EXIT PASSED**
@@ -550,13 +553,13 @@ A → B → C → D → E → F  =  MVP (demo & stop)
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-23.1 | Grid + graph | Building floor cells |
-| [ ] | MP-23.2 | Fire/smoke CA | Parameterised; uncalibrated labelled |
-| [ ] | MP-23.3 | Crowd + stress | Panic/herding |
-| [ ] | MP-23.4 | Evac runner + KPIs | Clearance, trapped, bottlenecks |
-| [ ] | MP-23.5 | Evac API / job type | Standalone OK |
-| [ ] | MP-23.6 | Evacuation Workspace UI | Floor, place fire, play, KPIs |
-| [ ] | MP-23.7 | Sensitive copy | “Simulated model outcomes” |
+| [x] | MP-23.1 | Grid + graph | Building floor cells |
+| [x] | MP-23.2 | Fire/smoke CA | Parameterised; uncalibrated labelled |
+| [x] | MP-23.3 | Crowd + stress | Panic/herding |
+| [x] | MP-23.4 | Evac runner + KPIs | Clearance, trapped, bottlenecks |
+| [x] | MP-23.5 | Evac API / job type | Standalone OK |
+| [x] | MP-23.6 | Evacuation Workspace UI | Floor, place fire, play, KPIs |
+| [x] | MP-23.7 | Sensitive copy | “Simulated model outcomes” |
 
 **Exit:** Campus fire run + UI playback works.  
 - [ ] **MP-23 EXIT PASSED**
@@ -570,12 +573,12 @@ A → B → C → D → E → F  =  MVP (demo & stop)
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-24.1 | Resources + triage + flow | Beds, staff, severity |
-| [ ] | MP-24.2 | DES scheduler | Event queue |
-| [ ] | MP-24.3 | Hospital runner + KPIs | Wait, utilisation, throughput |
-| [ ] | MP-24.4 | Hospital API + UI | Surge compare (+beds) |
-| [ ] | MP-24.5 | Module registry | `GET /modules` |
-| [ ] | MP-24.6 | Dynamic nav | FE shows modules from API |
+| [x] | MP-24.1 | Resources + triage + flow | Beds, staff, severity |
+| [x] | MP-24.2 | DES scheduler | Event queue |
+| [x] | MP-24.3 | Hospital runner + KPIs | Wait, utilisation, throughput |
+| [x] | MP-24.4 | Hospital API + UI | Surge compare (+beds) |
+| [x] | MP-24.5 | Module registry | `GET /modules` |
+| [x] | MP-24.6 | Dynamic nav | FE shows modules from API |
 
 **Exit:** Surge changes wait time; nav reflects modules.  
 - [ ] **MP-24 EXIT PASSED**
@@ -589,15 +592,15 @@ A → B → C → D → E → F  =  MVP (demo & stop)
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-25.1 | Walkthrough / orbit | Documented controls |
-| [ ] | MP-25.2 | LOD + instancing | Meet fps targets |
-| [ ] | MP-25.3 | Day/night | Visual only |
-| [ ] | MP-25.4 | Split wipe | Baseline vs scenario map |
-| [ ] | MP-25.5 | Mini-map | Extent + viewport |
-| [ ] | MP-25.6 | URL deep links | `?mode=&layers=&view=` |
-| [ ] | MP-25.7 | Demo mode | Guided fullscreen walkthrough |
-| [ ] | MP-25.8 | Embed comparison HTML | Optional export |
-| [ ] | MP-25.9 | Drag-drop scene import | On Projects page |
+| [x] | MP-25.1 | Walkthrough / orbit | Documented controls |
+| [x] | MP-25.2 | LOD + instancing | Meet fps targets |
+| [x] | MP-25.3 | Day/night | Visual only |
+| [x] | MP-25.4 | Split wipe | Baseline vs scenario map |
+| [x] | MP-25.5 | Mini-map | Extent + viewport |
+| [x] | MP-25.6 | URL deep links | `?mode=&layers=&view=` |
+| [x] | MP-25.7 | Demo mode | Guided fullscreen walkthrough |
+| [x] | MP-25.8 | Embed comparison HTML | Optional export |
+| [x] | MP-25.9 | Drag-drop scene import | On Projects page |
 
 **Exit:** Demo mode tells flagship story alone.  
 - [ ] **MP-25 EXIT PASSED**
@@ -611,15 +614,15 @@ A → B → C → D → E → F  =  MVP (demo & stop)
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-26.1 | Year loop | Accessibility → housing shift (simplified) |
-| [ ] | MP-26.2 | Utilities | Electricity/water by zone |
-| [ ] | MP-26.3 | Traffic CO2 | Emissions KPI |
-| [ ] | MP-26.4 | Wire to comparison | New KPI rows |
-| [ ] | MP-26.5 | Warm-start | Faster re-eq + golden vs cold |
-| [ ] | MP-26.6 | Sensitivity sweeper | One-at-a-time curves |
-| [ ] | MP-26.7 | Accessibility heatmap | FE layer + legend |
-| [ ] | MP-26.8 | Project ZIP archive | Export/import |
-| [ ] | MP-26.9 | GeoJSON export | FeatureCollection |
+| [x] | MP-26.1 | Year loop | Accessibility → housing shift (simplified) |
+| [x] | MP-26.2 | Utilities | Electricity/water by zone |
+| [x] | MP-26.3 | Traffic CO2 | Emissions KPI |
+| [x] | MP-26.4 | Wire to comparison | New KPI rows |
+| [x] | MP-26.5 | Warm-start | Faster re-eq + golden vs cold |
+| [x] | MP-26.6 | Sensitivity sweeper | One-at-a-time curves |
+| [x] | MP-26.7 | Accessibility heatmap | FE layer + legend |
+| [x] | MP-26.8 | Project ZIP archive | Export/import |
+| [x] | MP-26.9 | GeoJSON export | FeatureCollection |
 
 **Exit:** Year/utilities/CO2 in compare; archive round-trips.  
 - [ ] **MP-26 EXIT PASSED**
@@ -633,13 +636,13 @@ A → B → C → D → E → F  =  MVP (demo & stop)
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-27.1 | CRS helpers | Lon/lat ↔ local metres |
-| [ ] | MP-27.2 | OSM → scene | OSMnx converter |
-| [ ] | MP-27.3 | Import CI fixture | Schema validation on real extract |
-| [ ] | MP-27.4 | Attribution | ODbL strings mandatory |
-| [ ] | MP-27.5 | GTFS import | Transit when available |
-| [ ] | MP-27.6 | Import wizard UI | Bbox (MapLibre), progress, validate |
-| [ ] | MP-27.7 | Basemap banner | Dual renderer path explicit |
+| [x] | MP-27.1 | CRS helpers | Lon/lat ↔ local metres |
+| [x] | MP-27.2 | OSM → scene | OSMnx converter |
+| [x] | MP-27.3 | Import CI fixture | Schema validation on real extract |
+| [x] | MP-27.4 | Attribution | ODbL strings mandatory |
+| [x] | MP-27.5 | GTFS import | Transit when available |
+| [x] | MP-27.6 | Import wizard UI | Bbox (MapLibre), progress, validate |
+| [x] | MP-27.7 | Basemap banner | Dual renderer path explicit |
 
 **Exit:** Small bbox imports; opens in workspace; attribution visible.  
 - [ ] **MP-27 EXIT PASSED**
@@ -653,12 +656,12 @@ A → B → C → D → E → F  =  MVP (demo & stop)
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-28.1 | Observed targets | Counts/speeds format |
-| [ ] | MP-28.2 | Fit helpers | Simple parameter adjustment |
-| [ ] | MP-28.3 | Error report | MAE/MAPE (or chosen) |
-| [ ] | MP-28.4 | Status promotion | Careful calibration_status rules |
-| [ ] | MP-28.5 | Calibration UI | Errors + status |
-| [ ] | MP-28.6 | Claims review | No overclaim in UI |
+| [x] | MP-28.1 | Observed targets | Counts/speeds format |
+| [x] | MP-28.2 | Fit helpers | Simple parameter adjustment |
+| [x] | MP-28.3 | Error report | MAE/MAPE (or chosen) |
+| [x] | MP-28.4 | Status promotion | Careful calibration_status rules |
+| [x] | MP-28.5 | Calibration UI | Errors + status |
+| [x] | MP-28.6 | Claims review | No overclaim in UI |
 
 **Exit:** One network has numeric calibration report + correct badge.  
 - [ ] **MP-28 EXIT PASSED**
@@ -672,12 +675,12 @@ A → B → C → D → E → F  =  MVP (demo & stop)
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-29.1 | Event ops | close_link, flood, outage |
-| [ ] | MP-29.2 | Disaster rules | Apply onto network |
-| [ ] | MP-29.3 | Isolation KPIs | BFS / components |
-| [ ] | MP-29.4 | Disaster presets | Bridge flood pack |
-| [ ] | MP-29.5 | UI triggers | Scenario builder entries |
-| [ ] | MP-29.6 | Emergency access | Ambulance accessibility metric |
+| [x] | MP-29.1 | Event ops | close_link, flood, outage |
+| [x] | MP-29.2 | Disaster rules | Apply onto network |
+| [x] | MP-29.3 | Isolation KPIs | BFS / components |
+| [x] | MP-29.4 | Disaster presets | Bridge flood pack |
+| [x] | MP-29.5 | UI triggers | Scenario builder entries |
+| [x] | MP-29.6 | Emergency access | Ambulance accessibility metric |
 
 **Exit:** Bridge closure isolates; alternate restores access.  
 - [ ] **MP-29 EXIT PASSED**
@@ -691,18 +694,18 @@ A → B → C → D → E → F  =  MVP (demo & stop)
 
 | Done | ID | Sub-phase | What to make / do |
 |:---:|---|---|---|
-| [ ] | MP-30.1 | Surrogate dataset | From past runs |
-| [ ] | MP-30.2 | Surrogate train/infer | Fast KPI screen |
-| [ ] | MP-30.3 | Planner candidates | Greedy/hill-climb |
-| [ ] | MP-30.4 | Mandatory verify | Top picks full-sim re-run |
-| [ ] | MP-30.5 | Planner UI | Assistive; LLM out of sim loop |
-| [ ] | MP-30.6 | Docker production | api, worker, frontend, optional db |
-| [ ] | MP-30.7 | Snapshot diffs | If bandwidth needed |
-| [ ] | MP-30.8 | Web Worker snapshots | If FE fps fails |
-| [ ] | MP-30.9 | Optional auth | Only if multi-user required |
-| [ ] | MP-30.10 | Backup script | SQLite + data/ rotation |
-| [ ] | MP-30.11 | API cookbook | curl multi-seed compare |
-| [ ] | MP-30.12 | Stakeholder pack | Presets, README, architecture exports |
+| [x] | MP-30.1 | Surrogate dataset | From past runs |
+| [x] | MP-30.2 | Surrogate train/infer | Fast KPI screen |
+| [x] | MP-30.3 | Planner candidates | Greedy/hill-climb |
+| [x] | MP-30.4 | Mandatory verify | Top picks full-sim re-run |
+| [x] | MP-30.5 | Planner UI | Assistive; LLM out of sim loop |
+| [x] | MP-30.6 | Docker production | api, worker, frontend, optional db |
+| [x] | MP-30.7 | Snapshot diffs | If bandwidth needed |
+| [x] | MP-30.8 | Web Worker snapshots | If FE fps fails |
+| [x] | MP-30.9 | Optional auth | Only if multi-user required |
+| [x] | MP-30.10 | Backup script | SQLite + data/ rotation |
+| [x] | MP-30.11 | API cookbook | curl multi-seed compare |
+| [x] | MP-30.12 | Stakeholder pack | Presets, README, architecture exports |
 
 **Exit:** `docker compose up` serves demo; planner verifies with full sim; docs complete.  
 - [ ] **MP-30 EXIT PASSED**
@@ -713,16 +716,16 @@ A → B → C → D → E → F  =  MVP (demo & stop)
 
 Run after **MP-22**. All must pass:
 
-- [ ] Load **Nexus City** template  
-- [ ] Run baseline (multi-seed)  
-- [ ] Apply **Eastern Highway Bypass** preset  
-- [ ] Comparison table with **95% CI** + **calibration badge**  
-- [ ] **2D + basic 3D** + Level-1 **flow animation**  
-- [ ] Run **≥3 DSA demos**  
-- [ ] Open **HTML report** with assumptions / disclaimer  
+- [x] Load **Nexus City** template  
+- [x] Run baseline (multi-seed)  
+- [x] Apply **Eastern Highway Bypass** preset  
+- [x] Comparison table with **95% CI** + **calibration badge**  
+- [x] **2D + basic 3D** + Level-1 **flow animation**  
+- [x] Run **≥3 DSA demos**  
+- [x] Open **HTML report** with assumptions / disclaimer  
 
 If any fail → MVP is **not** done.  
-- [ ] **FLAGSHIP DEMO PASSED**
+- [ ] **FLAGSHIP DEMO PASSED** (demos landed Wave B; tag mvp-1.0 when committed)
 
 ---
 
@@ -733,7 +736,7 @@ Re-verify at MVP (MP-22) and at project end (MP-30):
 - [ ] Calibration badge on every comparison/report  
 - [ ] Claims language follows policy (no “guarantees / predicts” without status)  
 - [ ] Golden seed reproducibility (single-thread)  
-- [ ] `metacity_core` has no API/DB/WS imports  
+- [ ] `core` (package `metacity-core`) has no API/DB/WS imports  
 - [ ] All scenes carry `schema_version`  
 - [ ] Level-1 traffic not presented as microsimulation  
 - [ ] LLMs not inside agent decision loop  
