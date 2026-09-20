@@ -12,18 +12,20 @@ class ProjectRepository:
     def __init__(self, conn: sqlite3.Connection):
         self.conn = conn
 
-    def create(self, name: str, description: str, scene_json_path: str) -> Project:
+    def create(self, name: str, description: str, scene_json_path: str, profile_id: str = "default") -> Project:
         proj = Project(
             id=str(uuid.uuid4()),
             name=name,
             description=description,
             scene_json_path=scene_json_path,
+            profile_id=profile_id,
+            calibration_status="synthetic_uncalibrated",
             created_at=now(),
             updated_at=now()
         )
         self.conn.execute(
-            "INSERT INTO projects (id, name, description, scene_json_path, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
-            (proj.id, proj.name, proj.description, proj.scene_json_path, proj.created_at, proj.updated_at)
+            "INSERT INTO projects (id, name, description, scene_json_path, profile_id, calibration_status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (proj.id, proj.name, proj.description, proj.scene_json_path, proj.profile_id, proj.calibration_status, proj.created_at, proj.updated_at)
         )
         self.conn.commit()
         return proj
@@ -37,6 +39,13 @@ class ProjectRepository:
     def list_all(self) -> list[Project]:
         rows = self.conn.execute("SELECT * FROM projects ORDER BY created_at DESC").fetchall()
         return [Project(**dict(r)) for r in rows]
+
+    def update_calibration_status(self, proj_id: str, status: str):
+        self.conn.execute(
+            "UPDATE projects SET calibration_status = ?, updated_at = ? WHERE id = ?",
+            (status, now(), proj_id)
+        )
+        self.conn.commit()
 
 class ScenarioRepository:
     def __init__(self, conn: sqlite3.Connection):
@@ -95,6 +104,12 @@ class RunRepository:
                               (status, error_msg, run_id))
         self.conn.commit()
 
+    def mark_orphans_interrupted(self):
+        """Marks any runs stuck in 'running' as 'interrupted'. Called on boot after crash recovery.
+        Note: 'pending' runs are NOT marked — they should be retried by the worker pool."""
+        self.conn.execute("UPDATE runs SET status = 'interrupted', error_msg = 'Server restarted' WHERE status = 'running'")
+        self.conn.commit()
+
     def get(self, run_id: str) -> Optional[Run]:
         row = self.conn.execute("SELECT * FROM runs WHERE id = ?", (run_id,)).fetchone()
         if row:
@@ -104,3 +119,17 @@ class RunRepository:
     def list_by_scenario(self, scenario_id: str) -> list[Run]:
         rows = self.conn.execute("SELECT * FROM runs WHERE scenario_id = ? ORDER BY created_at DESC", (scenario_id,)).fetchall()
         return [Run(**dict(r)) for r in rows]
+
+    def list_by_project(self, project_id: str) -> list[dict]:
+        """Join runs with scenarios for a project; returns dicts with scenario_name."""
+        rows = self.conn.execute(
+            """
+            SELECT r.*, s.name AS scenario_name
+            FROM runs r
+            JOIN scenarios s ON s.id = r.scenario_id
+            WHERE s.project_id = ?
+            ORDER BY r.created_at DESC
+            """,
+            (project_id,),
+        ).fetchall()
+        return [dict(r) for r in rows]

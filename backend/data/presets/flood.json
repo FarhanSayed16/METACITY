@@ -1,0 +1,7 @@
+{
+    "name": "Riverside Flood",
+    "description": "Inundate the river corridor (synthetic elevation) and close affected links",
+    "ops": [
+        {"type": "flood", "data": {"water_level": 8.0}}
+    ]
+}

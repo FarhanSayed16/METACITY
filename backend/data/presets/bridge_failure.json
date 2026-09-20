@@ -1,0 +1,8 @@
+{
+    "name": "Critical Bridge Failure",
+    "description": "Close the main ring-road bridge segment",
+    "ops": [
+        {"type": "close_link", "data": {"id": "LR100"}},
+        {"type": "close_link", "data": {"id": "LR101"}}
+    ]
+}

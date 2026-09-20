@@ -8,6 +8,8 @@ class Project(BaseModel):
     name: str
     description: str
     scene_json_path: str
+    profile_id: str = "default"
+    calibration_status: str = "synthetic_uncalibrated"
     created_at: datetime
     updated_at: datetime
 
