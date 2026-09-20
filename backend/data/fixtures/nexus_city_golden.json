@@ -1,0 +1,1739 @@
+{
+  "schema_version": "1.0.0",
+  "name": "Nexus City Baseline",
+  "description": "Fictional city with 7x7 grid + ring road. Features a deliberate bottleneck on the east-west arterial between G3_2 and G3_3 for the Highway Bypass scenario demo.",
+  "calibration_status": "synthetic_uncalibrated",
+  "bounds": {
+    "width_m": 5000.0,
+    "height_m": 5000.0
+  },
+  "nodes": [
+    {
+      "id": "G0_0",
+      "x": 700.0,
+      "y": 700.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G0_1",
+      "x": 1300.0,
+      "y": 700.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G0_2",
+      "x": 1900.0,
+      "y": 700.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G0_3",
+      "x": 2500.0,
+      "y": 700.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G0_4",
+      "x": 3100.0,
+      "y": 700.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G0_5",
+      "x": 3700.0,
+      "y": 700.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G0_6",
+      "x": 4300.0,
+      "y": 700.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G1_0",
+      "x": 700.0,
+      "y": 1300.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G1_1",
+      "x": 1300.0,
+      "y": 1300.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G1_2",
+      "x": 1900.0,
+      "y": 1300.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G1_3",
+      "x": 2500.0,
+      "y": 1300.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G1_4",
+      "x": 3100.0,
+      "y": 1300.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G1_5",
+      "x": 3700.0,
+      "y": 1300.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G1_6",
+      "x": 4300.0,
+      "y": 1300.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G2_0",
+      "x": 700.0,
+      "y": 1900.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G2_1",
+      "x": 1300.0,
+      "y": 1900.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G2_2",
+      "x": 1900.0,
+      "y": 1900.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G2_3",
+      "x": 2500.0,
+      "y": 1900.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G2_4",
+      "x": 3100.0,
+      "y": 1900.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G2_5",
+      "x": 3700.0,
+      "y": 1900.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G2_6",
+      "x": 4300.0,
+      "y": 1900.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G3_0",
+      "x": 700.0,
+      "y": 2500.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G3_1",
+      "x": 1300.0,
+      "y": 2500.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G3_2",
+      "x": 1900.0,
+      "y": 2500.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G3_3",
+      "x": 2500.0,
+      "y": 2500.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G3_4",
+      "x": 3100.0,
+      "y": 2500.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G3_5",
+      "x": 3700.0,
+      "y": 2500.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G3_6",
+      "x": 4300.0,
+      "y": 2500.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G4_0",
+      "x": 700.0,
+      "y": 3100.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G4_1",
+      "x": 1300.0,
+      "y": 3100.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G4_2",
+      "x": 1900.0,
+      "y": 3100.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G4_3",
+      "x": 2500.0,
+      "y": 3100.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G4_4",
+      "x": 3100.0,
+      "y": 3100.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G4_5",
+      "x": 3700.0,
+      "y": 3100.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G4_6",
+      "x": 4300.0,
+      "y": 3100.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G5_0",
+      "x": 700.0,
+      "y": 3700.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G5_1",
+      "x": 1300.0,
+      "y": 3700.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G5_2",
+      "x": 1900.0,
+      "y": 3700.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G5_3",
+      "x": 2500.0,
+      "y": 3700.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G5_4",
+      "x": 3100.0,
+      "y": 3700.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G5_5",
+      "x": 3700.0,
+      "y": 3700.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G5_6",
+      "x": 4300.0,
+      "y": 3700.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G6_0",
+      "x": 700.0,
+      "y": 4300.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G6_1",
+      "x": 1300.0,
+      "y": 4300.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G6_2",
+      "x": 1900.0,
+      "y": 4300.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G6_3",
+      "x": 2500.0,
+      "y": 4300.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G6_4",
+      "x": 3100.0,
+      "y": 4300.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G6_5",
+      "x": 3700.0,
+      "y": 4300.0,
+      "type": "intersection"
+    },
+    {
+      "id": "G6_6",
+      "x": 4300.0,
+      "y": 4300.0,
+      "type": "intersection"
+    },
+    {
+      "id": "R0",
+      "x": 4700.0,
+      "y": 2500.0,
+      "type": "intersection"
+    },
+    {
+      "id": "R1",
+      "x": 4405.0,
+      "y": 3600.0,
+      "type": "intersection"
+    },
+    {
+      "id": "R2",
+      "x": 3600.0,
+      "y": 4405.0,
+      "type": "intersection"
+    },
+    {
+      "id": "R3",
+      "x": 2500.0,
+      "y": 4700.0,
+      "type": "intersection"
+    },
+    {
+      "id": "R4",
+      "x": 1400.0,
+      "y": 4405.0,
+      "type": "intersection"
+    },
+    {
+      "id": "R5",
+      "x": 595.0,
+      "y": 3600.0,
+      "type": "intersection"
+    },
+    {
+      "id": "R6",
+      "x": 300.0,
+      "y": 2500.0,
+      "type": "intersection"
+    },
+    {
+      "id": "R7",
+      "x": 595.0,
+      "y": 1400.0,
+      "type": "intersection"
+    },
+    {
+      "id": "R8",
+      "x": 1400.0,
+      "y": 595.0,
+      "type": "intersection"
+    },
+    {
+      "id": "R9",
+      "x": 2500.0,
+      "y": 300.0,
+      "type": "intersection"
+    },
+    {
+      "id": "R10",
+      "x": 3600.0,
+      "y": 595.0,
+      "type": "intersection"
+    },
+    {
+      "id": "R11",
+      "x": 4405.0,
+      "y": 1400.0,
+      "type": "intersection"
+    }
+  ],
+  "links": [
+    {
+      "id": "LH1",
+      "from_node": "G0_0",
+      "to_node": "G0_1",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH2",
+      "from_node": "G0_1",
+      "to_node": "G0_2",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH3",
+      "from_node": "G0_2",
+      "to_node": "G0_3",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH4",
+      "from_node": "G0_3",
+      "to_node": "G0_4",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH5",
+      "from_node": "G0_4",
+      "to_node": "G0_5",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH6",
+      "from_node": "G0_5",
+      "to_node": "G0_6",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH7",
+      "from_node": "G1_0",
+      "to_node": "G1_1",
+      "lanes": 2,
+      "speed_kph": 50.0,
+      "capacity_per_lane_per_hour": 1500,
+      "road_class": "collector",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH8",
+      "from_node": "G1_1",
+      "to_node": "G1_2",
+      "lanes": 2,
+      "speed_kph": 50.0,
+      "capacity_per_lane_per_hour": 1500,
+      "road_class": "collector",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH9",
+      "from_node": "G1_2",
+      "to_node": "G1_3",
+      "lanes": 2,
+      "speed_kph": 50.0,
+      "capacity_per_lane_per_hour": 1500,
+      "road_class": "collector",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH10",
+      "from_node": "G1_3",
+      "to_node": "G1_4",
+      "lanes": 2,
+      "speed_kph": 50.0,
+      "capacity_per_lane_per_hour": 1500,
+      "road_class": "collector",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH11",
+      "from_node": "G1_4",
+      "to_node": "G1_5",
+      "lanes": 2,
+      "speed_kph": 50.0,
+      "capacity_per_lane_per_hour": 1500,
+      "road_class": "collector",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH12",
+      "from_node": "G1_5",
+      "to_node": "G1_6",
+      "lanes": 2,
+      "speed_kph": 50.0,
+      "capacity_per_lane_per_hour": 1500,
+      "road_class": "collector",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH13",
+      "from_node": "G2_0",
+      "to_node": "G2_1",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH14",
+      "from_node": "G2_1",
+      "to_node": "G2_2",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH15",
+      "from_node": "G2_2",
+      "to_node": "G2_3",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH16",
+      "from_node": "G2_3",
+      "to_node": "G2_4",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH17",
+      "from_node": "G2_4",
+      "to_node": "G2_5",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH18",
+      "from_node": "G2_5",
+      "to_node": "G2_6",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH19",
+      "from_node": "G3_0",
+      "to_node": "G3_1",
+      "lanes": 2,
+      "speed_kph": 60.0,
+      "capacity_per_lane_per_hour": 1800,
+      "road_class": "arterial",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH20",
+      "from_node": "G3_1",
+      "to_node": "G3_2",
+      "lanes": 2,
+      "speed_kph": 60.0,
+      "capacity_per_lane_per_hour": 1800,
+      "road_class": "arterial",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH21",
+      "from_node": "G3_2",
+      "to_node": "G3_3",
+      "lanes": 1,
+      "speed_kph": 30.0,
+      "capacity_per_lane_per_hour": 800,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH22",
+      "from_node": "G3_3",
+      "to_node": "G3_4",
+      "lanes": 2,
+      "speed_kph": 60.0,
+      "capacity_per_lane_per_hour": 1800,
+      "road_class": "arterial",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH23",
+      "from_node": "G3_4",
+      "to_node": "G3_5",
+      "lanes": 2,
+      "speed_kph": 60.0,
+      "capacity_per_lane_per_hour": 1800,
+      "road_class": "arterial",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH24",
+      "from_node": "G3_5",
+      "to_node": "G3_6",
+      "lanes": 2,
+      "speed_kph": 60.0,
+      "capacity_per_lane_per_hour": 1800,
+      "road_class": "arterial",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH25",
+      "from_node": "G4_0",
+      "to_node": "G4_1",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH26",
+      "from_node": "G4_1",
+      "to_node": "G4_2",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH27",
+      "from_node": "G4_2",
+      "to_node": "G4_3",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH28",
+      "from_node": "G4_3",
+      "to_node": "G4_4",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH29",
+      "from_node": "G4_4",
+      "to_node": "G4_5",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH30",
+      "from_node": "G4_5",
+      "to_node": "G4_6",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH31",
+      "from_node": "G5_0",
+      "to_node": "G5_1",
+      "lanes": 2,
+      "speed_kph": 50.0,
+      "capacity_per_lane_per_hour": 1500,
+      "road_class": "collector",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH32",
+      "from_node": "G5_1",
+      "to_node": "G5_2",
+      "lanes": 2,
+      "speed_kph": 50.0,
+      "capacity_per_lane_per_hour": 1500,
+      "road_class": "collector",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH33",
+      "from_node": "G5_2",
+      "to_node": "G5_3",
+      "lanes": 2,
+      "speed_kph": 50.0,
+      "capacity_per_lane_per_hour": 1500,
+      "road_class": "collector",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH34",
+      "from_node": "G5_3",
+      "to_node": "G5_4",
+      "lanes": 2,
+      "speed_kph": 50.0,
+      "capacity_per_lane_per_hour": 1500,
+      "road_class": "collector",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH35",
+      "from_node": "G5_4",
+      "to_node": "G5_5",
+      "lanes": 2,
+      "speed_kph": 50.0,
+      "capacity_per_lane_per_hour": 1500,
+      "road_class": "collector",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH36",
+      "from_node": "G5_5",
+      "to_node": "G5_6",
+      "lanes": 2,
+      "speed_kph": 50.0,
+      "capacity_per_lane_per_hour": 1500,
+      "road_class": "collector",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH37",
+      "from_node": "G6_0",
+      "to_node": "G6_1",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH38",
+      "from_node": "G6_1",
+      "to_node": "G6_2",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH39",
+      "from_node": "G6_2",
+      "to_node": "G6_3",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH40",
+      "from_node": "G6_3",
+      "to_node": "G6_4",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH41",
+      "from_node": "G6_4",
+      "to_node": "G6_5",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LH42",
+      "from_node": "G6_5",
+      "to_node": "G6_6",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV43",
+      "from_node": "G0_0",
+      "to_node": "G1_0",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV44",
+      "from_node": "G1_0",
+      "to_node": "G2_0",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV45",
+      "from_node": "G2_0",
+      "to_node": "G3_0",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV46",
+      "from_node": "G3_0",
+      "to_node": "G4_0",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV47",
+      "from_node": "G4_0",
+      "to_node": "G5_0",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV48",
+      "from_node": "G5_0",
+      "to_node": "G6_0",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV49",
+      "from_node": "G0_1",
+      "to_node": "G1_1",
+      "lanes": 2,
+      "speed_kph": 50.0,
+      "capacity_per_lane_per_hour": 1500,
+      "road_class": "collector",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV50",
+      "from_node": "G1_1",
+      "to_node": "G2_1",
+      "lanes": 2,
+      "speed_kph": 50.0,
+      "capacity_per_lane_per_hour": 1500,
+      "road_class": "collector",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV51",
+      "from_node": "G2_1",
+      "to_node": "G3_1",
+      "lanes": 2,
+      "speed_kph": 50.0,
+      "capacity_per_lane_per_hour": 1500,
+      "road_class": "collector",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV52",
+      "from_node": "G3_1",
+      "to_node": "G4_1",
+      "lanes": 2,
+      "speed_kph": 50.0,
+      "capacity_per_lane_per_hour": 1500,
+      "road_class": "collector",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV53",
+      "from_node": "G4_1",
+      "to_node": "G5_1",
+      "lanes": 2,
+      "speed_kph": 50.0,
+      "capacity_per_lane_per_hour": 1500,
+      "road_class": "collector",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV54",
+      "from_node": "G5_1",
+      "to_node": "G6_1",
+      "lanes": 2,
+      "speed_kph": 50.0,
+      "capacity_per_lane_per_hour": 1500,
+      "road_class": "collector",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV55",
+      "from_node": "G0_2",
+      "to_node": "G1_2",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV56",
+      "from_node": "G1_2",
+      "to_node": "G2_2",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV57",
+      "from_node": "G2_2",
+      "to_node": "G3_2",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV58",
+      "from_node": "G3_2",
+      "to_node": "G4_2",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV59",
+      "from_node": "G4_2",
+      "to_node": "G5_2",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV60",
+      "from_node": "G5_2",
+      "to_node": "G6_2",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV61",
+      "from_node": "G0_3",
+      "to_node": "G1_3",
+      "lanes": 2,
+      "speed_kph": 60.0,
+      "capacity_per_lane_per_hour": 1800,
+      "road_class": "arterial",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV62",
+      "from_node": "G1_3",
+      "to_node": "G2_3",
+      "lanes": 2,
+      "speed_kph": 60.0,
+      "capacity_per_lane_per_hour": 1800,
+      "road_class": "arterial",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV63",
+      "from_node": "G2_3",
+      "to_node": "G3_3",
+      "lanes": 2,
+      "speed_kph": 60.0,
+      "capacity_per_lane_per_hour": 1800,
+      "road_class": "arterial",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV64",
+      "from_node": "G3_3",
+      "to_node": "G4_3",
+      "lanes": 2,
+      "speed_kph": 60.0,
+      "capacity_per_lane_per_hour": 1800,
+      "road_class": "arterial",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV65",
+      "from_node": "G4_3",
+      "to_node": "G5_3",
+      "lanes": 2,
+      "speed_kph": 60.0,
+      "capacity_per_lane_per_hour": 1800,
+      "road_class": "arterial",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV66",
+      "from_node": "G5_3",
+      "to_node": "G6_3",
+      "lanes": 2,
+      "speed_kph": 60.0,
+      "capacity_per_lane_per_hour": 1800,
+      "road_class": "arterial",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV67",
+      "from_node": "G0_4",
+      "to_node": "G1_4",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV68",
+      "from_node": "G1_4",
+      "to_node": "G2_4",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV69",
+      "from_node": "G2_4",
+      "to_node": "G3_4",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV70",
+      "from_node": "G3_4",
+      "to_node": "G4_4",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV71",
+      "from_node": "G4_4",
+      "to_node": "G5_4",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV72",
+      "from_node": "G5_4",
+      "to_node": "G6_4",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV73",
+      "from_node": "G0_5",
+      "to_node": "G1_5",
+      "lanes": 2,
+      "speed_kph": 50.0,
+      "capacity_per_lane_per_hour": 1500,
+      "road_class": "collector",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV74",
+      "from_node": "G1_5",
+      "to_node": "G2_5",
+      "lanes": 2,
+      "speed_kph": 50.0,
+      "capacity_per_lane_per_hour": 1500,
+      "road_class": "collector",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV75",
+      "from_node": "G2_5",
+      "to_node": "G3_5",
+      "lanes": 2,
+      "speed_kph": 50.0,
+      "capacity_per_lane_per_hour": 1500,
+      "road_class": "collector",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV76",
+      "from_node": "G3_5",
+      "to_node": "G4_5",
+      "lanes": 2,
+      "speed_kph": 50.0,
+      "capacity_per_lane_per_hour": 1500,
+      "road_class": "collector",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV77",
+      "from_node": "G4_5",
+      "to_node": "G5_5",
+      "lanes": 2,
+      "speed_kph": 50.0,
+      "capacity_per_lane_per_hour": 1500,
+      "road_class": "collector",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV78",
+      "from_node": "G5_5",
+      "to_node": "G6_5",
+      "lanes": 2,
+      "speed_kph": 50.0,
+      "capacity_per_lane_per_hour": 1500,
+      "road_class": "collector",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV79",
+      "from_node": "G0_6",
+      "to_node": "G1_6",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV80",
+      "from_node": "G1_6",
+      "to_node": "G2_6",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV81",
+      "from_node": "G2_6",
+      "to_node": "G3_6",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV82",
+      "from_node": "G3_6",
+      "to_node": "G4_6",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV83",
+      "from_node": "G4_6",
+      "to_node": "G5_6",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LV84",
+      "from_node": "G5_6",
+      "to_node": "G6_6",
+      "lanes": 2,
+      "speed_kph": 40.0,
+      "capacity_per_lane_per_hour": 1200,
+      "road_class": "local",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LR85",
+      "from_node": "R0",
+      "to_node": "R1",
+      "lanes": 2,
+      "speed_kph": 80.0,
+      "capacity_per_lane_per_hour": 2000,
+      "road_class": "highway",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LR86",
+      "from_node": "R1",
+      "to_node": "R2",
+      "lanes": 2,
+      "speed_kph": 80.0,
+      "capacity_per_lane_per_hour": 2000,
+      "road_class": "highway",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LR87",
+      "from_node": "R2",
+      "to_node": "R3",
+      "lanes": 2,
+      "speed_kph": 80.0,
+      "capacity_per_lane_per_hour": 2000,
+      "road_class": "highway",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LR88",
+      "from_node": "R3",
+      "to_node": "R4",
+      "lanes": 2,
+      "speed_kph": 80.0,
+      "capacity_per_lane_per_hour": 2000,
+      "road_class": "highway",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LR89",
+      "from_node": "R4",
+      "to_node": "R5",
+      "lanes": 2,
+      "speed_kph": 80.0,
+      "capacity_per_lane_per_hour": 2000,
+      "road_class": "highway",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LR90",
+      "from_node": "R5",
+      "to_node": "R6",
+      "lanes": 2,
+      "speed_kph": 80.0,
+      "capacity_per_lane_per_hour": 2000,
+      "road_class": "highway",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LR91",
+      "from_node": "R6",
+      "to_node": "R7",
+      "lanes": 2,
+      "speed_kph": 80.0,
+      "capacity_per_lane_per_hour": 2000,
+      "road_class": "highway",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LR92",
+      "from_node": "R7",
+      "to_node": "R8",
+      "lanes": 2,
+      "speed_kph": 80.0,
+      "capacity_per_lane_per_hour": 2000,
+      "road_class": "highway",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LR93",
+      "from_node": "R8",
+      "to_node": "R9",
+      "lanes": 2,
+      "speed_kph": 80.0,
+      "capacity_per_lane_per_hour": 2000,
+      "road_class": "highway",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LR94",
+      "from_node": "R9",
+      "to_node": "R10",
+      "lanes": 2,
+      "speed_kph": 80.0,
+      "capacity_per_lane_per_hour": 2000,
+      "road_class": "highway",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LR95",
+      "from_node": "R10",
+      "to_node": "R11",
+      "lanes": 2,
+      "speed_kph": 80.0,
+      "capacity_per_lane_per_hour": 2000,
+      "road_class": "highway",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LR96",
+      "from_node": "R11",
+      "to_node": "R0",
+      "lanes": 2,
+      "speed_kph": 80.0,
+      "capacity_per_lane_per_hour": 2000,
+      "road_class": "highway",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LC97",
+      "from_node": "R0",
+      "to_node": "G3_6",
+      "lanes": 2,
+      "speed_kph": 60.0,
+      "capacity_per_lane_per_hour": 1800,
+      "road_class": "arterial",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LC98",
+      "from_node": "R3",
+      "to_node": "G6_3",
+      "lanes": 2,
+      "speed_kph": 60.0,
+      "capacity_per_lane_per_hour": 1800,
+      "road_class": "arterial",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LC99",
+      "from_node": "R6",
+      "to_node": "G3_0",
+      "lanes": 2,
+      "speed_kph": 60.0,
+      "capacity_per_lane_per_hour": 1800,
+      "road_class": "arterial",
+      "oneway": false,
+      "length_m": null
+    },
+    {
+      "id": "LC100",
+      "from_node": "R9",
+      "to_node": "G0_3",
+      "lanes": 2,
+      "speed_kph": 60.0,
+      "capacity_per_lane_per_hour": 1800,
+      "road_class": "arterial",
+      "oneway": false,
+      "length_m": null
+    }
+  ],
+  "zones": [
+    {
+      "id": "Z_RES_N",
+      "name": "North Residential",
+      "land_use": "residential",
+      "population_target": 250,
+      "population": 0,
+      "center_x": 0.0,
+      "center_y": 0.0
+    },
+    {
+      "id": "Z_RES_W",
+      "name": "West Residential",
+      "land_use": "residential",
+      "population_target": 200,
+      "population": 0,
+      "center_x": 0.0,
+      "center_y": 0.0
+    },
+    {
+      "id": "Z_RES_S",
+      "name": "South Residential",
+      "land_use": "residential",
+      "population_target": 200,
+      "population": 0,
+      "center_x": 0.0,
+      "center_y": 0.0
+    },
+    {
+      "id": "Z_COM",
+      "name": "Central Commercial",
+      "land_use": "commercial",
+      "population_target": 150,
+      "population": 0,
+      "center_x": 0.0,
+      "center_y": 0.0
+    },
+    {
+      "id": "Z_IND",
+      "name": "East Industrial",
+      "land_use": "industrial",
+      "population_target": 100,
+      "population": 0,
+      "center_x": 0.0,
+      "center_y": 0.0
+    },
+    {
+      "id": "Z_MIX",
+      "name": "Mixed Quarter",
+      "land_use": "mixed",
+      "population_target": 100,
+      "population": 0,
+      "center_x": 0.0,
+      "center_y": 0.0
+    }
+  ],
+  "facilities": [
+    {
+      "id": "home_1",
+      "type": "home",
+      "zone_id": "Z_RES_N",
+      "capacity": 120,
+      "x": 1300.0,
+      "y": 900.0,
+      "floors": 3
+    },
+    {
+      "id": "home_2",
+      "type": "home",
+      "zone_id": "Z_RES_N",
+      "capacity": 130,
+      "x": 1900.0,
+      "y": 900.0,
+      "floors": 2
+    },
+    {
+      "id": "home_3",
+      "type": "home",
+      "zone_id": "Z_RES_W",
+      "capacity": 100,
+      "x": 900.0,
+      "y": 2100.0,
+      "floors": 2
+    },
+    {
+      "id": "home_4",
+      "type": "home",
+      "zone_id": "Z_RES_W",
+      "capacity": 100,
+      "x": 900.0,
+      "y": 2700.0,
+      "floors": 2
+    },
+    {
+      "id": "home_5",
+      "type": "home",
+      "zone_id": "Z_RES_S",
+      "capacity": 100,
+      "x": 1300.0,
+      "y": 3900.0,
+      "floors": 2
+    },
+    {
+      "id": "home_6",
+      "type": "home",
+      "zone_id": "Z_RES_S",
+      "capacity": 100,
+      "x": 1900.0,
+      "y": 3900.0,
+      "floors": 3
+    },
+    {
+      "id": "home_7",
+      "type": "home",
+      "zone_id": "Z_MIX",
+      "capacity": 80,
+      "x": 3700.0,
+      "y": 3300.0,
+      "floors": 4
+    },
+    {
+      "id": "home_8",
+      "type": "home",
+      "zone_id": "Z_MIX",
+      "capacity": 70,
+      "x": 3700.0,
+      "y": 3900.0,
+      "floors": 3
+    },
+    {
+      "id": "off_1",
+      "type": "office",
+      "zone_id": "Z_COM",
+      "capacity": 300,
+      "x": 2500.0,
+      "y": 2100.0,
+      "floors": 8
+    },
+    {
+      "id": "off_2",
+      "type": "office",
+      "zone_id": "Z_COM",
+      "capacity": 200,
+      "x": 2500.0,
+      "y": 2700.0,
+      "floors": 6
+    },
+    {
+      "id": "off_3",
+      "type": "office",
+      "zone_id": "Z_COM",
+      "capacity": 150,
+      "x": 3100.0,
+      "y": 2500.0,
+      "floors": 5
+    },
+    {
+      "id": "off_4",
+      "type": "office",
+      "zone_id": "Z_MIX",
+      "capacity": 100,
+      "x": 3700.0,
+      "y": 2700.0,
+      "floors": 4
+    },
+    {
+      "id": "fac_1",
+      "type": "factory",
+      "zone_id": "Z_IND",
+      "capacity": 200,
+      "x": 3700.0,
+      "y": 1500.0,
+      "floors": 1
+    },
+    {
+      "id": "fac_2",
+      "type": "factory",
+      "zone_id": "Z_IND",
+      "capacity": 150,
+      "x": 4300.0,
+      "y": 1500.0,
+      "floors": 1
+    },
+    {
+      "id": "sch_1",
+      "type": "school",
+      "zone_id": "Z_RES_N",
+      "capacity": 200,
+      "x": 1900.0,
+      "y": 1500.0,
+      "floors": 2
+    },
+    {
+      "id": "hosp_1",
+      "type": "hospital",
+      "zone_id": "Z_COM",
+      "capacity": 150,
+      "x": 3100.0,
+      "y": 2100.0,
+      "floors": 4
+    },
+    {
+      "id": "shop_1",
+      "type": "shop",
+      "zone_id": "Z_COM",
+      "capacity": 100,
+      "x": 2500.0,
+      "y": 1900.0,
+      "floors": 1
+    },
+    {
+      "id": "shop_2",
+      "type": "shop",
+      "zone_id": "Z_MIX",
+      "capacity": 80,
+      "x": 3300.0,
+      "y": 3300.0,
+      "floors": 1
+    },
+    {
+      "id": "park_1",
+      "type": "park",
+      "zone_id": "Z_RES_W",
+      "capacity": 300,
+      "x": 700.0,
+      "y": 3300.0,
+      "floors": 1
+    },
+    {
+      "id": "park_2",
+      "type": "park",
+      "zone_id": "Z_RES_S",
+      "capacity": 200,
+      "x": 2500.0,
+      "y": 4100.0,
+      "floors": 1
+    }
+  ],
+  "transit_lines": [
+    {
+      "id": "BUS_1",
+      "name": "East-West Express",
+      "mode": "bus",
+      "stop_node_ids": [
+        "G3_0",
+        "G3_1",
+        "G3_2",
+        "G3_4",
+        "G3_5",
+        "G3_6"
+      ],
+      "headway_minutes": 10
+    }
+  ],
+  "parameters": {
+    "total_population": 1000,
+    "car_ownership_rate": 0.5,
+    "simulation_days": 1
+  }
+}

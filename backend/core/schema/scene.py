@@ -12,9 +12,9 @@ class SceneLink(BaseModel):
     id: str
     from_node: str
     to_node: str
-    lanes: int = Field(ge=1, le=8, default=2)
-    speed_kph: float = Field(ge=5, le=200, default=50)
-    capacity_per_lane_per_hour: int = Field(ge=100, le=3000, default=1800)
+    lanes: int = Field(ge=0, le=20, default=2)
+    speed_kph: float = Field(ge=0, le=300, default=50)
+    capacity_per_lane_per_hour: int = Field(ge=0, le=5000, default=1800)
     road_class: str = "local"
     oneway: bool = False
     length_m: float | None = None
@@ -33,6 +33,9 @@ class SceneZone(BaseModel):
     name: str
     land_use: str
     population_target: int = 0
+    population: int = 0
+    center_x: float = 0.0
+    center_y: float = 0.0
 
 class SceneTransitLine(BaseModel):
     id: str
