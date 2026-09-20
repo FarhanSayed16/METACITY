@@ -1,0 +1,3476 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "METACITY API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "ops"
+        ],
+        "summary": "Health Check",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects": {
+      "get": {
+        "tags": [
+          "projects"
+        ],
+        "summary": "List Projects",
+        "operationId": "list_projects_projects_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ProjectResp"
+                  },
+                  "type": "array",
+                  "title": "Response List Projects Projects Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "projects"
+        ],
+        "summary": "Create Project",
+        "operationId": "create_project_projects_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectCreateReq"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectResp"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{project_id}": {
+      "get": {
+        "tags": [
+          "projects"
+        ],
+        "summary": "Get Project",
+        "operationId": "get_project_projects__project_id__get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectResp"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{project_id}/scene": {
+      "get": {
+        "tags": [
+          "scenes"
+        ],
+        "summary": "Get Scene",
+        "operationId": "get_scene_projects__project_id__scene_get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "scenes"
+        ],
+        "summary": "Update Scene",
+        "operationId": "update_scene_projects__project_id__scene_put",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Scene"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{project_id}/scene/history": {
+      "get": {
+        "tags": [
+          "scenes"
+        ],
+        "summary": "List Scene History",
+        "description": "List available scene history versions (most recent first).",
+        "operationId": "list_scene_history_projects__project_id__scene_history_get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{project_id}/scene/restore": {
+      "post": {
+        "tags": [
+          "scenes"
+        ],
+        "summary": "Restore Scene Version",
+        "description": "Restore a previous scene version. \nBody: { \"filename\": \"scene_20260920_103015.json\" }\nThe current scene is saved to history before restoring.",
+        "operationId": "restore_scene_version_projects__project_id__scene_restore_post",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scenarios": {
+      "post": {
+        "tags": [
+          "scenarios"
+        ],
+        "summary": "Create Scenario",
+        "operationId": "create_scenario_scenarios_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScenarioCreateReq"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioResp"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scenarios/{scenario_id}": {
+      "get": {
+        "tags": [
+          "scenarios"
+        ],
+        "summary": "Get Scenario",
+        "operationId": "get_scenario_scenarios__scenario_id__get",
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Scenario Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioResp"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{project_id}/scenarios": {
+      "get": {
+        "tags": [
+          "scenarios"
+        ],
+        "summary": "List Scenarios",
+        "operationId": "list_scenarios_projects__project_id__scenarios_get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ScenarioResp"
+                  },
+                  "title": "Response List Scenarios Projects  Project Id  Scenarios Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/runs": {
+      "post": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "Trigger Runs",
+        "operationId": "trigger_runs_runs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TriggerRunReq"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RunResp"
+                  },
+                  "type": "array",
+                  "title": "Response Trigger Runs Runs Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{project_id}/runs": {
+      "get": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "List Project Runs",
+        "operationId": "list_project_runs_projects__project_id__runs_get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProjectRunResp"
+                  },
+                  "title": "Response List Project Runs Projects  Project Id  Runs Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/runs/{run_id}": {
+      "get": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "Get Run",
+        "operationId": "get_run_runs__run_id__get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunResp"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/runs/{run_id}/meta": {
+      "get": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "Get Run Meta",
+        "operationId": "get_run_meta_runs__run_id__meta_get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/runs/{run_id}/retry": {
+      "post": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "Retry Run",
+        "operationId": "retry_run_runs__run_id__retry_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunResp"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/runs/{run_id}/metrics": {
+      "get": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "Get Run Metrics",
+        "operationId": "get_run_metrics_runs__run_id__metrics_get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/comparisons": {
+      "post": {
+        "tags": [
+          "comparisons"
+        ],
+        "summary": "Compare Scenarios",
+        "operationId": "compare_scenarios_comparisons_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompareReq"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/templates": {
+      "get": {
+        "tags": [
+          "templates"
+        ],
+        "summary": "List Templates",
+        "description": "List available scene templates from data/templates/.\nReturns: [{name, description, filename, node_count, link_count}]",
+        "operationId": "list_templates_templates_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/templates/{filename}": {
+      "get": {
+        "tags": [
+          "templates"
+        ],
+        "summary": "Get Template",
+        "description": "Return the full scene JSON for a given template.",
+        "operationId": "get_template_templates__filename__get",
+        "parameters": [
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Filename"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/profiles": {
+      "get": {
+        "tags": [
+          "profiles"
+        ],
+        "summary": "List Profiles",
+        "description": "List all available config profiles.",
+        "operationId": "list_profiles_profiles_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/profiles/{profile_id}": {
+      "get": {
+        "tags": [
+          "profiles"
+        ],
+        "summary": "Get Profile By Id",
+        "description": "Get a specific profile.",
+        "operationId": "get_profile_by_id_profiles__profile_id__get",
+        "parameters": [
+          {
+            "name": "profile_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Profile Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/presets": {
+      "get": {
+        "tags": [
+          "presets"
+        ],
+        "summary": "List Presets",
+        "description": "List available scenario presets from data/presets/.\nReturns: [{id, name, description}]",
+        "operationId": "list_presets_presets_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/presets/{preset_id}": {
+      "get": {
+        "tags": [
+          "presets"
+        ],
+        "summary": "Get Preset",
+        "description": "Get a single preset by ID (filename stem), including its full ops.",
+        "operationId": "get_preset_presets__preset_id__get",
+        "parameters": [
+          {
+            "name": "preset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Preset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reports/comparison": {
+      "get": {
+        "tags": [
+          "reports"
+        ],
+        "summary": "Get Comparison Report",
+        "operationId": "get_comparison_report_reports_comparison_get",
+        "parameters": [
+          {
+            "name": "baseline_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Baseline Id"
+            }
+          },
+          {
+            "name": "target_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Target Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/modules": {
+      "get": {
+        "tags": [
+          "modules"
+        ],
+        "summary": "List Modules",
+        "description": "Returns the simulation modules available in this METACITY deployment.",
+        "operationId": "list_modules_modules_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ModuleInfo"
+                  },
+                  "type": "array",
+                  "title": "Response List Modules Modules Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{project_id}/geojson": {
+      "get": {
+        "tags": [
+          "export"
+        ],
+        "summary": "Export Geojson",
+        "description": "Exports the project's scene as a standard GeoJSON FeatureCollection.\nWhen `run_id` is provided, link features include volume / capacity / vc_ratio / travel_time.",
+        "operationId": "export_geojson_projects__project_id__geojson_get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "run_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional completed run to attach link flow fields",
+              "title": "Run Id"
+            },
+            "description": "Optional completed run to attach link flow fields"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/predict/surrogate": {
+      "post": {
+        "tags": [
+          "predict"
+        ],
+        "summary": "Predict Kpis",
+        "description": "Instantly predict traffic KPIs using the PyTorch surrogate model.\nBypasses the physics simulation entirely.",
+        "operationId": "predict_kpis_predict_surrogate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PredictRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/congestion-legend": {
+      "get": {
+        "tags": [
+          "network-tools"
+        ],
+        "summary": "Get Congestion Legend",
+        "description": "Return the shared congestion threshold legend for frontend use.",
+        "operationId": "get_congestion_legend_tools_congestion_legend_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/connectivity": {
+      "post": {
+        "tags": [
+          "network-tools"
+        ],
+        "summary": "Check Connectivity",
+        "description": "Check if the road network is fully connected.",
+        "operationId": "check_connectivity_tools_connectivity_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Scene"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/bridges": {
+      "post": {
+        "tags": [
+          "network-tools"
+        ],
+        "summary": "Detect Bridges",
+        "description": "Find critical links whose removal would disconnect the network.",
+        "operationId": "detect_bridges_tools_bridges_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Scene"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/centrality": {
+      "post": {
+        "tags": [
+          "network-tools"
+        ],
+        "summary": "Compute Centrality",
+        "description": "Compute betweenness centrality for all nodes.",
+        "operationId": "compute_centrality_tools_centrality_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Scene"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/isolation": {
+      "post": {
+        "tags": [
+          "network-tools"
+        ],
+        "summary": "Get Isolation",
+        "description": "Compute isolation metrics for disaster evaluation.",
+        "operationId": "get_isolation_tools_isolation_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Scene"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/emergency_access": {
+      "post": {
+        "tags": [
+          "network-tools"
+        ],
+        "summary": "Get Emergency Access",
+        "description": "Compute accessibility times to hospitals.",
+        "operationId": "get_emergency_access_tools_emergency_access_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Scene"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/pathfind": {
+      "post": {
+        "tags": [
+          "network-tools"
+        ],
+        "summary": "Pathfind",
+        "description": "A* shortest path demo over the scene network.",
+        "operationId": "pathfind_tools_pathfind_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PathfindReq"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/msa_demo": {
+      "post": {
+        "tags": [
+          "network-tools"
+        ],
+        "summary": "Msa Demo",
+        "description": "Toy MSA/BPR equilibrium demo on a parallel-link corridor.\nDemand splits across links; volumes smoothed with MSA; costs via BPR.",
+        "operationId": "msa_demo_tools_msa_demo_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MsaDemoReq"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{project_id}/export": {
+      "get": {
+        "tags": [
+          "archive"
+        ],
+        "summary": "Export Project Zip",
+        "description": "Bundles the project directory into a ZIP archive for export.",
+        "operationId": "export_project_zip_projects__project_id__export_get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/import": {
+      "post": {
+        "tags": [
+          "archive"
+        ],
+        "summary": "Import Project Zip",
+        "description": "Unpacks a ZIP archive into a new project directory.",
+        "operationId": "import_project_zip_projects_import_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_import_project_zip_projects_import_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/import/osm": {
+      "post": {
+        "tags": [
+          "import"
+        ],
+        "summary": "Import From Osm",
+        "description": "Fetch highways from Overpass API for the bounding box.\nConvert to METACITY scene JSON.\nCreate a new project with the imported scene.",
+        "operationId": "import_from_osm_import_osm_post",
+        "parameters": [
+          {
+            "name": "south",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "title": "South"
+            }
+          },
+          {
+            "name": "west",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "title": "West"
+            }
+          },
+          {
+            "name": "north",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "title": "North"
+            }
+          },
+          {
+            "name": "east",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "title": "East"
+            }
+          },
+          {
+            "name": "project_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "OSM Import",
+              "title": "Project Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/import/gtfs": {
+      "post": {
+        "tags": [
+          "import"
+        ],
+        "summary": "Import Gtfs",
+        "description": "Parse GTFS data and return TransitLine and Node objects.",
+        "operationId": "import_gtfs_import_gtfs_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_import_gtfs_import_gtfs_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/evacuation/run": {
+      "post": {
+        "tags": [
+          "evacuation"
+        ],
+        "summary": "Run Evacuation Sim",
+        "description": "Run a fire evacuation simulation and return results.",
+        "operationId": "run_evacuation_sim_evacuation_run_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvacuationRunReq"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Run Evacuation Sim Evacuation Run Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/evacuation/run/template/{template_name}": {
+      "post": {
+        "tags": [
+          "evacuation"
+        ],
+        "summary": "Run From Template",
+        "description": "Load a campus template and run evacuation with default fire/agent positions.",
+        "operationId": "run_from_template_evacuation_run_template__template_name__post",
+        "parameters": [
+          {
+            "name": "template_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Template Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/hospital/run": {
+      "post": {
+        "tags": [
+          "hospital"
+        ],
+        "summary": "Run Hospital Sim",
+        "description": "Run a single hospital surge simulation.",
+        "operationId": "run_hospital_sim_hospital_run_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HospitalRunReq"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Run Hospital Sim Hospital Run Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/hospital/compare": {
+      "post": {
+        "tags": [
+          "hospital"
+        ],
+        "summary": "Compare Surge",
+        "description": "Run two scenarios (different bed counts) and compare results.",
+        "operationId": "compare_surge_hospital_compare_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HospitalCompareReq"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Compare Surge Hospital Compare Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{project_id}/calibrate": {
+      "post": {
+        "tags": [
+          "calibration"
+        ],
+        "summary": "Run Calibration",
+        "description": "Evaluate calibration (GEH/RMSE). When fit=true, suggest a demand scale,\nre-run once with that scale, and return before/after reports (does not\npersist scene mutations \u2014 caller decides whether to apply).",
+        "operationId": "run_calibration_projects__project_id__calibrate_post",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalibrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/planner/{project_id}/search": {
+      "post": {
+        "tags": [
+          "planner"
+        ],
+        "summary": "Search Candidates",
+        "description": "Run greedy search using surrogate model. Returns top candidates.",
+        "operationId": "search_candidates_planner__project_id__search_post",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchReq"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/planner/{project_id}/verify": {
+      "post": {
+        "tags": [
+          "planner"
+        ],
+        "summary": "Verify Candidate",
+        "description": "Run full simulation to verify surrogate-predicted candidates.",
+        "operationId": "verify_candidate_planner__project_id__verify_post",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyReq"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/screenshots": {
+      "post": {
+        "tags": [
+          "screenshots"
+        ],
+        "summary": "Upload Screenshot",
+        "operationId": "upload_screenshot_screenshots_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScreenshotUpload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "screenshots"
+        ],
+        "summary": "List Screenshots",
+        "operationId": "list_screenshots_screenshots_get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "comparison_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Comparison Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/screenshots/{shot_id}": {
+      "get": {
+        "tags": [
+          "screenshots"
+        ],
+        "summary": "Get Screenshot Meta",
+        "operationId": "get_screenshot_meta_screenshots__shot_id__get",
+        "parameters": [
+          {
+            "name": "shot_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Shot Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/screenshots/{shot_id}/file": {
+      "get": {
+        "tags": [
+          "screenshots"
+        ],
+        "summary": "Get Screenshot File",
+        "operationId": "get_screenshot_file_screenshots__shot_id__file_get",
+        "parameters": [
+          {
+            "name": "shot_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Shot Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{project_id}/multi-year": {
+      "post": {
+        "tags": [
+          "analysis"
+        ],
+        "summary": "Multi Year",
+        "operationId": "multi_year_projects__project_id__multi_year_post",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MultiYearReq"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{project_id}/sweep": {
+      "post": {
+        "tags": [
+          "analysis"
+        ],
+        "summary": "Sensitivity Sweep",
+        "operationId": "sensitivity_sweep_projects__project_id__sweep_post",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SweepReq"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{project_id}/warm-start-compare": {
+      "post": {
+        "tags": [
+          "analysis"
+        ],
+        "summary": "Warm Start Compare",
+        "description": "Run the same scene cold vs warm-started from cold link travel times.\nReturns iteration/gap comparison for honesty checks.",
+        "operationId": "warm_start_compare_projects__project_id__warm_start_compare_post",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WarmStartReq"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Body_import_gtfs_import_gtfs_post": {
+        "properties": {
+          "stops": {
+            "type": "string",
+            "format": "binary",
+            "title": "Stops"
+          },
+          "routes": {
+            "type": "string",
+            "format": "binary",
+            "title": "Routes"
+          },
+          "trips": {
+            "type": "string",
+            "format": "binary",
+            "title": "Trips"
+          },
+          "stop_times": {
+            "type": "string",
+            "format": "binary",
+            "title": "Stop Times"
+          },
+          "ref_lat": {
+            "type": "number",
+            "title": "Ref Lat",
+            "default": 0.0
+          },
+          "ref_lon": {
+            "type": "number",
+            "title": "Ref Lon",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "required": [
+          "stops",
+          "routes",
+          "trips",
+          "stop_times"
+        ],
+        "title": "Body_import_gtfs_import_gtfs_post"
+      },
+      "Body_import_project_zip_projects_import_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_import_project_zip_projects_import_post"
+      },
+      "CalibrationRequest": {
+        "properties": {
+          "observed_counts": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Observed Counts"
+          },
+          "fit": {
+            "type": "boolean",
+            "title": "Fit",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "observed_counts"
+        ],
+        "title": "CalibrationRequest"
+      },
+      "CompareReq": {
+        "properties": {
+          "baseline_scenario_id": {
+            "type": "string",
+            "title": "Baseline Scenario Id"
+          },
+          "target_scenario_id": {
+            "type": "string",
+            "title": "Target Scenario Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "baseline_scenario_id",
+          "target_scenario_id"
+        ],
+        "title": "CompareReq"
+      },
+      "Coord": {
+        "properties": {
+          "x": {
+            "type": "integer",
+            "title": "X"
+          },
+          "y": {
+            "type": "integer",
+            "title": "Y"
+          }
+        },
+        "type": "object",
+        "required": [
+          "x",
+          "y"
+        ],
+        "title": "Coord"
+      },
+      "EvacuationRunReq": {
+        "properties": {
+          "width": {
+            "type": "integer",
+            "title": "Width",
+            "default": 50
+          },
+          "height": {
+            "type": "integer",
+            "title": "Height",
+            "default": 50
+          },
+          "fire_starts": {
+            "items": {
+              "$ref": "#/components/schemas/Coord"
+            },
+            "type": "array",
+            "title": "Fire Starts",
+            "default": []
+          },
+          "agent_starts": {
+            "items": {
+              "$ref": "#/components/schemas/Coord"
+            },
+            "type": "array",
+            "title": "Agent Starts",
+            "default": []
+          },
+          "wall_cells": {
+            "items": {
+              "$ref": "#/components/schemas/Coord"
+            },
+            "type": "array",
+            "title": "Wall Cells",
+            "default": []
+          },
+          "exit_cells": {
+            "items": {
+              "$ref": "#/components/schemas/Coord"
+            },
+            "type": "array",
+            "title": "Exit Cells",
+            "default": []
+          },
+          "max_ticks": {
+            "type": "integer",
+            "title": "Max Ticks",
+            "default": 500
+          },
+          "spread_prob": {
+            "type": "number",
+            "title": "Spread Prob",
+            "default": 0.1
+          }
+        },
+        "type": "object",
+        "title": "EvacuationRunReq"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HospitalCompareReq": {
+        "properties": {
+          "beds_baseline": {
+            "type": "integer",
+            "title": "Beds Baseline",
+            "default": 100
+          },
+          "beds_scenario": {
+            "type": "integer",
+            "title": "Beds Scenario",
+            "default": 150
+          },
+          "nurses": {
+            "type": "integer",
+            "title": "Nurses",
+            "default": 50
+          },
+          "surge_rate": {
+            "type": "number",
+            "title": "Surge Rate",
+            "default": 2.0
+          },
+          "max_ticks": {
+            "type": "integer",
+            "title": "Max Ticks",
+            "default": 1440
+          }
+        },
+        "type": "object",
+        "title": "HospitalCompareReq"
+      },
+      "HospitalRunReq": {
+        "properties": {
+          "beds": {
+            "type": "integer",
+            "title": "Beds",
+            "default": 100
+          },
+          "nurses": {
+            "type": "integer",
+            "title": "Nurses",
+            "default": 50
+          },
+          "surge_rate": {
+            "type": "number",
+            "title": "Surge Rate",
+            "default": 2.0
+          },
+          "max_ticks": {
+            "type": "integer",
+            "title": "Max Ticks",
+            "default": 1440
+          }
+        },
+        "type": "object",
+        "title": "HospitalRunReq"
+      },
+      "ModuleInfo": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description",
+          "type"
+        ],
+        "title": "ModuleInfo"
+      },
+      "MsaDemoReq": {
+        "properties": {
+          "free_flow": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Free Flow",
+            "default": [
+              10.0,
+              12.0,
+              8.0
+            ]
+          },
+          "capacity": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Capacity",
+            "default": [
+              1000.0,
+              800.0,
+              1200.0
+            ]
+          },
+          "demand": {
+            "type": "number",
+            "title": "Demand",
+            "default": 1500.0
+          },
+          "max_iters": {
+            "type": "integer",
+            "title": "Max Iters",
+            "default": 20
+          },
+          "alpha": {
+            "type": "number",
+            "title": "Alpha",
+            "default": 0.15
+          },
+          "beta": {
+            "type": "number",
+            "title": "Beta",
+            "default": 4.0
+          },
+          "epsilon": {
+            "type": "number",
+            "title": "Epsilon",
+            "default": 0.01
+          }
+        },
+        "type": "object",
+        "title": "MsaDemoReq"
+      },
+      "MultiYearReq": {
+        "properties": {
+          "years": {
+            "type": "integer",
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Years",
+            "default": 3
+          },
+          "shift_rate": {
+            "type": "number",
+            "maximum": 0.5,
+            "minimum": 0.0,
+            "title": "Shift Rate",
+            "default": 0.05
+          },
+          "seed": {
+            "type": "integer",
+            "title": "Seed",
+            "default": 42
+          }
+        },
+        "type": "object",
+        "title": "MultiYearReq"
+      },
+      "PathfindReq": {
+        "properties": {
+          "scene": {
+            "$ref": "#/components/schemas/Scene"
+          },
+          "start": {
+            "type": "string",
+            "title": "Start"
+          },
+          "goal": {
+            "type": "string",
+            "title": "Goal"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scene",
+          "start",
+          "goal"
+        ],
+        "title": "PathfindReq"
+      },
+      "PredictRequest": {
+        "properties": {
+          "demand_scale": {
+            "type": "number",
+            "title": "Demand Scale",
+            "default": 1.0
+          },
+          "weather_penalty": {
+            "type": "number",
+            "title": "Weather Penalty",
+            "default": 1.0
+          },
+          "capacity_drop": {
+            "type": "number",
+            "title": "Capacity Drop",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "title": "PredictRequest"
+      },
+      "ProjectCreateReq": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "scene_json_path": {
+            "type": "string",
+            "title": "Scene Json Path"
+          },
+          "profile_id": {
+            "type": "string",
+            "title": "Profile Id",
+            "default": "default"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "description",
+          "scene_json_path"
+        ],
+        "title": "ProjectCreateReq"
+      },
+      "ProjectResp": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "scene_json_path": {
+            "type": "string",
+            "title": "Scene Json Path"
+          },
+          "profile_id": {
+            "type": "string",
+            "title": "Profile Id",
+            "default": "default"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description",
+          "scene_json_path",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ProjectResp"
+      },
+      "ProjectRunResp": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "scenario_id": {
+            "type": "string",
+            "title": "Scenario Id"
+          },
+          "scenario_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Name"
+          },
+          "seed": {
+            "type": "integer",
+            "title": "Seed"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "error_msg": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Msg"
+          },
+          "final_gap": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Final Gap"
+          },
+          "iterations": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Iterations"
+          },
+          "converged": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Converged"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "scenario_id",
+          "seed",
+          "status",
+          "created_at"
+        ],
+        "title": "ProjectRunResp"
+      },
+      "RunResp": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "scenario_id": {
+            "type": "string",
+            "title": "Scenario Id"
+          },
+          "seed": {
+            "type": "integer",
+            "title": "Seed"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "error_msg": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Msg"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "scenario_id",
+          "seed",
+          "status",
+          "created_at"
+        ],
+        "title": "RunResp"
+      },
+      "ScenarioCreateReq": {
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "title": "Project Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "diff_ops": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Diff Ops"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "name",
+          "diff_ops"
+        ],
+        "title": "ScenarioCreateReq"
+      },
+      "ScenarioResp": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "string",
+            "title": "Project Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "diff_json": {
+            "type": "string",
+            "title": "Diff Json"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "name",
+          "diff_json",
+          "created_at"
+        ],
+        "title": "ScenarioResp"
+      },
+      "Scene": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "title": "Schema Version",
+            "default": "1.0.0"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "calibration_status": {
+            "type": "string",
+            "enum": [
+              "synthetic_uncalibrated",
+              "partially_calibrated",
+              "calibrated"
+            ],
+            "title": "Calibration Status",
+            "default": "synthetic_uncalibrated"
+          },
+          "bounds": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Bounds",
+            "default": {
+              "width_m": 5000.0,
+              "height_m": 5000.0
+            }
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/SceneNode"
+            },
+            "type": "array",
+            "title": "Nodes"
+          },
+          "links": {
+            "items": {
+              "$ref": "#/components/schemas/SceneLink"
+            },
+            "type": "array",
+            "title": "Links"
+          },
+          "zones": {
+            "items": {
+              "$ref": "#/components/schemas/SceneZone"
+            },
+            "type": "array",
+            "title": "Zones",
+            "default": []
+          },
+          "facilities": {
+            "items": {
+              "$ref": "#/components/schemas/SceneFacility"
+            },
+            "type": "array",
+            "title": "Facilities",
+            "default": []
+          },
+          "transit_lines": {
+            "items": {
+              "$ref": "#/components/schemas/SceneTransitLine"
+            },
+            "type": "array",
+            "title": "Transit Lines",
+            "default": []
+          },
+          "parameters": {
+            "$ref": "#/components/schemas/SceneParameters",
+            "default": {
+              "total_population": 1000,
+              "car_ownership_rate": 0.5,
+              "simulation_days": 1
+            }
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "nodes",
+          "links"
+        ],
+        "title": "Scene"
+      },
+      "SceneFacility": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "zone_id": {
+            "type": "string",
+            "title": "Zone Id"
+          },
+          "capacity": {
+            "type": "integer",
+            "title": "Capacity",
+            "default": 100
+          },
+          "x": {
+            "type": "number",
+            "title": "X"
+          },
+          "y": {
+            "type": "number",
+            "title": "Y"
+          },
+          "floors": {
+            "type": "integer",
+            "title": "Floors",
+            "default": 1
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "zone_id",
+          "x",
+          "y"
+        ],
+        "title": "SceneFacility"
+      },
+      "SceneLink": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "from_node": {
+            "type": "string",
+            "title": "From Node"
+          },
+          "to_node": {
+            "type": "string",
+            "title": "To Node"
+          },
+          "lanes": {
+            "type": "integer",
+            "maximum": 20.0,
+            "minimum": 0.0,
+            "title": "Lanes",
+            "default": 2
+          },
+          "speed_kph": {
+            "type": "number",
+            "maximum": 300.0,
+            "minimum": 0.0,
+            "title": "Speed Kph",
+            "default": 50
+          },
+          "capacity_per_lane_per_hour": {
+            "type": "integer",
+            "maximum": 5000.0,
+            "minimum": 0.0,
+            "title": "Capacity Per Lane Per Hour",
+            "default": 1800
+          },
+          "road_class": {
+            "type": "string",
+            "title": "Road Class",
+            "default": "local"
+          },
+          "oneway": {
+            "type": "boolean",
+            "title": "Oneway",
+            "default": false
+          },
+          "length_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Length M"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "from_node",
+          "to_node"
+        ],
+        "title": "SceneLink"
+      },
+      "SceneNode": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "x": {
+            "type": "number",
+            "title": "X"
+          },
+          "y": {
+            "type": "number",
+            "title": "Y"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "default": "intersection"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "x",
+          "y"
+        ],
+        "title": "SceneNode"
+      },
+      "SceneParameters": {
+        "properties": {
+          "total_population": {
+            "type": "integer",
+            "title": "Total Population",
+            "default": 1000
+          },
+          "car_ownership_rate": {
+            "type": "number",
+            "title": "Car Ownership Rate",
+            "default": 0.5
+          },
+          "simulation_days": {
+            "type": "integer",
+            "title": "Simulation Days",
+            "default": 1
+          }
+        },
+        "type": "object",
+        "title": "SceneParameters"
+      },
+      "SceneTransitLine": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "mode": {
+            "type": "string",
+            "title": "Mode",
+            "default": "bus"
+          },
+          "stop_node_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Stop Node Ids"
+          },
+          "headway_minutes": {
+            "type": "integer",
+            "title": "Headway Minutes",
+            "default": 10
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "stop_node_ids"
+        ],
+        "title": "SceneTransitLine"
+      },
+      "SceneZone": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "land_use": {
+            "type": "string",
+            "title": "Land Use"
+          },
+          "population_target": {
+            "type": "integer",
+            "title": "Population Target",
+            "default": 0
+          },
+          "population": {
+            "type": "integer",
+            "title": "Population",
+            "default": 0
+          },
+          "center_x": {
+            "type": "number",
+            "title": "Center X",
+            "default": 0.0
+          },
+          "center_y": {
+            "type": "number",
+            "title": "Center Y",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "land_use"
+        ],
+        "title": "SceneZone"
+      },
+      "ScreenshotUpload": {
+        "properties": {
+          "image_base64": {
+            "type": "string",
+            "title": "Image Base64",
+            "description": "PNG as data URL or raw base64"
+          },
+          "run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run Id"
+          },
+          "comparison_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comparison Id"
+          },
+          "slot": {
+            "type": "string",
+            "title": "Slot",
+            "default": "workspace"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "image_base64"
+        ],
+        "title": "ScreenshotUpload"
+      },
+      "SearchReq": {
+        "properties": {
+          "objective": {
+            "type": "string",
+            "title": "Objective",
+            "default": "minimize_travel_time"
+          },
+          "n_candidates": {
+            "type": "integer",
+            "title": "N Candidates",
+            "default": 10
+          }
+        },
+        "type": "object",
+        "title": "SearchReq"
+      },
+      "SweepReq": {
+        "properties": {
+          "param_name": {
+            "type": "string",
+            "title": "Param Name",
+            "default": "demand_scale"
+          },
+          "values": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Values",
+            "default": [
+              0.75,
+              1.0,
+              1.25
+            ]
+          },
+          "base_diff_ops": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Base Diff Ops",
+            "default": []
+          },
+          "seed": {
+            "type": "integer",
+            "title": "Seed",
+            "default": 42
+          },
+          "msa_max_iter": {
+            "type": "integer",
+            "title": "Msa Max Iter",
+            "default": 5
+          }
+        },
+        "type": "object",
+        "title": "SweepReq"
+      },
+      "TriggerRunReq": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "title": "Scenario Id"
+          },
+          "seeds": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Seeds",
+            "default": [
+              42
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "scenario_id"
+        ],
+        "title": "TriggerRunReq"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VerifyReq": {
+        "properties": {
+          "candidates": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Candidates"
+          },
+          "top_n": {
+            "type": "integer",
+            "title": "Top N",
+            "default": 3
+          },
+          "seeds": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Seeds",
+            "default": [
+              42
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "candidates"
+        ],
+        "title": "VerifyReq"
+      },
+      "WarmStartReq": {
+        "properties": {
+          "seed": {
+            "type": "integer",
+            "title": "Seed",
+            "default": 42
+          },
+          "msa_max_iter": {
+            "type": "integer",
+            "title": "Msa Max Iter",
+            "default": 10
+          }
+        },
+        "type": "object",
+        "title": "WarmStartReq"
+      }
+    }
+  }
+}

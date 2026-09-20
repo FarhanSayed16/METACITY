@@ -1,7 +1,7 @@
 """Tests for N-1 resilience scanner (schema-safe link closure)."""
 from core.config import SimConfig
 from core.metrics.resilience import calculate_n1_resilience
-from core.schema.scene import Scene, SceneLink, SceneNode, SceneBounds
+from core.schema.scene import Scene, SceneLink, SceneNode
 
 
 def _tiny_scene() -> Scene:
@@ -10,7 +10,7 @@ def _tiny_scene() -> Scene:
         name="resilience-tiny",
         description="two-link corridor",
         calibration_status="synthetic_uncalibrated",
-        bounds=SceneBounds(width_m=1000, height_m=100),
+        bounds={"width_m": 1000, "height_m": 100},
         nodes=[
             SceneNode(id="A", x=0, y=0),
             SceneNode(id="B", x=500, y=0),
@@ -45,9 +45,6 @@ def _tiny_scene() -> Scene:
                 length_m=1000,
             ),
         ],
-        zones=[],
-        facilities=[],
-        parameters={},
     )
 
 
