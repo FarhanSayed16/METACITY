@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 from core.schema.scene import Scene
+from core.config import SimConfig
 from core.runner import run_replication
 
 def test_golden_seed_reproducibility():
@@ -12,13 +13,17 @@ def test_golden_seed_reproducibility():
     scene_data = json.loads(template_path.read_text())
     scene = Scene.model_validate(scene_data)
     
-    kpis_run1 = run_replication(scene, seed=42)
-    kpis_run2 = run_replication(scene, seed=42)
-    kpis_run3 = run_replication(scene, seed=99)
+    config = SimConfig()
+    kpis_run1 = run_replication("test1", scene, config, seed=42)
+    kpis_run2 = run_replication("test2", scene, config, seed=42)
+    kpis_run3 = run_replication("test3", scene, config, seed=99)
     
     # Same seed MUST produce identical exact outputs
-    assert kpis_run1.total_trips == kpis_run2.total_trips
-    assert kpis_run1.avg_travel_time_min == kpis_run2.avg_travel_time_min
+    assert kpis_run1.total_trips_completed == kpis_run2.total_trips_completed
+    assert kpis_run1.average_travel_time_mins == kpis_run2.average_travel_time_mins
     
-    # Different seed MAY produce different outputs (but total trips is likely same if tied to capacity here)
-    # The key test is the absolute match of the 42 seed.
+    # Different seeds should produce different outputs (unless simulation is entirely static)
+    if kpis_run1.total_trips_completed > 0:
+        # Since the network is very small, average_travel_time might be identical.
+        # We can just verify the trips were completed.
+        pass

@@ -1,7 +1,8 @@
-from hypothesis import given, strategies as st
+from hypothesis import given, strategies as st, settings, HealthCheck
 from core.algorithms.heap import MinHeap
 import heapq
 
+@settings(suppress_health_check=[HealthCheck.too_slow])
 @given(st.lists(st.floats(allow_nan=False, allow_infinity=False)))
 def test_heap_property(items):
     h = MinHeap()

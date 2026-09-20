@@ -60,7 +60,7 @@ def test_full_system_integration_flow():
         res = client.get(f"/runs/{run_id}/metrics")
         assert res.status_code == 200, res.text
         metrics = res.json()
-        assert "total_trips" in metrics
+        assert "total_trips_completed" in metrics
     
         # 7. For MVP comparison test, we'll just compare baseline against itself
         comp_payload = {
@@ -70,10 +70,10 @@ def test_full_system_integration_flow():
         res = client.post("/comparisons", json=comp_payload)
         assert res.status_code == 200, res.text
         comp_result = res.json()
-        assert comp_result["samples"] == 1
+        assert comp_result["statistics"]["samples"] == 1
         
         # 8. Fetch Report
-        res = client.get("/reports/some_id")
+        res = client.get(f"/reports/comparison?baseline_id={baseline_id}&target_id={baseline_id}")
         assert res.status_code == 200, res.text
         assert "text/html" in res.headers["content-type"]
         assert "Comparison Report" in res.text
