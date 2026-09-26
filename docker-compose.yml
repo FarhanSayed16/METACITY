@@ -1,5 +1,8 @@
 version: '3.8'
 
+# METACITY product stack (root only).
+# Do NOT use a second friend compose — partner tree was removed (see docs/merge/ARCHIVE_FRIEND.md).
+
 services:
   backend:
     build: 

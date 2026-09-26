@@ -1,17 +1,43 @@
 # METACITY — Full System Audit (MP-01 … MP-30)
 
 > **Purpose:** One comprehensive fix list so the system can be closed as complete before UI polish / next enhancement work.  
-> **Date:** 20 September 2026  
+> **Date:** 20 September 2026 · **Merge update:** 25 September 2026  
 > **Scope:** Re-check MP-01…20 (including prior audit fixes) + full audit MP-21…30  
-> **Tests:** `pytest` → **92 passed**, 13 warnings (Waves A–D + Appendix A/B closed)  
-> **Verdict:** Substantial product exists, but **the system is not EXIT-complete through Phase 30.** Master Plan Progress Log + EXIT boxes reconciled honestly (Wave D). Appendix A/B closed. Remaining work is Wave E UI polish + MVP tag when committed.
+> **Tests:** `pytest` → **96 passed** (Phase 8 twin/disaster integration added); FE Vitest **6** (registry + landing smoke)  
+> **Partner merge:** Phases **0–8 DONE** — see `docs/METACITY_Partner_Merge_Unification_Plan.md`. Phase 9 docs ready; tag `mvp-1.1-unified` when you request commit/tag.  
+> **Verdict:** Unified dual-mode product is demoable. Historical MP-23–30 EXIT boxes may still be open for polish; do **not** claim “Phase 30 complete.” Keep Level-1 honesty on agents / Ask / SplitWipe.
 
 | Field | Value |
 |---|---|
 | Prior audit | `METACITY_Audit_MP01_MP20_Fixes.md` (many P0s fixed) |
 | This document | Supersedes that file as the **current** fix queue |
-| Honest status | **~70–80% engineered · ~40–50% EXIT-complete** |
-| Safe next focus | Commit working tree; tag `mvp-1.0` when ready |
+| Honest status | **~85% engineered · merge Phases 0–8 closed · MVP tag pending commit** |
+| Safe next focus | Commit + tag `mvp-1.1-unified`, then Phase 10 enhancements as prioritized |
+
+---
+
+## 0. Partner merge status (25 Sep 2026)
+
+| Phase | Goal | Status |
+|---|---|---|
+| 0 | Freeze friend as vendor (later **deleted** post-merge) | **DONE** → removed; see ARCHIVE_FRIEND |
+| 1 | Integration spine / flags / one compose | **DONE** |
+| 2 | GLB AssetRegistry (42) | **DONE** |
+| 3 | Scene-driven City Twin | **DONE** |
+| 4 | Cinematic landing (Civic Steel) | **DONE** |
+| 5 | Disaster Lab → your ops | **DONE** |
+| 6 | AI Command + guided Ask | **DONE** |
+| 7 | `agents_sample` viz (honest) | **DONE** |
+| 8 | Hardening (LOD, SplitWipe label, Vitest, pytest) | **DONE** |
+| 9 | Docs / stakeholder / archive | **Docs DONE** · tag when asked |
+| 10 | Enhancements backlog (E-M1…E-M6) | **Groomed** — `docs/merge/ENHANCEMENTS_BACKLOG.md` |
+
+**Honesty reminders still in force**
+
+- Agents viz ≠ microsimulation (`docs/merge/AGENTS_VIZ_HONESTY.md`)
+- Ask = guided templates unless E-M3
+- SplitWipe = aesthetic preview; Compare = real dual-run evidence
+- Friend backend = reference only (`docs/merge/ARCHIVE_FRIEND.md`)
 
 ---
 
@@ -47,17 +73,19 @@ Many earlier **P0s are fixed**:
 - `workers/pool.py` exists for dev compose
 - `agents_sample` populated; `final_gap` in `meta.json`
 - Toast + ApiDown present; Compare UI with mechanisms exists
-- Bypass multi-seed integration test added (suite now 61 tests)
+- Bypass multi-seed integration test added
 
-### What is still not true (honest leftover — not Appendix A)
+### Partner merge (Sep 2026)
 
-- **MVP gate (MP-22)** — demos/screenshots landed; `mvp-1.0` tag still pending commit
-- **MP-23–30 EXIT** — Progress Log correctly unchecked; engines exist, polish remains
-- **Wave E UI** — workspace/evidence/trust polish not started
+Waves A–E plus merge Phases 0–8 delivered dual-mode product entry, City Twin GLBs, Disaster Lab, AI Command, agents viz, and hardening tests. Remaining governance step: **commit + tag** when you ask.
 
-Appendix A broken call sites from the original audit are **all fixed** (see Appendix A status table).
+### What is still not true (honest leftover)
 
-**Bottom line:** Do not treat the project as “Phase 30 complete.” Waves A–D + Appendix A/B closed the P0/P1 hygiene queue and residual broken sites; treat remaining work as Wave E UI + MVP tag.
+- **`mvp-1.1-unified` tag** — pending explicit commit/tag request
+- **MP-23–30 EXIT** — Progress Log may still show open polish items; engines exist
+- **E-M1…E-M6** — enhancements (real LLM, friend FSM adapter, etc.) are backlog, not P0
+
+**Bottom line:** Demo the unified product with Level-1 claims. Do not claim “Phase 30 complete” or “microsim agents.”
 
 ---
 

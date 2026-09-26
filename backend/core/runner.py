@@ -88,7 +88,7 @@ def run_replication(run_id: str, scene: Scene, config: SimConfig, seed: int = 42
                     max_iterations=config.msa_max_iter
                 )
                 
-                # Populate agents_sample: cap at 200 agents on links
+                # Populate agents_sample: cap at 200 agents on links (viz only — not microsim)
                 sample_agents = []
                 sampled = 0
                 for aid, pos in agent_positions.items():
@@ -97,13 +97,18 @@ def run_replication(run_id: str, scene: Scene, config: SimConfig, seed: int = 42
                     from_data = world.network.nodes_data.get(pos.get("from_node", ""))
                     to_data = world.network.nodes_data.get(pos.get("to_node", ""))
                     if from_data and to_data:
-                        # Interpolate position (midpoint for simplicity)
+                        link_tt = max(float(pos.get("link_tt") or 1.0), 1e-6)
+                        enter_t = float(pos.get("enter_t", current_time))
+                        progress = min(1.0, max(0.0, (current_time - enter_t) / link_tt))
+                        fx, fy = from_data["x"], from_data["y"]
+                        tx, ty = to_data["x"], to_data["y"]
                         sample_agents.append({
                             "id": aid,
-                            "x": (from_data["x"] + to_data["x"]) / 2,
-                            "y": (from_data["y"] + to_data["y"]) / 2,
+                            "x": fx + (tx - fx) * progress,
+                            "y": fy + (ty - fy) * progress,
                             "mode": pos.get("mode", "car"),
-                            "link_id": pos.get("link_id", "")
+                            "link_id": pos.get("link_id", ""),
+                            "progress": round(progress, 3),
                         })
                         sampled += 1
                 
@@ -226,17 +231,20 @@ def run_replication(run_id: str, scene: Scene, config: SimConfig, seed: int = 42
                     
                     if link_id:
                         link_volumes[link_id] = link_volumes.get(link_id, 0) + 1
-                        # Track agent position for sampling
-                        agent_positions[event.agent_id] = {
-                            "link_id": link_id, "mode": mode,
-                            "from_node": u, "to_node": v
-                        }
                         vol = link_volumes[link_id]
                         cap = d.get("capacity", 1000)
                         fft = d.get("free_flow_time_m", 1.0)
                         # Delay for *this* agent entering now
                         delay = fft * (1.0 + config.bpr_alpha * ((vol / max(cap, 1)) ** config.bpr_beta))
-                        
+                        # Track agent position for City Twin sample viz (progress along link)
+                        agent_positions[event.agent_id] = {
+                            "link_id": link_id,
+                            "mode": mode,
+                            "from_node": u,
+                            "to_node": v,
+                            "enter_t": exact_time,
+                            "link_tt": delay,
+                        }
                         if link_id in experienced_delays:
                             experienced_delays[link_id].append(delay)
                     else:

@@ -35,4 +35,7 @@ dist/
 # METACITY data
 backend/data/runs/
 backend/data/metacity.db*
+backend/.hypothesis/
+backend/.pytest_cache/
+frontend/node_modules/.tmp/
 .env

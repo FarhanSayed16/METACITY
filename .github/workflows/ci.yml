@@ -19,7 +19,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: "20" }
       - run: cd backend && pip install -e ".[dev]"
-      - run: cd frontend && npm ci --legacy-peer-deps && npm run build
+      - run: cd frontend && npm ci --legacy-peer-deps && npm run verify:assets && npm test && npm run build
       - name: OpenAPI TypeScript drift check
         run: |
           cd frontend
