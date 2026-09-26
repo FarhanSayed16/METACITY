@@ -10,7 +10,10 @@
     "preview": "vite preview",
     "typegen": "npm run typegen:schema && npx -y openapi-typescript ./openapi.json -o src/lib/api-types.ts",
     "typegen:schema": "cd ../backend && python scripts/dump_openapi.py",
-    "typegen:check": "npm run typegen && git diff --exit-code -- src/lib/api-types.ts openapi.json"
+    "typegen:check": "npm run typegen && git diff --exit-code -- src/lib/api-types.ts openapi.json",
+    "verify:assets": "node ../scripts/verify-asset-registry.mjs",
+    "test": "vitest run --config vitest.config.ts",
+    "test:watch": "vitest --config vitest.config.ts"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.8",
@@ -18,9 +21,9 @@
     "@tailwindcss/vite": "^4.3.3",
     "classnames": "^2.5.1",
     "lucide-react": "^1.47.0",
-    "maplibre-gl": "^6.10.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "react-is": "^19.3.0",
     "react-router-dom": "^7.18.4",
     "recharts": "^3.10.1",
     "tailwindcss": "^4.3.3",
@@ -28,13 +31,16 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@testing-library/react": "^16.3.3",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
     "@types/three": "^0.186.0",
     "@vitejs/plugin-react": "^6.1.1",
+    "jsdom": "^26.1.0",
     "oxlint": "^1.81.0",
     "typescript": "~6.0.2",
-    "vite": "^8.3.0"
+    "vite": "^8.3.0",
+    "vitest": "^3.2.7"
   }
 }
