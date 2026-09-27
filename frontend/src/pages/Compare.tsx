@@ -290,7 +290,8 @@ export function Compare() {
                 Isolation (disaster network)
               </h3>
               <p className="text-sm text-[var(--text-secondary)] mb-3">
-                Post-scenario isolation ratio delta (higher = more fragmentation).
+                Post-scenario isolation ratio delta from Disaster Lab / flood / outage / close_link ops
+                (higher = more fragmentation).
               </p>
               <div className="grid grid-cols-3 gap-3 text-sm">
                 <div>

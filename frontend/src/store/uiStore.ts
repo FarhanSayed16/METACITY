@@ -29,6 +29,12 @@ interface UIState {
   toggleHelp: () => void;
   saveHandler: (() => void) | null;
   setSaveHandler: (fn: (() => void) | null) => void;
+  showDisasterLab: boolean;
+  setShowDisasterLab: (show: boolean) => void;
+  showAskAI: boolean;
+  setShowAskAI: (show: boolean) => void;
+  selectedAgentId: string | null;
+  setSelectedAgentId: (id: string | null) => void;
 }
 
 export const useUIStore = create<UIState>((set) => ({
@@ -60,4 +66,10 @@ export const useUIStore = create<UIState>((set) => ({
   toggleHelp: () => set((s) => ({ showHelp: !s.showHelp })),
   saveHandler: null,
   setSaveHandler: (fn) => set({ saveHandler: fn }),
+  showDisasterLab: false,
+  setShowDisasterLab: (show) => set({ showDisasterLab: show }),
+  showAskAI: false,
+  setShowAskAI: (show) => set({ showAskAI: show }),
+  selectedAgentId: null,
+  setSelectedAgentId: (id) => set({ selectedAgentId: id }),
 }));

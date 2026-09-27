@@ -29,13 +29,15 @@ export const Projects: React.FC = () => {
   }, []);
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-4 sm:p-8 max-w-6xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div>
           <h1 className="text-2xl font-bold">Projects</h1>
-          <p className="text-[var(--text-secondary)]">Manage your simulation environments and scenarios.</p>
+          <p className="text-[var(--text-secondary)] text-sm sm:text-base">
+            Manage simulation environments — then open Network Evidence or City Twin.
+          </p>
         </div>
-        <Button className="gap-2" onClick={() => setWizardOpen(true)}>
+        <Button className="gap-2 w-full sm:w-auto" onClick={() => setWizardOpen(true)}>
           <Plus className="h-4 w-4" />
           New Project
         </Button>

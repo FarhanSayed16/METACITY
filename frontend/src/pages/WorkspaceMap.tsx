@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useBlocker, useParams } from 'react-router-dom';
+import { useLocation, useBlocker, useParams, useNavigate } from 'react-router-dom';
 import { Canvas3D } from '../components/Map/Canvas3D';
 import { SimStrip } from '../components/layout/SimStrip';
 import { InspectorPanel } from '../components/layout/InspectorPanel';
@@ -10,7 +10,7 @@ import { useScenarioDraftStore } from '../store/scenarioDraftStore';
 import { useHealthStore } from '../store/healthStore';
 import { api } from '../lib/api';
 import { toast } from '../components/ui/Toast';
-import { Layers, Box, MousePointer2, CirclePlus, GitMerge, Save, Undo, Redo, Camera, Search, Activity, EyeOff, HelpCircle } from 'lucide-react';
+import { Layers, Box, MousePointer2, CirclePlus, GitMerge, Save, Undo, Redo, Camera, Search, Activity, EyeOff, HelpCircle, Building2 } from 'lucide-react';
 import { useKeyboardShortcuts } from '../lib/useKeyboardShortcuts';
 import { useURLParams } from '../hooks/useURLParams';
 import { MiniMap } from '../components/Map/MiniMap';
@@ -23,9 +23,13 @@ import { DragDropZone } from '../components/Import/DragDropZone';
 import { CongestionLegend } from '../components/ui/CongestionLegend';
 import { CalibrationBadge } from '../components/Compare/CalibrationBadge';
 import { AssumptionsDrawer } from '../components/Compare/AssumptionsDrawer';
+import { featureFlags } from '../lib/featureFlags';
+import { DisasterLabModal } from '../components/disasters/DisasterLabModal';
+import { DisasterLabHUD } from '../components/disasters/DisasterLabHUD';
 
 export const WorkspaceMap: React.FC = () => {
   const { id: projectId } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const is3D = useUIStore((state) => state.is3D);
   const toggle3D = useUIStore((state) => state.toggle3D);
   const showLayersLegend = useUIStore((s) => s.showLayersLegend);
@@ -193,7 +197,7 @@ export const WorkspaceMap: React.FC = () => {
                 {draftLabel ?? 'Scenario draft'} · {pendingOps.length} op{pendingOps.length === 1 ? '' : 's'}
               </p>
               <p className="text-[10px] text-[var(--text-muted)] mt-1">
-                Dashed amber/teal = proposed · red dashed = closures
+                Dashed amber/teal = proposed · red dashed = closures / flood / outage
               </p>
             </div>
             <button
@@ -207,6 +211,9 @@ export const WorkspaceMap: React.FC = () => {
           </div>
         </div>
       )}
+
+      {featureFlags.disasterLab && <DisasterLabHUD />}
+      {featureFlags.disasterLab && <DisasterLabModal />}
 
       {/* Floating UI Elements */}
       
@@ -226,6 +233,21 @@ export const WorkspaceMap: React.FC = () => {
           <Box size={16} />
           <span>3D View</span>
         </button>
+        {featureFlags.cityTwin && projectId && (
+          <button
+            type="button"
+            onClick={() => {
+              const runId = useSimStore.getState().activeRunId;
+              const q = runId ? `?run_id=${encodeURIComponent(runId)}` : '';
+              navigate(`/projects/${projectId}/city${q}`);
+            }}
+            className="px-4 py-2 flex items-center space-x-2 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] transition-colors border-l border-[var(--border-color)]"
+            title="City Twin (GLB presentation)"
+          >
+            <Building2 size={16} />
+            <span className="hidden sm:inline">City Twin</span>
+          </button>
+        )}
       </div>
 
       {/* Editor Toolbar — desktop edit chrome */}

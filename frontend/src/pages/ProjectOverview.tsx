@@ -3,12 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 import type { Project } from '../types/api';
 import { Button } from '../components/ui/Button';
-import { Map, Plus, Play, ChevronDown, Trash2, X, Eye } from 'lucide-react';
+import { Map, Plus, Play, ChevronDown, Trash2, X, Eye, Building2 } from 'lucide-react';
 import { Skeleton } from '../components/ui/Skeleton';
 import { toast } from '../components/ui/Toast';
 import { CalibrationPanel } from '../components/projects/CalibrationPanel';
 import { useScenarioDraftStore } from '../store/scenarioDraftStore';
 import { useHealthStore } from '../store/healthStore';
+import { useUIStore } from '../store/uiStore';
+import { featureFlags } from '../lib/featureFlags';
 
 // Supported op types
 const OP_TYPES = [
@@ -190,29 +192,84 @@ export const ProjectOverview: React.FC = () => {
   }
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">{project.name}</h1>
-        <p className="text-[var(--text-secondary)] text-lg">{project.description}</p>
+    <div className="p-4 sm:p-8 max-w-4xl mx-auto">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">{project.name}</h1>
+        <p className="text-[var(--text-secondary)] text-base sm:text-lg">{project.description}</p>
       </div>
 
-      <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-lg p-6 mb-8 flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
+      {/* Dual-mode entry — Phase 4 shell */}
+      <div className="mb-8 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <button
+          type="button"
+          onClick={() => navigate(`/projects/${id}/map`)}
+          className="text-left p-5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:border-[var(--accent)] hover:bg-[var(--accent-muted)] transition-colors group"
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <Map className="h-5 w-5 text-[var(--accent)]" />
+            <span className="font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)]">
+              Network Evidence
+            </span>
+          </div>
+          <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+            Edit links, run scenarios, inspect congestion and Compare KPIs.
+          </p>
+        </button>
+        {featureFlags.cityTwin ? (
+          <button
+            type="button"
+            onClick={() => navigate(`/projects/${id}/city`)}
+            className="text-left p-5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:border-[var(--accent)] hover:bg-[var(--accent-muted)] transition-colors group"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <Building2 className="h-5 w-5 text-[var(--accent)]" />
+              <span className="font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)]">
+                City Twin
+              </span>
+            </div>
+            <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+              Present the same scene with GLB buildings and live road colours.
+            </p>
+          </button>
+        ) : (
+          <div className="p-5 rounded-lg border border-dashed border-[var(--border-subtle)] bg-[var(--bg-surface-muted)]">
+            <p className="text-sm text-[var(--text-muted)]">
+              City Twin is off. Set <span className="font-mono">VITE_CITY_TWIN=1</span> to enable.
+            </p>
+          </div>
+        )}
+      </div>
+
+      <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-lg p-4 sm:p-6 mb-8 flex flex-col md:flex-row gap-4 sm:gap-6 items-start md:items-center justify-between">
         <div>
           <h3 className="font-semibold text-lg mb-1">Base Template</h3>
-          <p className="text-[var(--text-secondary)] font-mono text-sm">{project.scene_json_path}</p>
+          <p className="text-[var(--text-secondary)] font-mono text-sm break-all">{project.scene_json_path}</p>
           <p className="text-xs text-[var(--text-muted)] mt-2">
             Created: {new Date(project.created_at).toLocaleString()}
           </p>
         </div>
-        <div className="flex-shrink-0 flex gap-2">
+        <div className="flex-shrink-0 flex flex-wrap gap-2">
           <Button variant="secondary" size="lg" className="gap-2" onClick={() => navigate(`/projects/${id}/runs`)}>
             <Play className="h-5 w-5" />
             Runs
           </Button>
           <Button size="lg" className="gap-2" onClick={() => navigate(`/projects/${id}/map`)}>
             <Map className="h-5 w-5" />
-            Open Workspace
+            Open map
           </Button>
+          {featureFlags.disasterLab && (
+            <Button
+              variant="secondary"
+              size="lg"
+              className="gap-2"
+              onClick={() => {
+                useUIStore.getState().setShowDisasterLab(true);
+                navigate(`/projects/${id}/map`);
+              }}
+            >
+              Disaster Lab
+            </Button>
+          )}
         </div>
       </div>
 
