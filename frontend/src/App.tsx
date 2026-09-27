@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import { MainLayout } from './components/layout/MainLayout';
-import { Welcome } from './pages/Welcome';
+import { LandingPage } from './pages/LandingPage';
 import { Projects } from './pages/Projects';
 import { ProjectOverview } from './pages/ProjectOverview';
 import { Settings } from './pages/Settings';
@@ -20,9 +20,12 @@ import { HospitalSurge } from './pages/HospitalSurge';
 import { Runs } from './pages/Runs';
 import { Planner } from './pages/Planner';
 import { NetworkTools } from './pages/NetworkTools';
+import { CityTwin } from './pages/CityTwin';
 import { OnboardingTour } from './components/ui/OnboardingTour';
 import { useHealthStore } from './store/healthStore';
 import { api } from './lib/api';
+
+/** City Twin route is always registered; `featureFlags.cityTwin` gates UI CTAs + page content. */
 
 /**
  * Root layout that wraps the entire app.
@@ -57,7 +60,10 @@ function RootLayout() {
     };
   }, [setApiReachable, setModelVersion]);
 
-  if (initialCheckDone && apiReachable === false && !window.location.pathname.includes('/projects')) {
+  // Landing (`/`) stays reachable offline so product entry still works.
+  const path = window.location.pathname;
+  const allowOffline = path === '/' || path.includes('/projects');
+  if (initialCheckDone && apiReachable === false && !allowOffline) {
     return <ApiDown />;
   }
 
@@ -85,7 +91,7 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     errorElement: <NotFound />,
     children: [
-      { path: '/', element: <Welcome /> },
+      { path: '/', element: <LandingPage /> },
 
       // Routes wrapped in MainLayout (with TopBar, ProjectNav, StatusBar)
       {
@@ -96,6 +102,7 @@ const router = createBrowserRouter([
           { path: '/settings', element: <Settings /> },
           { path: '/ui-kit', element: <UiKit /> },
           { path: '/projects/:id/map', element: <WorkspaceMap /> },
+          { path: '/projects/:id/city', element: <CityTwin /> },
           { path: '/projects/:id/compare', element: <Compare /> },
           { path: '/projects/:id/runs', element: <Runs /> },
           { path: '/projects/:id/runs/:runId', element: <Runs /> },
