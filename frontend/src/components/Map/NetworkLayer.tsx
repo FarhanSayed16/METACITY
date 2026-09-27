@@ -167,16 +167,18 @@ export const NetworkLayer: React.FC = () => {
         case 'add_link':
           if (d.id && d.from_node && d.to_node) extraLinks.push(d);
           break;
-        case 'flood':
+        case 'flood': {
+          const water = Number(d.water_level) || 5;
+          const inundated = new Set<string>();
+          sceneData?.nodes?.forEach((n: any) => {
+            const elev = Math.abs(Number(n.x) - 500) * 0.05;
+            if (elev < water) inundated.add(n.id);
+          });
           sceneData?.links?.forEach((l: any) => {
-            const from = map.get(l.from_node);
-            const to = map.get(l.to_node);
-            if (!from || !to) return;
-            if (Math.abs(from.x - 500) < 200 || Math.abs(to.x - 500) < 200) {
-              closed.add(l.id);
-            }
+            if (inundated.has(l.from_node) || inundated.has(l.to_node)) closed.add(l.id);
           });
           break;
+        }
         default:
           break;
       }

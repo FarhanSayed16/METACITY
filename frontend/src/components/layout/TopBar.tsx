@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
-import { Settings, Box, Sparkles, Menu, X } from 'lucide-react';
+import { NavLink, Link } from 'react-router-dom';
+import { Settings, Box, Sparkles, Menu, X, Building2, Map, MessageCircle } from 'lucide-react';
 import { api } from '../../lib/api';
 import { useUIStore } from '../../store/uiStore';
+import { featureFlags } from '../../lib/featureFlags';
 
 export const TopBar: React.FC = () => {
   const [modules, setModules] = useState<any[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
   const activeProjectId = useUIStore((s) => s.activeProjectId);
+  const setShowAskAI = useUIStore((s) => s.setShowAskAI);
 
   useEffect(() => {
     api
@@ -26,10 +28,10 @@ export const TopBar: React.FC = () => {
 
   return (
     <header className="h-14 bg-[var(--bg-chrome)] text-[var(--text-inverse)] flex items-center justify-between px-3 md:px-4 shrink-0 relative z-[60]">
-      <div className="flex items-center space-x-2">
+      <Link to="/" className="flex items-center space-x-2 hover:opacity-90 transition-opacity">
         <Box className="h-6 w-6 text-[var(--accent)]" />
         <span className="font-bold text-lg tracking-wide">METACITY</span>
-      </div>
+      </Link>
 
       {/* Desktop nav */}
       <nav className="hidden md:flex items-center space-x-1">
@@ -81,8 +83,20 @@ export const TopBar: React.FC = () => {
           }
         >
           <Sparkles className="h-3.5 w-3.5" />
-          Planner
+          {featureFlags.aiCommand ? 'AI Center' : 'Planner'}
         </NavLink>
+
+        {featureFlags.aiCommand && (
+          <button
+            type="button"
+            onClick={() => setShowAskAI(true)}
+            className="px-3 py-1.5 rounded-md text-sm font-medium text-teal-200 hover:bg-[var(--accent)]/15 flex items-center gap-1"
+            title="Ask METACITY (guided templates)"
+          >
+            <MessageCircle className="h-3.5 w-3.5" />
+            Ask
+          </button>
+        )}
 
         <NavLink to="/dsa" className={linkClass}>
           Algorithms
@@ -118,6 +132,26 @@ export const TopBar: React.FC = () => {
           {activeProjectId && (
             <>
               <NavLink
+                to={`/projects/${activeProjectId}/map`}
+                className={linkClass}
+                onClick={() => setMenuOpen(false)}
+              >
+                <span className="inline-flex items-center gap-1.5">
+                  <Map className="h-3.5 w-3.5" /> Network
+                </span>
+              </NavLink>
+              {featureFlags.cityTwin && (
+                <NavLink
+                  to={`/projects/${activeProjectId}/city`}
+                  className={linkClass}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <span className="inline-flex items-center gap-1.5">
+                    <Building2 className="h-3.5 w-3.5" /> City Twin
+                  </span>
+                </NavLink>
+              )}
+              <NavLink
                 to={`/projects/${activeProjectId}/compare`}
                 className={linkClass}
                 onClick={() => setMenuOpen(false)}
@@ -136,6 +170,18 @@ export const TopBar: React.FC = () => {
           <NavLink to="/dsa" className={linkClass} onClick={() => setMenuOpen(false)}>
             Algorithms
           </NavLink>
+          {featureFlags.aiCommand && (
+            <button
+              type="button"
+              className={`${linkClass({ isActive: false })} text-left`}
+              onClick={() => {
+                setShowAskAI(true);
+                setMenuOpen(false);
+              }}
+            >
+              Ask METACITY
+            </button>
+          )}
           <NavLink to="/settings" className={linkClass} onClick={() => setMenuOpen(false)}>
             Settings
           </NavLink>

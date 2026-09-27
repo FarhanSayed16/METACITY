@@ -3,6 +3,8 @@ import { Outlet } from 'react-router-dom';
 import { TopBar } from './TopBar';
 import { ProjectNav } from './ProjectNav';
 import { StatusBar } from './StatusBar';
+import { AskMetacityAI } from '../ai/AskMetacityAI';
+import { featureFlags } from '../../lib/featureFlags';
 
 export const MainLayout: React.FC = () => {
   return (
@@ -17,6 +19,7 @@ export const MainLayout: React.FC = () => {
         </main>
       </div>
       <StatusBar />
+      {featureFlags.aiCommand && <AskMetacityAI />}
     </div>
   );
 };

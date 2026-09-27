@@ -1,7 +1,8 @@
 import React from 'react';
 import { NavLink, useParams } from 'react-router-dom';
-import { Map, Activity, Play, Network } from 'lucide-react';
+import { Map, Activity, Play, Network, Building2 } from 'lucide-react';
 import { useUIStore } from '../../store/uiStore';
+import { featureFlags } from '../../lib/featureFlags';
 
 export const ProjectNav: React.FC = () => {
   const { id: routeId } = useParams<{ id?: string }>();
@@ -17,10 +18,21 @@ export const ProjectNav: React.FC = () => {
         className={({ isActive }) =>
           `p-2 rounded-lg transition-colors ${isActive ? 'bg-[var(--accent)] text-white' : 'hover:bg-gray-700 hover:text-white'}`
         }
-        title="Map & Scenarios"
+        title="Network Evidence map"
       >
         <Map className="h-6 w-6" />
       </NavLink>
+      {featureFlags.cityTwin && (
+        <NavLink
+          to={base ? `${base}/city` : '/projects'}
+          className={({ isActive }) =>
+            `p-2 rounded-lg transition-colors ${isActive ? 'bg-[var(--accent)] text-white' : 'hover:bg-gray-700 hover:text-white'}`
+          }
+          title="City Twin (GLB presentation)"
+        >
+          <Building2 className="h-6 w-6" />
+        </NavLink>
+      )}
       <NavLink
         to={base ? `${base}/runs` : '/runs'}
         className={({ isActive }) =>

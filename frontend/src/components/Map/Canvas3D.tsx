@@ -61,7 +61,7 @@ export const Canvas3D: React.FC<Canvas3DProps> = ({ perspective = true }) => {
         {perspective && <HeatmapLayer type="accessibility" />}
         <NetworkLayer />
 
-        {perspective && <LODManager />}
+        {perspective && <LODManager highDist={2000} midDist={500} />}
       </Canvas>
     </div>
   );

@@ -1,38 +1,37 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
+import { tierFromDistance, useLodStore, type LodTier } from '../../store/lodStore';
 
-// We define 3 LOD tiers based on camera distance
-// 0: High Detail (< 500)
-// 1: Medium Detail (500 - 2000)
-// 2: Low Detail (> 2000)
+type Props = {
+  /** Override thresholds for Network map (larger world units). */
+  highDist?: number;
+  midDist?: number;
+};
 
-export const LODManager: React.FC = () => {
+/**
+ * Updates lodStore from camera distance so Twin GLBs / agents can cull.
+ * No React re-render of the canvas tree except store subscribers.
+ */
+export function LODManager({ highDist, midDist }: Props) {
   const { camera } = useThree();
-  const lastLOD = useRef(-1);
+  const lastLOD = useRef<LodTier>(-1 as LodTier);
+  const setTier = useLodStore((s) => s.setTier);
 
-  // Instead of pushing to a global store which causes React renders,
-  // a true LOD system uses instancing or three.js `LOD` objects.
-  // For MVP, we'll just log or set a class on the body to let CSS know, 
-  // or we can dispatch to the store only when it changes to trigger a re-render of NetworkLayer.
-  // For maximum performance, we won't even use this to trigger React renders. We will just expose it.
-  
   useFrame(() => {
-    // Distance from origin (assuming city is centered)
     const dist = camera.position.length();
-    
-    let currentLOD = 0;
-    if (dist > 2000) {
-      currentLOD = 2;
-    } else if (dist > 500) {
-      currentLOD = 1;
+    let current: LodTier = 0;
+    if (highDist != null && midDist != null) {
+      if (dist > highDist) current = 2;
+      else if (dist > midDist) current = 1;
+    } else {
+      current = tierFromDistance(dist);
     }
 
-    if (currentLOD !== lastLOD.current) {
-      lastLOD.current = currentLOD;
-      // You could update a store here if you want to swap React components
-      // console.log("LOD Tier Changed:", currentLOD);
+    if (current !== lastLOD.current) {
+      lastLOD.current = current;
+      setTier(current);
     }
   });
 
   return null;
-};
+}
