@@ -34,33 +34,33 @@ export function OnboardingTour() {
         <div className="p-6 flex-1 min-h-[200px]">
           {step === 1 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-              <h3 className="font-semibold text-gray-800 mb-2">1. Projects & Presets</h3>
+              <h3 className="font-semibold text-gray-800 mb-2">1. Decision Mode</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
-                Start by choosing a project. If you're new, we recommend loading the <b>Highway Bypass</b> preset to see how traffic diverts when a new route opens!
+                Start at <b>Decision</b>. Pick a city (Nexus City) and an infrastructure plan such as the <b>Highway Bypass</b> — no drawing required.
               </p>
             </div>
           )}
           {step === 2 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-              <h3 className="font-semibold text-gray-800 mb-2">2. Scenarios & Editing</h3>
+              <h3 className="font-semibold text-gray-800 mb-2">2. Before vs after</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
-                Inside a project, you can create <b>Scenarios</b>. Add links, close roads, or adjust lanes directly on the 3D map. Your baseline network remains safe.
+                We automatically run the <b>baseline</b> and your <b>plan</b> with matching seeds, then open an Impact briefing with travel time and citizen stress.
               </p>
             </div>
           )}
           {step === 3 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-              <h3 className="font-semibold text-gray-800 mb-2">3. Macroscopic Simulation</h3>
+              <h3 className="font-semibold text-gray-800 mb-2">3. Citizen impact</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
-                Run the simulation to find the <i>User Equilibrium</i> (BPR/MSA). Watch congestion form dynamically on the map over a 24-hour cycle.
+                Stress and Impatience scores are derived from trip delays (Level-1). They show how people&apos;s day may feel if the plan is built — not microsimulated emotions.
               </p>
             </div>
           )}
           {step === 4 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-              <h3 className="font-semibold text-gray-800 mb-2">4. Flagship Comparison</h3>
+              <h3 className="font-semibold text-gray-800 mb-2">4. 3D Twin & Advanced lab</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
-                Compare your Scenario to the Baseline! METACITY will pair the randomized seeds and run a <b>paired t-test</b> to prove if your intervention actually worked.
+                Open the <b>City Twin</b> from the briefing to see the after run in 3D. Use TopBar <b>Advanced lab</b> only if you need the network editor, DSA, or hospital/evac modules.
               </p>
             </div>
           )}
@@ -69,7 +69,7 @@ export function OnboardingTour() {
         <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-between items-center">
           <div className="flex gap-1.5">
             {[1, 2, 3, 4].map(s => (
-              <div key={s} className={`h-1.5 rounded-full transition-all ${s === step ? 'w-6 bg-blue-600' : 'w-1.5 bg-gray-300'}`} />
+              <div key={s} className={`h-1.5 rounded-full transition-all ${s === step ? 'w-6 bg-[var(--accent)]' : 'w-1.5 bg-gray-300'}`} />
             ))}
           </div>
           

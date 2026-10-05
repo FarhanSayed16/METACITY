@@ -12,6 +12,15 @@ function envFlag(name: string, defaultValue: boolean): boolean {
   }
 }
 
+function readAdvancedLabDefault(): boolean {
+  if (envFlag('VITE_ADVANCED_LAB', false)) return true;
+  try {
+    return localStorage.getItem('metacity.advancedLab') === 'true';
+  } catch {
+    return false;
+  }
+}
+
 export const featureFlags = {
   /** City Twin mode route + CTAs (GLB presentation — Phase 2+) */
   cityTwin: envFlag('VITE_CITY_TWIN', true),
@@ -19,6 +28,12 @@ export const featureFlags = {
   disasterLab: envFlag('VITE_DISASTER_LAB', true),
   /** AI Command Center + Ask — Phase 6 */
   aiCommand: envFlag('VITE_AI_COMMAND', true),
+  /**
+   * Advanced lab (editor, DSA, evac, hospital, network tools, AI center).
+   * Default OFF — Decision Mode is the primary product surface.
+   * Persist override via uiStore / localStorage `metacity.advancedLab`.
+   */
+  advancedLab: readAdvancedLabDefault(),
 
   // ── Phase 10 enhancements (default OFF) ─────────────────────────────
   /** E-M1: friend-style FSM billboards on agents_sample (viz only) */

@@ -21,10 +21,10 @@ export function LandingHeroOverlay({ onEnter }: LandingHeroOverlayProps) {
           METACITY
         </p>
         <h1 className="mt-4 sm:mt-5 text-lg sm:text-2xl md:text-3xl font-semibold text-white/90 tracking-tight max-w-xl">
-          Network evidence. Living city twin.
+          Test infrastructure plans before you build.
         </h1>
         <p className="mt-3 text-sm sm:text-base text-white/55 max-w-md leading-relaxed">
-          Run deterministic traffic scenarios, compare outcomes with confidence intervals, then explore the same scene as a GLB city twin.
+          Simulate how a bypass, closure, or flood changes traffic and citizen stress — then review a clear before/after briefing.
         </p>
         <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
           <button
@@ -32,7 +32,7 @@ export function LandingHeroOverlay({ onEnter }: LandingHeroOverlayProps) {
             onClick={onEnter}
             className="px-8 py-3.5 rounded-md bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-bold text-sm tracking-wide transition-colors"
           >
-            Open projects
+            Start a decision
           </button>
           <button
             type="button"

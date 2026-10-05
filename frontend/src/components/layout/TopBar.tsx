@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { Settings, Box, Sparkles, Menu, X, Building2, Map, MessageCircle } from 'lucide-react';
+import { Settings, Box, Sparkles, Menu, X, Building2, Map, MessageCircle, Scale } from 'lucide-react';
 import { api } from '../../lib/api';
 import { useUIStore } from '../../store/uiStore';
 import { featureFlags } from '../../lib/featureFlags';
@@ -10,13 +10,16 @@ export const TopBar: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const activeProjectId = useUIStore((s) => s.activeProjectId);
   const setShowAskAI = useUIStore((s) => s.setShowAskAI);
+  const advancedLab = useUIStore((s) => s.advancedLab);
+  const setAdvancedLab = useUIStore((s) => s.setAdvancedLab);
 
   useEffect(() => {
+    if (!advancedLab) return;
     api
       .getModules()
       .then(setModules)
       .catch((err) => console.error('Failed to load modules', err));
-  }, []);
+  }, [advancedLab]);
 
   const hasEvacuation = modules.some((m) => m.id === 'evacuation_ca');
   const hasHospital = modules.some((m) => m.id === 'hospital_des');
@@ -33,85 +36,112 @@ export const TopBar: React.FC = () => {
         <span className="font-bold text-lg tracking-wide">METACITY</span>
       </Link>
 
-      {/* Desktop nav */}
+      {/* Desktop nav — Decision Mode primary */}
       <nav className="hidden md:flex items-center space-x-1">
-        <NavLink to="/projects" className={linkClass}>
-          Projects
-        </NavLink>
-        <NavLink to="/ui-kit" className={`${linkClass({ isActive: false })} opacity-70`}>
-          UI Kit
-        </NavLink>
-
-        {hasEvacuation && (
-          <NavLink
-            to="/evacuation"
-            className={({ isActive }) =>
-              `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                isActive
-                  ? 'bg-red-500/20 text-red-200'
-                  : 'text-red-400 hover:bg-red-500/10 hover:text-red-300'
-              }`
-            }
-          >
-            Evacuation
-          </NavLink>
-        )}
-
-        {hasHospital && (
-          <NavLink
-            to="/hospital"
-            className={({ isActive }) =>
-              `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                isActive
-                  ? 'bg-[var(--accent)]/20 text-teal-100'
-                  : 'text-teal-300 hover:bg-[var(--accent)]/10'
-              }`
-            }
-          >
-            Hospital
-          </NavLink>
-        )}
-
         <NavLink
-          to={activeProjectId ? `/projects/${activeProjectId}/planner` : '/planner'}
+          to="/decision"
           className={({ isActive }) =>
-            `px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1 ${
+            `px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1.5 ${
               isActive
-                ? 'bg-amber-500/20 text-amber-100'
-                : 'text-amber-300 hover:bg-amber-500/10 hover:text-amber-200'
+                ? 'bg-[var(--accent)]/25 text-white'
+                : 'text-teal-200 hover:bg-[var(--accent)]/15 hover:text-white'
             }`
           }
         >
-          <Sparkles className="h-3.5 w-3.5" />
-          {featureFlags.aiCommand ? 'AI Center' : 'Planner'}
+          <Scale className="h-3.5 w-3.5" />
+          Decision
         </NavLink>
 
-        {featureFlags.aiCommand && (
-          <button
-            type="button"
-            onClick={() => setShowAskAI(true)}
-            className="px-3 py-1.5 rounded-md text-sm font-medium text-teal-200 hover:bg-[var(--accent)]/15 flex items-center gap-1"
-            title="Ask METACITY (guided templates)"
-          >
-            <MessageCircle className="h-3.5 w-3.5" />
-            Ask
-          </button>
+        {advancedLab && (
+          <>
+            <NavLink to="/projects" className={linkClass}>
+              Projects
+            </NavLink>
+            <NavLink to="/ui-kit" className={`${linkClass({ isActive: false })} opacity-70`}>
+              UI Kit
+            </NavLink>
+
+            {hasEvacuation && (
+              <NavLink
+                to="/evacuation"
+                className={({ isActive }) =>
+                  `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'bg-red-500/20 text-red-200'
+                      : 'text-red-400 hover:bg-red-500/10 hover:text-red-300'
+                  }`
+                }
+              >
+                Evacuation
+              </NavLink>
+            )}
+
+            {hasHospital && (
+              <NavLink
+                to="/hospital"
+                className={({ isActive }) =>
+                  `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'bg-[var(--accent)]/20 text-teal-100'
+                      : 'text-teal-300 hover:bg-[var(--accent)]/10'
+                  }`
+                }
+              >
+                Hospital
+              </NavLink>
+            )}
+
+            <NavLink
+              to={activeProjectId ? `/projects/${activeProjectId}/planner` : '/planner'}
+              className={({ isActive }) =>
+                `px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1 ${
+                  isActive
+                    ? 'bg-amber-500/20 text-amber-100'
+                    : 'text-amber-300 hover:bg-amber-500/10 hover:text-amber-200'
+                }`
+              }
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              {featureFlags.aiCommand ? 'AI Center' : 'Planner'}
+            </NavLink>
+
+            {featureFlags.aiCommand && (
+              <button
+                type="button"
+                onClick={() => setShowAskAI(true)}
+                className="px-3 py-1.5 rounded-md text-sm font-medium text-teal-200 hover:bg-[var(--accent)]/15 flex items-center gap-1"
+                title="Ask METACITY (guided templates)"
+              >
+                <MessageCircle className="h-3.5 w-3.5" />
+                Ask
+              </button>
+            )}
+
+            <NavLink to="/dsa" className={linkClass}>
+              Algorithms
+            </NavLink>
+            <NavLink
+              to="/settings"
+              className={({ isActive }) =>
+                `p-1.5 rounded-md transition-colors ${
+                  isActive ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white'
+                }`
+              }
+              title="Settings"
+            >
+              <Settings className="h-5 w-5" />
+            </NavLink>
+          </>
         )}
 
-        <NavLink to="/dsa" className={linkClass}>
-          Algorithms
-        </NavLink>
-        <NavLink
-          to="/settings"
-          className={({ isActive }) =>
-            `p-1.5 rounded-md transition-colors ${
-              isActive ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white'
-            }`
-          }
-          title="Settings"
+        <button
+          type="button"
+          onClick={() => setAdvancedLab(!advancedLab)}
+          className="ml-1 px-2.5 py-1 rounded-md text-[11px] font-medium text-gray-400 hover:text-white hover:bg-white/5 border border-white/10"
+          title={advancedLab ? 'Hide Advanced lab' : 'Show Advanced lab (editor, DSA, modules)'}
         >
-          <Settings className="h-5 w-5" />
-        </NavLink>
+          {advancedLab ? 'Hide lab' : 'Advanced lab'}
+        </button>
       </nav>
 
       {/* Mobile menu */}
@@ -126,65 +156,82 @@ export const TopBar: React.FC = () => {
 
       {menuOpen && (
         <div className="absolute top-14 inset-x-0 bg-[var(--bg-chrome)] border-t border-white/10 p-3 flex flex-col gap-1 md:hidden shadow-xl animate-fade-up">
-          <NavLink to="/projects" className={linkClass} onClick={() => setMenuOpen(false)}>
-            Projects
+          <NavLink to="/decision" className={linkClass} onClick={() => setMenuOpen(false)}>
+            Decision Mode
           </NavLink>
-          {activeProjectId && (
+          {advancedLab && (
             <>
-              <NavLink
-                to={`/projects/${activeProjectId}/map`}
-                className={linkClass}
-                onClick={() => setMenuOpen(false)}
-              >
-                <span className="inline-flex items-center gap-1.5">
-                  <Map className="h-3.5 w-3.5" /> Network
-                </span>
+              <NavLink to="/projects" className={linkClass} onClick={() => setMenuOpen(false)}>
+                Projects
               </NavLink>
-              {featureFlags.cityTwin && (
-                <NavLink
-                  to={`/projects/${activeProjectId}/city`}
-                  className={linkClass}
-                  onClick={() => setMenuOpen(false)}
-                >
-                  <span className="inline-flex items-center gap-1.5">
-                    <Building2 className="h-3.5 w-3.5" /> City Twin
-                  </span>
-                </NavLink>
+              {activeProjectId && (
+                <>
+                  <NavLink
+                    to={`/projects/${activeProjectId}/map`}
+                    className={linkClass}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <span className="inline-flex items-center gap-1.5">
+                      <Map className="h-3.5 w-3.5" /> Network
+                    </span>
+                  </NavLink>
+                  {featureFlags.cityTwin && (
+                    <NavLink
+                      to={`/projects/${activeProjectId}/city`}
+                      className={linkClass}
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <span className="inline-flex items-center gap-1.5">
+                        <Building2 className="h-3.5 w-3.5" /> City Twin
+                      </span>
+                    </NavLink>
+                  )}
+                  <NavLink
+                    to={`/projects/${activeProjectId}/compare`}
+                    className={linkClass}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Compare
+                  </NavLink>
+                  <NavLink
+                    to={`/projects/${activeProjectId}/runs`}
+                    className={linkClass}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Runs
+                  </NavLink>
+                </>
               )}
-              <NavLink
-                to={`/projects/${activeProjectId}/compare`}
-                className={linkClass}
-                onClick={() => setMenuOpen(false)}
-              >
-                Compare
+              <NavLink to="/dsa" className={linkClass} onClick={() => setMenuOpen(false)}>
+                Algorithms
               </NavLink>
-              <NavLink
-                to={`/projects/${activeProjectId}/runs`}
-                className={linkClass}
-                onClick={() => setMenuOpen(false)}
-              >
-                Runs
+              {featureFlags.aiCommand && (
+                <button
+                  type="button"
+                  className={`${linkClass({ isActive: false })} text-left`}
+                  onClick={() => {
+                    setShowAskAI(true);
+                    setMenuOpen(false);
+                  }}
+                >
+                  Ask METACITY
+                </button>
+              )}
+              <NavLink to="/settings" className={linkClass} onClick={() => setMenuOpen(false)}>
+                Settings
               </NavLink>
             </>
           )}
-          <NavLink to="/dsa" className={linkClass} onClick={() => setMenuOpen(false)}>
-            Algorithms
-          </NavLink>
-          {featureFlags.aiCommand && (
-            <button
-              type="button"
-              className={`${linkClass({ isActive: false })} text-left`}
-              onClick={() => {
-                setShowAskAI(true);
-                setMenuOpen(false);
-              }}
-            >
-              Ask METACITY
-            </button>
-          )}
-          <NavLink to="/settings" className={linkClass} onClick={() => setMenuOpen(false)}>
-            Settings
-          </NavLink>
+          <button
+            type="button"
+            className={`${linkClass({ isActive: false })} text-left`}
+            onClick={() => {
+              setAdvancedLab(!advancedLab);
+              setMenuOpen(false);
+            }}
+          >
+            {advancedLab ? 'Hide Advanced lab' : 'Show Advanced lab'}
+          </button>
         </div>
       )}
     </header>

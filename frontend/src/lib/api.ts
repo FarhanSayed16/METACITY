@@ -3,7 +3,7 @@ import type { Project, ProjectCreateReq, Template, Profile, Preset } from '../ty
 /** Backend origin — override with VITE_API_URL in non-local deploys. */
 export const API_BASE =
   (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_URL) ||
-  'http://localhost:8001';
+  'http://localhost:8000';
 
 export function apiUrl(path: string): string {
   const p = path.startsWith('/') ? path : `/${path}`;
@@ -137,4 +137,14 @@ export const api = {
 
   // Modules
   getModules: () => fetchApi<any[]>('/modules'),
+
+  // Decision Mode
+  startDecision: (req: {
+    template_filename?: string;
+    preset_id?: string;
+    project_id?: string;
+    seeds?: number[];
+    name?: string;
+  }) => fetchApi<any>('/decision/run', { method: 'POST', body: JSON.stringify(req) }),
+  getDecision: (decisionId: string) => fetchApi<any>(`/decision/${decisionId}`),
 };

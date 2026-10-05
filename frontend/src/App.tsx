@@ -21,6 +21,8 @@ import { Runs } from './pages/Runs';
 import { Planner } from './pages/Planner';
 import { NetworkTools } from './pages/NetworkTools';
 import { CityTwin } from './pages/CityTwin';
+import { DecisionStart } from './pages/DecisionStart';
+import { DecisionImpact } from './pages/DecisionImpact';
 import { OnboardingTour } from './components/ui/OnboardingTour';
 import { useHealthStore } from './store/healthStore';
 import { api } from './lib/api';
@@ -60,9 +62,10 @@ function RootLayout() {
     };
   }, [setApiReachable, setModelVersion]);
 
-  // Landing (`/`) stays reachable offline so product entry still works.
+  // Landing + Decision entry stay reachable offline so product entry still works.
   const path = window.location.pathname;
-  const allowOffline = path === '/' || path.includes('/projects');
+  const allowOffline =
+    path === '/' || path.includes('/projects') || path.startsWith('/decision');
   if (initialCheckDone && apiReachable === false && !allowOffline) {
     return <ApiDown />;
   }
@@ -97,6 +100,8 @@ const router = createBrowserRouter([
       {
         element: <MainLayout />,
         children: [
+          { path: '/decision', element: <DecisionStart /> },
+          { path: '/decision/:decisionId/impact', element: <DecisionImpact /> },
           { path: '/projects', element: <Projects /> },
           { path: '/projects/:id', element: <ProjectOverview /> },
           { path: '/settings', element: <Settings /> },

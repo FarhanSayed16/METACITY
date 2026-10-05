@@ -101,18 +101,18 @@ export function LandingFinalCTA({ onEnter }: LandingFinalCTAProps) {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 flex flex-col items-center">
         <p className="font-extrabold text-4xl sm:text-6xl tracking-tight text-white">METACITY</p>
         <p className="mt-3 text-sm sm:text-base text-white/55 max-w-md">
-          Open a project, run the network, glance at the twin.
+          Pick a city, propose a plan, see before/after traffic and citizen impact.
         </p>
         <button
           type="button"
           onClick={onEnter}
           className="mt-8 px-10 py-4 rounded-md bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-bold text-sm uppercase tracking-wider transition-colors"
         >
-          Open projects →
+          Start a decision →
         </button>
         <footer className="mt-16 pt-8 border-t border-white/5 w-full flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] font-mono text-white/35">
           <span>© {new Date().getFullYear()} METACITY</span>
-          <span>Civic Steel · Network Evidence + City Twin</span>
+          <span>Civic Steel · Decision Mode + City Twin</span>
         </footer>
       </div>
     </section>

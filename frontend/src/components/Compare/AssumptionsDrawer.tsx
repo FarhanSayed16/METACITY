@@ -44,6 +44,14 @@ export function AssumptionsDrawer({ opened, onClose }: AssumptionsDrawerProps) {
               <div className="flex-shrink-0 mt-0.5"><Info className="text-[var(--accent)]" size={18} /></div>
               <div><b>Multinomial Logit Choice:</b> Mode choices (Car, Walk, Transit) rely on simple fixed utilities, without modeling complex household vehicle constraints.</div>
             </li>
+            <li className="flex gap-3 text-sm text-gray-700">
+              <div className="flex-shrink-0 mt-0.5"><Info className="text-[var(--accent)]" size={18} /></div>
+              <div>
+                <b>Citizen Stress / Impatience (Level-1):</b> Derived from trip durations — not microsimulated emotions.
+                Stress ≈ 45% average-travel burden + 55% share of trips over a 30-minute threshold.
+                Impatience ≈ 70% overtime share + delay above 15 minutes. Scores are capped 0–100 and meant as directional indicators for planners.
+              </div>
+            </li>
           </ul>
         </div>
       </div>

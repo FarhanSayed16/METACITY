@@ -60,7 +60,7 @@ export function LandingNavbar({ onEnter }: LandingNavbarProps) {
             onClick={onEnter}
             className="hidden sm:inline-flex px-4 py-2 rounded-md bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-bold text-xs uppercase tracking-wider transition-colors"
           >
-            Open projects
+            Start a decision
           </button>
           <button
             type="button"
@@ -81,8 +81,8 @@ export function LandingNavbar({ onEnter }: LandingNavbarProps) {
           <button type="button" onClick={() => scrollToSection('sec-evidence')} className="text-left text-sm text-white/80 py-2">
             Evidence
           </button>
-          <Link to="/projects" onClick={() => setMenuOpen(false)} className="text-sm font-semibold text-[var(--accent)] py-2">
-            Open projects →
+          <Link to="/decision" onClick={() => setMenuOpen(false)} className="text-sm font-semibold text-[var(--accent)] py-2">
+            Start a decision →
           </Link>
         </div>
       )}
