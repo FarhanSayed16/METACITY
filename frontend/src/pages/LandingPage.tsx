@@ -19,7 +19,7 @@ export const LandingPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const enter = useCallback(() => {
-    navigate('/projects');
+    navigate('/decision');
   }, [navigate]);
 
   return (

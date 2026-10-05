@@ -21,6 +21,10 @@ describe('landing / AI / LOD smoke', () => {
     expect(featureFlags.aiCommand).toBe(true);
   });
 
+  it('Decision Mode is primary — Advanced lab defaults off', () => {
+    expect(featureFlags.advancedLab).toBe(false);
+  });
+
   it('enhancement flags default off (Phase 10 anti-creep)', () => {
     expect(featureFlags.enhFsmViz).toBe(false);
     expect(featureFlags.enhTransitLayers).toBe(false);

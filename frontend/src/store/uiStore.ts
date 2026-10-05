@@ -1,4 +1,16 @@
 import { create } from 'zustand';
+import { featureFlags } from '../lib/featureFlags';
+
+function loadAdvancedLab(): boolean {
+  try {
+    const stored = localStorage.getItem('metacity.advancedLab');
+    if (stored === 'true') return true;
+    if (stored === 'false') return false;
+  } catch {
+    /* ignore */
+  }
+  return Boolean(featureFlags.advancedLab);
+}
 
 interface UIState {
   isNightMode: boolean;
@@ -35,6 +47,9 @@ interface UIState {
   setShowAskAI: (show: boolean) => void;
   selectedAgentId: string | null;
   setSelectedAgentId: (id: string | null) => void;
+  /** When false, Decision Mode is primary; lab nav is hidden. */
+  advancedLab: boolean;
+  setAdvancedLab: (enabled: boolean) => void;
 }
 
 export const useUIStore = create<UIState>((set) => ({
@@ -72,4 +87,13 @@ export const useUIStore = create<UIState>((set) => ({
   setShowAskAI: (show) => set({ showAskAI: show }),
   selectedAgentId: null,
   setSelectedAgentId: (id) => set({ selectedAgentId: id }),
+  advancedLab: loadAdvancedLab(),
+  setAdvancedLab: (enabled) => {
+    try {
+      localStorage.setItem('metacity.advancedLab', enabled ? 'true' : 'false');
+    } catch {
+      /* ignore */
+    }
+    set({ advancedLab: enabled });
+  },
 }));
