@@ -1,0 +1,27 @@
+{
+  "id": "e1fc1e5f-8e99-4ab8-b1c5-cec0b4d42017",
+  "created_at": "2026-10-05T05:56:11.266597+00:00",
+  "project_id": "07e376a6-3559-42f1-a182-62ad148d094f",
+  "template_filename": "nexus_city_baseline.json",
+  "preset_id": "bridge_failure",
+  "preset_name": "Critical Bridge Failure",
+  "preset_description": "Close the main ring-road bridge segment",
+  "baseline_scenario_id": "5bbbc043-15cc-4d65-b53e-9ab7748bf577",
+  "plan_scenario_id": "09e0f83f-a53d-4762-a71c-f2eecac26c51",
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "baseline_run_ids": [
+    "651547df-1bb1-4cb3-b5f4-a56f7e99a47f",
+    "2a3e91e4-0129-42b6-a6b3-b8f79117c5f6",
+    "a31c74cc-c78b-48ba-a456-82bc83332809"
+  ],
+  "plan_run_ids": [
+    "99aab430-ebf0-4253-8a6a-337881ad86ee",
+    "0d18190a-9083-4a04-a7f8-ac4f9f65211b",
+    "cd75b7fa-568e-4aaf-9ac8-2f2adc0f134e"
+  ],
+  "status": "completed"
+}

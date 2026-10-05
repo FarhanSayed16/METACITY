@@ -1,31 +1,30 @@
 # METACITY
 
-Open-source urban simulation: **Network Evidence** (BPR + MSA, multi-seed Compare CI) and **City Twin** (GLB presentation + sampled agents) — both driven by **one** FastAPI/`core` backend at this repo root.
+Open-source **pre-execution decision tool** for urban infrastructure: pick a city, propose a plan (bypass, flood, bridge failure), simulate how traffic bifurcates and how **citizen stress** changes — then review a clear before/after briefing and optional 3D City Twin.
 
-**Partner fork:** previously vendored as `vendor/friend-metacity/` — **removed** after merge. Assets + credits remain under `frontend/public/assets/` and `docs/assets/`. See [`docs/merge/ARCHIVE_FRIEND.md`](docs/merge/ARCHIVE_FRIEND.md).
+**Primary path:** Decision Mode. Network editor, DSA demos, evacuation/hospital labs remain available as **Advanced lab** (toggle in the TopBar).
 
 ---
 
-## Flagship walkthrough (&lt;20 minutes)
+## Flagship walkthrough (&lt;10 minutes)
 
 1. **Start stack** — `docker compose up --build` (api + worker + frontend), or local uvicorn + `npm run dev` (below).
-2. **Landing** — Open http://localhost:5173 — cinematic entry (Civic Steel) → **Open projects**.
-3. **Project** — Create from **Nexus City** (or Highway Bypass / Flood preset).
-4. **Network Evidence** — Overview → **Network Evidence** (or map). Run a scenario with **seeds 0–9**. Congestion colours stream live.
-5. **City Twin** — Overview → **City Twin**, or map toolbar → City Twin. Prefer `/projects/:id/city?run_id=…` so roads + **sampled agents** animate. Click an agent for the inspector (viz ≠ microsim).
-6. **Disaster Lab** — On the map (top-right) → flood / outage / close_link → Measure isolation → **Save & run**. Ghost closures show as red dashed links.
-7. **Compare** — Pair baseline vs disaster/bypass; read CI bands, mechanism trace, **isolation Δ**. Download the HTML report.
-8. **AI Command Center** — TopBar **AI Center** → Search candidates → **Verify top N (full sim)**. **Ask** uses guided templates from run artefacts (labelled: not an LLM).
-9. **Algorithms** — `/dsa` — A*, MSA/BPR, Brandes + bridges demos.
+2. **Landing** — Open http://localhost:5173 → **Start a decision**.
+3. **Decision Mode** — Choose **Nexus City** → pick **Eastern Highway Bypass** (or Flood / Bridge failure) → **Simulate before vs after**.
+4. **Impact briefing** — Read travel-time change, Stress / Impatience indices, plain-language narrative.
+5. **3D Twin** — **View after in 3D Twin** (same scene + sampled agents; viz ≠ microsim).
+6. **Report** — Download the HTML comparison report.
+7. **Advanced lab** (optional) — TopBar **Advanced lab** unlocks Projects, network editor, Compare tools, DSA, Evac, Hospital, AI Center.
 
 ---
 
-## Two modes · one truth
+## Two layers · one truth
 
-| Mode | Route | Use for |
+| Layer | Route | Use for |
 |---|---|---|
-| **Network Evidence** | `/projects/:id/map` | Edit links/facilities, ghost scenarios, live congestion, isolation tools |
-| **City Twin** | `/projects/:id/city` | Present the **same** scene with GLBs, congestion roads, ≤200 sampled agents |
+| **Decision Mode** | `/decision` → `/decision/:id/impact` | Planners & builders: plan cards → auto baseline+plan runs → impact story |
+| **City Twin** | `/projects/:id/city?run_id=…` | Present the **same** scene with GLBs + sampled agents |
+| **Advanced lab** | Projects / map / DSA / modules | Engineers: draw networks, inspect JSON, run lab modules |
 
 Stakeholder one-pager: [`docs/merge/STAKEHOLDER_NETWORK_VS_TWIN.md`](docs/merge/STAKEHOLDER_NETWORK_VS_TWIN.md).
 
@@ -34,21 +33,21 @@ Stakeholder one-pager: [`docs/merge/STAKEHOLDER_NETWORK_VS_TWIN.md`](docs/merge/
 | Flag | Default | Surface |
 |---|---|---|
 | `VITE_CITY_TWIN` | `true` | City Twin routes / CTAs |
-| `VITE_DISASTER_LAB` | `true` | Disaster Lab modal |
-| `VITE_AI_COMMAND` | `true` | AI Command Center + Ask |
+| `VITE_DISASTER_LAB` | `true` | Disaster Lab modal (Advanced) |
+| `VITE_AI_COMMAND` | `true` | AI Command Center + Ask (Advanced) |
+| `VITE_ADVANCED_LAB` | `false` | Start with lab nav visible |
 | `VITE_API_URL` | `http://localhost:8000` | API origin |
 
 ---
 
 ## Features
 
+- **Decision API** — `POST /decision/run` creates project + baseline/plan scenarios, enqueues multi-seed runs
 - Traffic equilibrium via MSA smoothing and BPR volume-delay
 - Multi-seed Compare with 95% CI, calibration badges, isolation delta
-- 2D orthographic + 3D network editing, scenario ghost preview
-- City Twin: 42-registry GLBs, LOD culling, agents sample viz (Level-1 honest)
-- Disaster Lab → your `flood` / `outage` / `close_link` ops
-- Planner search + verify on the **full** sim path; guided Ask (not LLM)
-- Evacuation and hospital surge modules; OSM import
+- Citizen **Stress / Impatience** indices derived from trip delays (Level-1, documented in Assumptions)
+- City Twin: 42-registry GLBs, LOD culling, agents sample viz (honest: not microsim)
+- Advanced: network editing, Disaster Lab, planner search + verify, evacuation & hospital modules, OSM import
 
 ---
 
@@ -80,16 +79,9 @@ cd frontend && npm run verify:assets && npm test && npm run build
 cd backend && pytest -q
 ```
 
-### Not supported
-
-```bash
-# Friend fork is no longer vendored — use root stack only
-# (historical note: docs/merge/ARCHIVE_FRIEND.md)
-```
-
 ---
 
-## Keyboard shortcuts
+## Keyboard shortcuts (Advanced map)
 
 | Key | Action |
 |---|---|
@@ -111,7 +103,6 @@ cd backend && pytest -q
 | Doc | Purpose |
 |---|---|
 | OpenAPI | http://localhost:8000/docs |
-| [`docs/METACITY_Partner_Merge_Unification_Plan.md`](docs/METACITY_Partner_Merge_Unification_Plan.md) | Merge Phases 0–8 done · Phase 9 docs |
 | [`docs/merge/INTEGRATION_SPINE.md`](docs/merge/INTEGRATION_SPINE.md) | API / mode contracts |
 | [`docs/merge/AGENTS_VIZ_HONESTY.md`](docs/merge/AGENTS_VIZ_HONESTY.md) | Agents viz ≠ microsim |
 | [`docs/merge/STAKEHOLDER_NETWORK_VS_TWIN.md`](docs/merge/STAKEHOLDER_NETWORK_VS_TWIN.md) | Stakeholder mode guide |

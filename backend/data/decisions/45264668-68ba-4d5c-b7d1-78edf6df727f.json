@@ -1,0 +1,21 @@
+{
+  "id": "45264668-68ba-4d5c-b7d1-78edf6df727f",
+  "created_at": "2026-10-05T05:52:00.370650+00:00",
+  "project_id": "f7ff481b-b3d3-459b-ad8f-092b62ce7234",
+  "template_filename": "nexus_city_baseline.json",
+  "preset_id": "highway_bypass",
+  "preset_name": "Eastern Highway Bypass",
+  "preset_description": "Adds a new 4-lane bypass road to relieve downtown congestion. Connects the northern and southern ring with a high-speed corridor.",
+  "baseline_scenario_id": "e533cdcb-be3c-4030-a3e0-09cd753dc33b",
+  "plan_scenario_id": "62ce237b-3389-4be6-86e7-f1393a405864",
+  "seeds": [
+    0
+  ],
+  "baseline_run_ids": [
+    "cc2c09d3-0342-409d-ba89-0b80d93c2a0d"
+  ],
+  "plan_run_ids": [
+    "9fa1e2a9-9e97-4754-94b4-f771f28d679f"
+  ],
+  "status": "running"
+}

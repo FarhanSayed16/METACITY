@@ -1,3 +1,68 @@
+def build_decision_narrative(
+    stats: dict,
+    mechanisms: list[str],
+    baseline_kpis: dict,
+    plan_kpis: dict,
+    plan_name: str = "the plan",
+) -> list[str]:
+    """
+    Plain-language bullets for Decision Mode Impact briefing.
+    Combines travel-time stats, citizen scores, and mechanism traces.
+    """
+    from core.metrics.citizen_impact import citizen_day_blurb
+
+    lines: list[str] = []
+    tt = (stats or {}).get("travel_time") or {}
+    if tt:
+        b = tt.get("baseline_mean")
+        s = tt.get("scenario_mean")
+        if b is not None and s is not None:
+            delta = s - b
+            if delta < -0.3:
+                lines.append(
+                    f"With {plan_name}, average travel time falls from {b:.1f} to {s:.1f} minutes "
+                    f"(about {abs(delta):.1f} min faster)."
+                )
+            elif delta > 0.3:
+                lines.append(
+                    f"With {plan_name}, average travel time rises from {b:.1f} to {s:.1f} minutes "
+                    f"(about {delta:.1f} min slower)."
+                )
+            else:
+                lines.append(
+                    f"Average travel time stays near {b:.1f} minutes after {plan_name}."
+                )
+            if tt.get("significant"):
+                lines.append("The travel-time change is statistically significant across paired seeds.")
+            elif tt.get("ci_lower") is not None and tt.get("ci_upper") is not None:
+                lines.append(
+                    f"95% CI on the difference: [{tt['ci_lower']:.2f}, {tt['ci_upper']:.2f}] minutes."
+                )
+
+    lines.append(citizen_day_blurb(baseline_kpis or {}, plan_kpis or {}))
+
+    b_delayed = int((baseline_kpis or {}).get("people_delayed", 0) or 0)
+    p_delayed = int((plan_kpis or {}).get("people_delayed", 0) or 0)
+    if b_delayed != p_delayed:
+        direction = "fewer" if p_delayed < b_delayed else "more"
+        lines.append(
+            f"{abs(p_delayed - b_delayed)} {direction} trips exceed the long-delay threshold "
+            f"after the plan ({b_delayed} → {p_delayed})."
+        )
+
+    for m in (mechanisms or [])[:3]:
+        lines.append(m)
+
+    # Deduplicate while preserving order
+    seen = set()
+    out = []
+    for line in lines:
+        if line and line not in seen:
+            seen.add(line)
+            out.append(line)
+    return out or ["No significant network-wide change detected for this plan."]
+
+
 def trace_mechanisms(
     baseline_kpis: dict[str, float],
     scenario_kpis: dict[str, float],

@@ -21,6 +21,11 @@ def compute_comparison(pairs: list[tuple]) -> dict:
     
     baseline_water = []
     scenario_water = []
+
+    baseline_stress = []
+    scenario_stress = []
+    baseline_impatience = []
+    scenario_impatience = []
     
     for b_run, s_run in pairs:
         b_kpis = read_run_kpis(b_run.id)
@@ -41,6 +46,11 @@ def compute_comparison(pairs: list[tuple]) -> dict:
             
             baseline_water.append(b_kpis.get("water_liters", 0.0))
             scenario_water.append(s_kpis.get("water_liters", 0.0))
+
+            baseline_stress.append(float(b_kpis.get("stress_index", 0.0) or 0.0))
+            scenario_stress.append(float(s_kpis.get("stress_index", 0.0) or 0.0))
+            baseline_impatience.append(float(b_kpis.get("impatience_index", 0.0) or 0.0))
+            scenario_impatience.append(float(s_kpis.get("impatience_index", 0.0) or 0.0))
             
     if not baseline_tt:
         return {"error": "No KPI data available for paired runs."}
@@ -67,6 +77,16 @@ def compute_comparison(pairs: list[tuple]) -> dict:
             "p_value": trips_stats["p_value"],
             "ci_lower": trips_stats["ci_lower"],
             "ci_upper": trips_stats["ci_upper"]
+        },
+        "stress": {
+            "baseline_mean": float(np.mean(baseline_stress)) if baseline_stress else 0.0,
+            "scenario_mean": float(np.mean(scenario_stress)) if scenario_stress else 0.0,
+            "diff_mean": float(np.mean(scenario_stress) - np.mean(baseline_stress)) if baseline_stress else 0.0,
+        },
+        "impatience": {
+            "baseline_mean": float(np.mean(baseline_impatience)) if baseline_impatience else 0.0,
+            "scenario_mean": float(np.mean(scenario_impatience)) if scenario_impatience else 0.0,
+            "diff_mean": float(np.mean(scenario_impatience) - np.mean(baseline_impatience)) if baseline_impatience else 0.0,
         },
         "co2": {
             "baseline_mean": float(np.mean(baseline_co2)),

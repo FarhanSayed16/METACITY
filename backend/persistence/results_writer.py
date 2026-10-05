@@ -5,6 +5,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 from core.config import SimConfig
+from core.metrics.citizen_impact import compute_citizen_impact
 from core.metrics.collector import Result
 from core.version import MODEL_VERSION, SCHEMA_VERSION
 from persistence.paths import get_data_dir
@@ -63,6 +64,7 @@ def write_run_result(
         json.dump(equilibrium, f, indent=2)
         
     # 2. Write KPIs (JSON for scalar, Parquet for distributions if needed)
+    citizen = compute_citizen_impact(result.trip_durations_mins or [])
     kpi_scalars = {
         "total_trips_completed": result.total_trips_completed,
         "average_travel_time_mins": result.average_travel_time_mins,
@@ -72,6 +74,11 @@ def write_run_result(
         "co2_tonnes": result.co2_tonnes,
         "electricity_kwh": result.electricity_kwh,
         "water_liters": result.water_liters,
+        "stress_index": citizen["stress_index"],
+        "impatience_index": citizen["impatience_index"],
+        "pct_trips_over_threshold": citizen["pct_trips_over_threshold"],
+        "people_delayed": citizen["people_delayed"],
+        "delay_threshold_mins": citizen["threshold_mins"],
     }
     if isolation:
         kpi_scalars["isolation_ratio"] = isolation.get("isolation_ratio", 0.0)

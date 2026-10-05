@@ -77,7 +77,7 @@ app.include_router(export.router)
 app.include_router(predict.router)
 app.include_router(network_tools.router)
 app.include_router(runs_stream.router)
-from api.routes import evacuation, hospital, archive, import_geo, calibration, planner, screenshots, analysis
+from api.routes import evacuation, hospital, archive, import_geo, calibration, planner, screenshots, analysis, decision
 app.include_router(archive.router)
 app.include_router(import_geo.router)
 app.include_router(evacuation.router)
@@ -86,3 +86,4 @@ app.include_router(calibration.router)
 app.include_router(planner.router)
 app.include_router(screenshots.router)
 app.include_router(analysis.router)
+app.include_router(decision.router)

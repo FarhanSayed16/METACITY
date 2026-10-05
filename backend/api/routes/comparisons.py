@@ -43,6 +43,8 @@ def compare_scenarios(req: CompareReq, db: sqlite3.Connection = Depends(get_db))
     s_lm = read_run_link_metrics(s_run.id)
     
     mechanisms = trace_mechanisms(b_kpis, s_kpis, b_lm, s_lm, top_n=3)
+    from comparison.mechanism import build_decision_narrative
+    narrative = build_decision_narrative(stats, mechanisms, b_kpis, s_kpis)
 
     isolation_delta = None
     if "isolation_ratio" in b_kpis or "isolation_ratio" in s_kpis:
@@ -59,6 +61,21 @@ def compare_scenarios(req: CompareReq, db: sqlite3.Connection = Depends(get_db))
     return {
         "statistics": stats,
         "mechanisms": mechanisms,
+        "narrative": narrative,
         "calibration_status": b_meta.get("calibration_status", "synthetic_uncalibrated"),
         "isolation_delta": isolation_delta,
+        "citizen_impact": {
+            "baseline": {
+                "stress_index": b_kpis.get("stress_index", 0),
+                "impatience_index": b_kpis.get("impatience_index", 0),
+                "pct_trips_over_threshold": b_kpis.get("pct_trips_over_threshold", 0),
+                "people_delayed": b_kpis.get("people_delayed", 0),
+            },
+            "plan": {
+                "stress_index": s_kpis.get("stress_index", 0),
+                "impatience_index": s_kpis.get("impatience_index", 0),
+                "pct_trips_over_threshold": s_kpis.get("pct_trips_over_threshold", 0),
+                "people_delayed": s_kpis.get("people_delayed", 0),
+            },
+        },
     }
